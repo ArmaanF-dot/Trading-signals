@@ -1,11 +1,15 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study"
+USAGE = "usage: python run.py form4|fca|combo|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | dashboard"
 
 
 def main(argv: list[str]) -> int:
     what = argv[1] if len(argv) > 1 else ""
+    if what == "dashboard":
+        from edge import dashboard
+        dashboard.main()
+        return 0
     if what == "fca-study":
         from edge.fca import backtest as fb
         fb.main()
