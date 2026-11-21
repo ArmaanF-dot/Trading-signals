@@ -103,12 +103,13 @@ def features_and_returns(bars: pd.DataFrame, filed: str, horizons=config.STUDY_H
         return out
     t = pd.Timestamp(filed)
     before, after = bars[bars.index <= t], bars[bars.index > t]
-    if after.empty:
-        return out
+    if after.empty or len(before) < config.MIN_BARS_BEFORE or (after.index[0] - t).days > config.MAX_ENTRY_GAP_DAYS:
+        return out  # history does not cover the event: treat as unpriced
     out["entry_date"] = after.index[0].strftime("%Y-%m-%d")
     tail = before.tail(20)
-    if len(tail) >= 10 and tail["volume"].notna().any():
-        out["adv"] = float((tail["close"] * tail["volume"]).mean())
+    vol = tail["volume"].where(tail["volume"] > 0)
+    if len(tail) >= 10 and vol.notna().sum() >= 5:
+        out["adv"] = float((tail["close"] * vol).mean())
     yr = before["close"].tail(252)
     if len(yr) >= 60:
         out["drawdown"] = float(yr.iloc[-1] / yr.max() - 1)
@@ -170,11 +171,16 @@ def add_quintiles(ev: pd.DataFrame) -> pd.DataFrame:
     return ev
 
 
+def _wmean(x: pd.Series) -> float:
+    """Mean after clipping to the 1st-99th percentile, so a handful of glitches or squeezes cannot drive a cell."""
+    return float(x.clip(x.quantile(0.01), x.quantile(0.99)).mean())
+
+
 def _row(g: pd.DataFrame, horizons) -> list[str]:
     cells = [str(len(g))]
     for h in horizons:
         n, e = g[f"net_{h}d"].dropna(), g[f"excess_{h}d"].dropna()
-        cells.append(f"{n.mean():.1%} / {(n > 0).mean():.0%} / {e.mean():.1%}" if len(n) else "n/a")
+        cells.append(f"{_wmean(n):.1%} (med {n.median():.1%}) / {(n > 0).mean():.0%} / {_wmean(e):.1%}" if len(n) else "n/a")
     return cells
 
 
@@ -192,7 +198,7 @@ def report(ev: pd.DataFrame, horizons=config.STUDY_HORIZONS) -> str:
          f"Events: {len(ev)}; with prices: {len(have)}. Entry at the first close after the filing date. "
          "Cost per trade depends on average dollar volume (assumed, not measured): "
          + ", ".join(f">= ${f / 1e6:g}m: {c:.1%}" if f else f"below: {c:.1%}" for f, c in config.LIQUIDITY_COST_TIERS)
-         + " round trip. Cells are mean net return / share of trades positive after cost / mean net excess over IWM. "
+         + " round trip. Cells are 1%-winsorised mean net return (median) / share of trades positive after cost / winsorised mean net excess over IWM. Events whose price history does not start within a week of the filing are dropped as unpriced. "
          "Survivorship bias flatters everything (delisted names have no prices).", ""]
     if have.empty:
         return "\n".join(L + ["No priced events."])
@@ -211,7 +217,7 @@ def report(ev: pd.DataFrame, horizons=config.STUDY_HORIZONS) -> str:
             spread = []
             for h in horizons:
                 q5, q1 = u[u.quintile == 5][f"net_{h}d"].dropna(), u[u.quintile == 1][f"net_{h}d"].dropna()
-                spread.append(f"{h}d: {q5.mean() - q1.mean():.1%}" if len(q5) and len(q1) else f"{h}d: n/a")
+                spread.append(f"{h}d: {_wmean(q5) - _wmean(q1):.1%}" if len(q5) and len(q1) else f"{h}d: n/a")
             L += [f"Q5 minus Q1 mean net return, {kind} ({label}): " + ", ".join(spread), ""]
     L += ["Caveats: events overlap in time and across names (not independent); fixed equal-weight "
           "score with four features, nothing fitted, but several tables were examined so a single "

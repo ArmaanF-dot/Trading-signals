@@ -98,3 +98,5 @@ STUDY_HORIZONS = (20, 40, 60)  # trading days: weeks-long holds
 EVENT_QUIET_DAYS = 30  # one event per issuer and buyer type per this many days
 MIN_EVENT_VALUE = 20_000
 MIN_EVENTS_PER_MONTH = 10  # months with fewer events are skipped for quintile ranking
+MAX_ENTRY_GAP_DAYS = 7  # entry must be within this many calendar days of the filing, else the price history does not cover the event (e.g. recycled ticker)
+MIN_BARS_BEFORE = 20
