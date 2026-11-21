@@ -59,7 +59,8 @@ COMBO_MIN_NET_SHORT_PCT = 0.5
 COMBO_LOOKBACK_DAYS = 30  # director buys older than this are ignored
 
 # --- prices (return tracking) ---
-STOOQ_URL = "https://stooq.com/q/d/l/?s={symbol}&i=d"
+YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=10y&interval=1d"
+YAHOO_USER_AGENT = "Mozilla/5.0 (compatible; trading-signals-research)"
 
 
 def ntfy_topic() -> str | None:
@@ -85,5 +86,5 @@ INSIDER_DATASET_URLS = [
 ]
 ROUND_TRIP_COST = 0.025  # 2.5% round trip spread/commission assumption for small caps
 BACKTEST_HORIZONS = (5, 20, 60)
-BACKTEST_BENCHMARK = "iwm.us"  # Russell 2000 ETF
+BACKTEST_BENCHMARK = "IWM"  # Russell 2000 ETF
 REPORTS_DIR = ROOT / "reports"
