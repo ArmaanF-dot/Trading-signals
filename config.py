@@ -64,7 +64,9 @@ def ntfy_topic() -> str | None:
 
 
 def sec_user_agent() -> str:
-    ua = os.environ.get("SEC_USER_AGENT")
+    # Secrets pasted into GitHub often carry a trailing newline or stray spaces,
+    # which make the header invalid; collapse all whitespace.
+    ua = " ".join((os.environ.get("SEC_USER_AGENT") or "").split())
     if not ua:
         raise RuntimeError(
             "SEC_USER_AGENT is not set. SEC requires a descriptive User-Agent "

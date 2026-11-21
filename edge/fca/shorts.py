@@ -24,7 +24,7 @@ _ALIASES = {
 
 
 def parse_csv(text: str) -> pd.DataFrame:
-    raw = pd.read_csv(io.StringIO(text.lstrip("\ufeff")), dtype=str, keep_default_na=False)
+    raw = pd.read_csv(io.StringIO(text.lstrip("\ufeff\u00ef\u00bb\u00bf")), dtype=str, keep_default_na=False)
     cols = {c.strip().lower(): c for c in raw.columns}
     out = pd.DataFrame()
     for k, names in _ALIASES.items():
@@ -73,4 +73,6 @@ def latest_snapshot(directory: Path, before: str | None = None) -> pd.DataFrame:
 
 
 def download() -> str:
-    return http.get(config.FCA_SHORTS_URL, headers={"User-Agent": "trading-signals-research"}).text
+    # decode ourselves: the file starts with a UTF-8 BOM that requests would mis-guess as latin-1
+    raw = http.get(config.FCA_SHORTS_URL, headers={"User-Agent": "trading-signals-research"}).content
+    return raw.decode("utf-8-sig")
