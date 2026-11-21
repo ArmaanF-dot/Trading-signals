@@ -1,4 +1,6 @@
 """Form 4 pipeline: fetch new filings -> purchases -> clusters -> alerts -> returns."""
+from datetime import date
+
 import pandas as pd
 
 import config
@@ -33,7 +35,9 @@ def collect_buys() -> int:
         except Exception as exc:  # one bad filing must not stop the batch; retried next run
             print(f"skip {f['accession']}: {type(exc).__name__}")
     if rows:
-        store.append_dedupe(config.FORM4_BUYS_CSV, pd.DataFrame(rows, columns=parse.COLUMNS),
+        new = pd.DataFrame(rows, columns=parse.COLUMNS)
+        new["seen"] = date.today().isoformat()
+        store.append_dedupe(config.FORM4_BUYS_CSV, new,
                             ["accession", "owner_cik", "date", "shares", "price"])
     _mark_seen(done)
     return len(rows)
@@ -59,7 +63,8 @@ def update_returns() -> None:
     df = store.read_csv(config.FORM4_CLUSTERS_CSV)
     if df.empty:
         return
-    df = prices.fill_returns(df, "ticker", "signal_date", "us")
+    df = prices.fill_returns(df, "ticker", "public_date", "us", bench_symbol=config.BACKTEST_BENCHMARK,
+                             fallback_col="signal_date", fallback_days=2)
     df.to_csv(config.FORM4_CLUSTERS_CSV, index=False)
 
 

@@ -4,7 +4,7 @@ import pandas as pd
 import config
 
 CLUSTER_COLUMNS = [
-    "issuer_cik", "window_start", "signal_date", "ticker", "issuer", "n_insiders",
+    "issuer_cik", "window_start", "signal_date", "public_date", "ticker", "issuer", "n_insiders",
     "total_value", "insiders", "last_price", "market_cap", "price_at_signal", "ret_5d", "ret_20d",
 ]
 
@@ -36,6 +36,10 @@ def load_buys(df: pd.DataFrame) -> pd.DataFrame:
     """Convert a str-typed CSV frame to proper dtypes."""
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"])
+    # Date the pipeline first saw the filing (a safe "public" date); older rows without it
+    # get trade date + 2 days, the longest Form 4 filing lag.
+    seen = pd.to_datetime(df["seen"], errors="coerce") if "seen" in df else pd.Series(pd.NaT, index=df.index)
+    df["public"] = seen.fillna(df["date"] + pd.Timedelta(days=2))
     for c in ("is_director", "is_officer", "is_ten_pct"):
         if c in df:
             df[c] = _flag(df[c])
@@ -80,6 +84,7 @@ def find_clusters(
                     "issuer_cik": cik,
                     "window_start": start.strftime("%Y-%m-%d"),
                     "signal_date": w["date"].max().strftime("%Y-%m-%d"),
+                    "public_date": (w["public"].max() if "public" in w else w["date"].max()).strftime("%Y-%m-%d"),
                     "ticker": last["ticker"], "issuer": last["issuer"],
                     "n_insiders": len(owners), "total_value": round(total, 2),
                     "insiders": "; ".join(f"{r.owner} ({r.role})" for r in owners.itertuples()),

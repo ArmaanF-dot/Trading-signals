@@ -13,7 +13,7 @@ from edge import http
 
 SNAP_COLS = ["issuer", "isin", "net_short_pct", "position_date"]
 EVENT_COLUMNS = ["date", "event", "issuer", "isin", "prev_pct", "new_pct", "delta_pp",
-                 "ticker", "price_at_signal", "ret_5d", "ret_20d"]
+                 "ticker", "price_at_signal", "ret_5d", "ret_20d", "bench_ret_5d", "bench_ret_20d"]
 
 _ALIASES = {
     "issuer": ["name of company", "name of share issuer", "issuer"],
@@ -48,7 +48,7 @@ def diff(prev: pd.DataFrame, cur: pd.DataFrame, today: str, threshold: float = c
     def ev(kind, isin, issuer, a, b):
         rows.append({"date": today, "event": kind, "issuer": issuer, "isin": isin,
                      "prev_pct": a, "new_pct": b, "delta_pp": round(b - a, 3), "ticker": "",
-                     "price_at_signal": "", "ret_5d": "", "ret_20d": ""})
+                     "price_at_signal": "", "ret_5d": "", "ret_20d": "", "bench_ret_5d": "", "bench_ret_20d": ""})
 
     for isin, r in c.iterrows():
         if isin not in p.index:
