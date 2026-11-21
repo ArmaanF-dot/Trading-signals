@@ -4,7 +4,7 @@ No lookahead: a cluster is only known once its last Form 4 is *filed*, so we ent
 close of the first trading day strictly after that filing date. Returns are net of
 config.ROUND_TRIP_COST and compared with a small-cap ETF over the same window.
 
-Known biases, repeated in the report: survivorship (Stooq lacks many delisted names, so
+Known biases, repeated in the report: survivorship (Yahoo lacks many delisted names, so
 those clusters are dropped) and no historical market-cap filter (shares outstanding is not
 point-in-time here, so a price proxy is reported instead).
 """
@@ -108,7 +108,7 @@ def log(msg: str) -> None:
     print(f"[backtest {time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def prefetch(symbols, fetch, workers: int = 8) -> dict:
+def prefetch(symbols, fetch, workers: int = 4) -> dict:
     """Fetch closes for many symbols in parallel (network-bound), logging progress."""
     symbols = sorted(set(symbols))
     out, done = {}, 0
@@ -129,12 +129,13 @@ def run_backtest(buys: pd.DataFrame, fetch=prices.fetch_closes, benchmark=config
     if clusters.empty:
         return clusters
     clusters["public_date"] = public_dates(clusters, buys)
-    syms = {prices.stooq_symbol(t, "us") for t in clusters["ticker"] if t}
+    syms = {prices.yahoo_symbol(t, "us") for t in clusters["ticker"] if t}
     cache = prefetch(syms | {benchmark}, fetch)
+    log(f"priced {sum(1 for v in cache.values() if not v.empty)}/{len(cache)} symbols (benchmark empty: {cache[benchmark].empty})")
     bench = cache[benchmark]
     rows = []
     for r in clusters.itertuples():
-        sym = prices.stooq_symbol(r.ticker, "us") if r.ticker else ""
+        sym = prices.yahoo_symbol(r.ticker, "us") if r.ticker else ""
         closes = cache.get(sym, pd.Series(dtype=float))
         res = trade_returns(closes, r.public_date)
         row = {**r._asdict(), **res, "have_prices": not closes.empty}

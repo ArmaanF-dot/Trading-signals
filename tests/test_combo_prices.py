@@ -48,8 +48,23 @@ def test_fill_returns_skips_complete_rows_and_uses_cache():
     df = pd.DataFrame({"ticker": ["VOD", "VOD", "XYZ"], "d": ["2026-11-02"] * 3,
                        "price_at_signal": ["", "", ""], "ret_5d": ["", "", ""], "ret_20d": ["", "0.1", ""]})
     out = prices.fill_returns(df, "ticker", "d", "uk", fetch=fake)
-    assert calls == ["vod.uk", "xyz.uk"] and out.loc[1, "ret_20d"] == "0.1" and out.loc[0, "ret_20d"] == 0.0
+    assert calls == ["VOD.L", "XYZ.L"] and out.loc[1, "ret_20d"] == "0.1" and out.loc[0, "ret_20d"] == 0.0
 
 
-def test_stooq_symbol():
-    assert prices.stooq_symbol("VOD.L", "uk") == "vod.uk" and prices.stooq_symbol("ACME", "us") == "acme.us"
+def test_yahoo_symbol():
+    assert prices.yahoo_symbol("VOD", "uk") == "VOD.L" and prices.yahoo_symbol("brk.b", "us") == "BRK-B"
+
+
+def test_fetch_closes_parses_yahoo_payload(monkeypatch):
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"chart": {"result": [{"timestamp": [1704205800, 1704292200],
+                    "indicators": {"quote": [{"close": [10.0, 11.0]}], "adjclose": [{"adjclose": [9.5, None]}]}}]}}
+    monkeypatch.setattr(prices.requests, "get", lambda *a, **k: R())
+    s = prices.fetch_closes("ACME")
+    assert list(s) == [9.5] and s.index[0] == pd.Timestamp("2024-01-02")
+    monkeypatch.setattr(prices.requests, "get", lambda *a, **k: (_ for _ in ()).throw(prices.requests.ConnectionError()))
+    assert prices.fetch_closes("ACME").empty

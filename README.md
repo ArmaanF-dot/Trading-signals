@@ -21,7 +21,7 @@ Thresholds live in `config.py`.
 
 ## Return tracking
 
-Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Stooq closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
+Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
 
 FCA events need a ticker to get returns: add optional `data/isin_ticker.csv` with `isin,ticker` columns.
 
