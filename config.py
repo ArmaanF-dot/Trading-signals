@@ -19,6 +19,7 @@ FCA_SNAPSHOT_DIR = DATA_DIR / "fca_shorts"
 FCA_EVENTS_CSV = SIGNALS_DIR / "fca_events.csv"
 RNS_CSV = DATA_DIR / "rns_director_buys.csv"
 COMBO_CSV = SIGNALS_DIR / "combo.csv"
+ISIN_TICKER_CSV = DATA_DIR / "isin_ticker.csv"  # optional: isin,ticker (for FCA returns)
 
 # --- notifications ---
 NTFY_BASE_URL = "https://ntfy.sh"
@@ -43,14 +44,18 @@ CLUSTER_WINDOW_DAYS = 10
 CLUSTER_MIN_VALUE = 100_000
 
 # --- FCA short positions ---
-# NOTE: this URL may need updating if the first run 404s; check the FCA
-# "Short positions" page for the current daily-update spreadsheet link.
-FCA_SHORTS_URL = "https://www.fca.org.uk/publication/data/short-positions-daily-update.xlsx"
+# Daily aggregate (anonymised) net short positions CSV; the FCA stopped publishing
+# named positions when the new regime started on 13 July 2026.
+FCA_SHORTS_URL = "https://www.fca.org.uk/publication/documents/aggregated-current-net-short-positions.csv"
 FCA_CHANGE_THRESHOLD_PP = 0.1   # report increases/decreases of at least this many pp
 FCA_ALERT_EVENTS = {"new", "cover"}  # event types that trigger an ntfy alert
 
 # --- combo (director buy + FCA net short) ---
 COMBO_MIN_NET_SHORT_PCT = 0.5
+COMBO_LOOKBACK_DAYS = 30  # director buys older than this are ignored
+
+# --- prices (return tracking) ---
+STOOQ_URL = "https://stooq.com/q/d/l/?s={symbol}&i=d"
 
 
 def ntfy_topic() -> str | None:
