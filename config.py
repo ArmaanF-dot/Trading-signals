@@ -88,3 +88,13 @@ ROUND_TRIP_COST = 0.025  # 2.5% round trip spread/commission assumption for smal
 BACKTEST_HORIZONS = (5, 20, 60)
 BACKTEST_BENCHMARK = "IWM"  # Russell 2000 ETF
 REPORTS_DIR = ROOT / "reports"
+
+# --- opportunistic-insider / cross-sectional study ---
+# Round-trip trading cost assumed by liquidity (average dollar volume, last 20 days).
+# These are ASSUMPTIONS, not measured spreads; the report says so.
+LIQUIDITY_COST_TIERS = [(20_000_000, 0.004), (5_000_000, 0.010), (0, 0.025)]
+LIQUID_MIN_ADV = 5_000_000
+STUDY_HORIZONS = (20, 40, 60)  # trading days: weeks-long holds
+EVENT_QUIET_DAYS = 30  # one event per issuer and buyer type per this many days
+MIN_EVENT_VALUE = 20_000
+MIN_EVENTS_PER_MONTH = 10  # months with fewer events are skipped for quintile ranking
