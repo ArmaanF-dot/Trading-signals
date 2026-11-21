@@ -21,7 +21,7 @@ def stooq_symbol(ticker: str, market: str) -> str:
 def fetch_closes(symbol: str) -> pd.Series:
     """Daily close series indexed by date; empty on any failure."""
     try:
-        resp = requests.get(config.STOOQ_URL.format(symbol=symbol), timeout=config.HTTP_TIMEOUT)
+        resp = requests.get(config.STOOQ_URL.format(symbol=symbol), timeout=15)  # short: one slow symbol must not stall a backtest
         resp.raise_for_status()
         df = pd.read_csv(io.StringIO(resp.text))
         if "Close" not in df or df.empty:

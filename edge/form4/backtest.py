@@ -9,7 +9,9 @@ those clusters are dropped) and no historical market-cap filter (shares outstand
 point-in-time here, so a price proxy is reported instead).
 """
 import io
+import time
 import zipfile
+from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 
@@ -102,18 +104,37 @@ def trade_returns(closes: pd.Series, public_date: str, horizons=config.BACKTEST_
     return out
 
 
+def log(msg: str) -> None:
+    print(f"[backtest {time.strftime('%H:%M:%S')}] {msg}", flush=True)
+
+
+def prefetch(symbols, fetch, workers: int = 8) -> dict:
+    """Fetch closes for many symbols in parallel (network-bound), logging progress."""
+    symbols = sorted(set(symbols))
+    out, done = {}, 0
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        for sym, closes in zip(symbols, ex.map(fetch, symbols)):
+            out[sym] = closes
+            done += 1
+            if done % 50 == 0 or done == len(symbols):
+                log(f"prices {done}/{len(symbols)}")
+    return out
+
+
 def run_backtest(buys: pd.DataFrame, fetch=prices.fetch_closes, benchmark=config.BACKTEST_BENCHMARK) -> pd.DataFrame:
     """One row per cluster with net returns and the benchmark's return over the same holding period."""
+    log(f"finding clusters in {len(buys)} purchase rows")
     clusters = cluster.find_clusters(buys)
+    log(f"{len(clusters)} clusters")
     if clusters.empty:
         return clusters
     clusters["public_date"] = public_dates(clusters, buys)
-    bench = fetch(benchmark)
-    cache, rows = {}, []
+    syms = {prices.stooq_symbol(t, "us") for t in clusters["ticker"] if t}
+    cache = prefetch(syms | {benchmark}, fetch)
+    bench = cache[benchmark]
+    rows = []
     for r in clusters.itertuples():
         sym = prices.stooq_symbol(r.ticker, "us") if r.ticker else ""
-        if sym and sym not in cache:
-            cache[sym] = fetch(sym)
         closes = cache.get(sym, pd.Series(dtype=float))
         res = trade_returns(closes, r.public_date)
         row = {**r._asdict(), **res, "have_prices": not closes.empty}
@@ -168,6 +189,7 @@ def load_range(start_year: int, end_year: int, dl=download_quarter) -> pd.DataFr
             zf = dl(y, q)
             if zf is not None:
                 frames.append(rows_from_zip(zf))
+                log(f"loaded {y}q{q}: {len(frames[-1])} purchase rows")
     if not frames:
         return pd.DataFrame(columns=TXN_COLS)
     df = pd.concat(frames, ignore_index=True)
