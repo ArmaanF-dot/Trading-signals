@@ -15,6 +15,10 @@ Thresholds live in `config.py`.
 
 > **Data change:** since 13 July 2026 the FCA publishes only anonymised *aggregate* net shorts (one number per company, T+2), not named funds. The pipeline uses that daily CSV, so it cannot tell you *who* is short, only how much.
 
+## Backtest
+
+`python run.py backtest 2021 2025` (or Actions, "backtest", "Run workflow") rebuilds Form 4 clusters from the SEC's bulk insider-transaction datasets, enters at the first close after the last filing date (no lookahead), subtracts a 2.5% round trip and compares with IWM. It writes `reports/form4_backtest.md`. Read the caveats in the report: survivorship bias and no point-in-time market-cap filter flatter the result.
+
 ## Return tracking
 
 Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Stooq closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
