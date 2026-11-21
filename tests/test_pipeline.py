@@ -10,6 +10,8 @@ def test_form4_end_to_end_offline(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(config, "DATA_DIR", tmp_path)
     for name, p in {"FORM4_BUYS_CSV": "b.csv", "FORM4_SEEN_TXT": "s.txt", "FORM4_CLUSTERS_CSV": "c.csv"}.items():
         monkeypatch.setattr(config, name, tmp_path / p)
+    monkeypatch.setattr(config, "SHARES_CACHE_CSV", tmp_path / "shares.csv")
+    monkeypatch.setattr(f4.marketcap, "fetch_shares_outstanding", lambda cik: None)
     monkeypatch.delenv("NTFY_TOPIC", raising=False)
     xml = (FIX / "form4_buy.xml").read_text()
     second = xml.replace("0000222222", "0000333333").replace("Doe Jane", "Roe Rick").replace("2026-11-10", "2026-11-12")

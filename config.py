@@ -42,6 +42,10 @@ HTTP_TIMEOUT = 30
 CLUSTER_MIN_INSIDERS = 2
 CLUSTER_WINDOW_DAYS = 10
 CLUSTER_MIN_VALUE = 100_000
+CLUSTER_REQUIRE_OFFICER_OR_DIRECTOR = True  # drop pure 10%-owner clusters (funds, activists)
+CLUSTER_MAX_MARKET_CAP = 2_000_000_000  # small caps only; unknown market cap is kept
+SHARES_OUT_URL = "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/dei/EntityCommonStockSharesOutstanding.json"
+SHARES_CACHE_CSV = DATA_DIR / "form4_shares.csv"
 
 # --- FCA short positions ---
 # Daily aggregate (anonymised) net short positions CSV; the FCA stopped publishing

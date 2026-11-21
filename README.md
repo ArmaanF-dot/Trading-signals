@@ -6,7 +6,7 @@ Cheap, free-data signals for markets institutions ignore (UK/US small caps). Dai
 
 | Command | Signal | Output |
 |---|---|---|
-| `python run.py form4` | US SEC Form 4 cluster buys: at least 2 insiders, 10 days, $100k+ | `data/form4_buys.csv`, `signals/form4_clusters.csv` |
+| `python run.py form4` | US SEC Form 4 cluster buys: at least 2 distinct buyers, at least one officer or director, 10 days, $100k+, market cap at most $2bn (unknown kept) | `data/form4_buys.csv`, `signals/form4_clusters.csv` |
 | `python run.py fca` | FCA aggregate net short positions: daily diff per company (new / cover / increase / decrease) | `data/fca_shorts/*.csv`, `signals/fca_events.csv` |
 | `python run.py combo` | UK director buy (RNS) on an ISIN with an aggregate net short of at least 0.5% | `signals/combo.csv` |
 | `python run.py all` | All of the above | |
