@@ -21,11 +21,11 @@ def yahoo_symbol(ticker: str, market: str) -> str:
     return t.replace(".", "-")
 
 
-def fetch_closes(symbol: str) -> pd.Series:
-    """Daily adjusted closes from Yahoo's chart endpoint, indexed by date; empty on any failure.
-
-    Retries a few times on 429/5xx. Failures never raise (returns stay blank, retried next run).
-    """
+def fetch_bars(symbol: str) -> pd.DataFrame:
+    """Daily bars from Yahoo's chart endpoint: columns close (dividend/split adjusted) and
+    volume (raw shares), indexed by date. Empty frame on any failure; never raises.
+    Retries a few times on 429/5xx."""
+    empty = pd.DataFrame(columns=["close", "volume"], dtype=float)
     url = config.YAHOO_URL.format(symbol=symbol)
     for attempt in range(3):
         try:
@@ -34,15 +34,24 @@ def fetch_closes(symbol: str) -> pd.Series:
                 time.sleep(2 ** attempt)
                 continue
             if resp.status_code != 200:
-                return pd.Series(dtype=float)
+                return empty
             res = resp.json()["chart"]["result"][0]
-            adj = res["indicators"].get("adjclose", [{}])[0].get("adjclose") or res["indicators"]["quote"][0]["close"]
+            quote = res["indicators"]["quote"][0]
+            adj = res["indicators"].get("adjclose", [{}])[0].get("adjclose") or quote["close"]
             idx = pd.to_datetime(res["timestamp"], unit="s").normalize()
-            s = pd.Series(adj, index=idx, dtype=float).dropna()
-            return s[~s.index.duplicated(keep="last")].sort_index()
+            df = pd.DataFrame({"close": pd.Series(adj, index=idx, dtype=float),
+                               "volume": pd.Series(quote.get("volume") or [None] * len(idx), index=idx, dtype=float)})
+            df = df.dropna(subset=["close"])
+            return df[~df.index.duplicated(keep="last")].sort_index()
         except (requests.RequestException, ValueError, KeyError, IndexError, TypeError):
-            return pd.Series(dtype=float)
-    return pd.Series(dtype=float)
+            return empty
+    return empty
+
+
+def fetch_closes(symbol: str) -> pd.Series:
+    """Daily adjusted closes indexed by date; empty on any failure."""
+    bars = fetch_bars(symbol)
+    return bars["close"] if not bars.empty else pd.Series(dtype=float)
 
 
 def returns_for(closes: pd.Series, signal_date: str) -> dict:

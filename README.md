@@ -19,6 +19,10 @@ Thresholds live in `config.py`.
 
 `python run.py backtest 2021 2025` (or Actions, "backtest", "Run workflow") rebuilds Form 4 clusters from the SEC's bulk insider-transaction datasets, enters at the first close after the last filing date (no lookahead), subtracts a 2.5% round trip and compares with IWM. It writes `reports/form4_backtest.md`. Read the caveats in the report: survivorship bias and no point-in-time market-cap filter flatter the result.
 
+## Opportunistic insiders and cross-sectional ranking
+
+`python run.py opportunistic 2023 2025` (Actions: "opportunistic") classifies insider buys as routine or opportunistic (Cohen, Malloy and Pomorski), ranks buy events each month on four fixed features (value, number of buyers, officer involved, drawdown), and reports quintile returns for all names and for liquid names only, net of a liquidity-dependent cost assumption. Output: `reports/form4_opportunistic.md`.
+
 ## Return tracking
 
 Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
