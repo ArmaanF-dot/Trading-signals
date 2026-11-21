@@ -23,6 +23,10 @@ Thresholds live in `config.py`.
 
 `python run.py opportunistic 2023 2025` (Actions: "opportunistic") classifies insider buys as routine or opportunistic (Cohen, Malloy and Pomorski), ranks buy events each month on four fixed features (value, number of buyers, officer involved, drawdown), and reports quintile returns for all names and for liquid names only, net of a liquidity-dependent cost assumption. Output: `reports/form4_opportunistic.md`.
 
+## FCA shorts study
+
+`python run.py fca-study` (Actions: "fca-study") rebuilds each ISIN's aggregate net short from the FCA's archived named positions, finds moves of 0.5pp or more, and measures forward returns versus a UK index ETF with stamp duty and liquidity-tiered costs. It also fills `data/isin_ticker.csv`, which the live FCA pipeline uses for return tracking. Output: `reports/fca_shorts_study.md`.
+
 ## Return tracking
 
 Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**

@@ -100,3 +100,15 @@ MIN_EVENT_VALUE = 20_000
 MIN_EVENTS_PER_MONTH = 10  # months with fewer events are skipped for quintile ranking
 MAX_ENTRY_GAP_DAYS = 7  # entry must be within this many calendar days of the filing, else the price history does not cover the event (e.g. recycled ticker)
 MIN_BARS_BEFORE = 20
+
+# --- FCA shorts study ---
+# Archived named-position workbook (old regime): sheets "Current Disclosures" and "Historic Disclosures".
+FCA_ARCHIVE_URL = "https://www.fca.org.uk/publication/data/short-positions-daily-update.xlsx"
+YAHOO_SEARCH_URL = "https://query1.finance.yahoo.com/v1/finance/search?q={q}&quotesCount=5&newsCount=0"
+FCA_PUBLICATION_LAG_BDAYS = 2  # conservative: a position date is treated as public two business days later
+FCA_RISE_PP = 0.5  # aggregate net short moved by at least this many percentage points
+UK_BENCHMARKS = ["VMID.L", "ISF.L"]  # FTSE 250 ETF, falling back to FTSE 100 ETF
+# UK round-trip cost by average daily value traded in GBP: spread plus 0.5% stamp duty on buys (main market).
+# Assumptions, not measured.
+UK_LIQUIDITY_COST_TIERS = [(10_000_000, 0.009), (2_000_000, 0.017), (0, 0.035)]
+UK_LIQUID_MIN_ADV = 2_000_000
