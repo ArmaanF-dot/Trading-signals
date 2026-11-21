@@ -17,6 +17,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python run.py backtest ${{ inputs.start_year }} ${{ inputs.end_year }}
         env:
+          PYTHONUNBUFFERED: "1"
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
       - name: Commit report
         run: |
