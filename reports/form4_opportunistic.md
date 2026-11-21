@@ -1,43 +1,43 @@
 # Opportunistic insiders and cross-sectional ranking
 
-Events: 11511; with prices: 9249. Entry at the first close after the filing date. Cost per trade depends on average dollar volume (assumed, not measured): >= $20m: 0.4%, >= $5m: 1.0%, below: 2.5% round trip. Cells are mean net return / share of trades positive after cost / mean net excess over IWM. Survivorship bias flatters everything (delisted names have no prices).
+Events: 11511; with prices: 8806. Entry at the first close after the filing date. Cost per trade depends on average dollar volume (assumed, not measured): >= $20m: 0.4%, >= $5m: 1.0%, below: 2.5% round trip. Cells are 1%-winsorised mean net return (median) / share of trades positive after cost / winsorised mean net excess over IWM. Events whose price history does not start within a week of the filing are dropped as unpriced. Survivorship bias flatters everything (delisted names have no prices).
 
 ### Opportunistic vs routine (all priced)
 
 | group | n | 20d net / hit / excess | 40d net / hit / excess | 60d net / hit / excess |
 |---|---|---|---|---|
-| opportunistic | 9103 | 2.6% / 44% / 1.1% | 1.8% / 48% / -1.1% | 3.7% / 50% / -0.5% |
-| routine | 146 | -1.4% / 41% / -2.4% | -1.1% / 45% / -3.1% | 1.7% / 53% / -2.0% |
+| opportunistic | 8665 | 0.1% (med -1.2%) / 45% / -1.3% | 1.2% (med -0.5%) / 48% / -1.6% | 2.7% (med 0.3%) / 51% / -1.4% |
+| routine | 141 | -1.4% (med -1.9%) / 41% / -2.5% | -1.0% (med -1.4%) / 45% / -3.1% | 1.7% (med 1.2%) / 53% / -2.0% |
 
 ### Opportunistic vs routine (liquid: ADV >= $5m)
 
 | group | n | 20d net / hit / excess | 40d net / hit / excess | 60d net / hit / excess |
 |---|---|---|---|---|
-| opportunistic | 3726 | 1.0% / 51% / -0.4% | 2.3% / 53% / -0.6% | 3.7% / 54% / -0.6% |
-| routine | 71 | -0.1% / 48% / -1.0% | 0.8% / 49% / -1.0% | 3.9% / 51% / 0.7% |
+| opportunistic | 3725 | 0.9% (med 0.3%) / 51% / -0.5% | 2.0% (med 1.1%) / 53% / -0.8% | 3.3% (med 2.0%) / 54% / -1.1% |
+| routine | 71 | -0.2% (med -1.3%) / 48% / -1.1% | 0.7% (med -0.1%) / 49% / -1.1% | 3.9% (med 0.2%) / 51% / 0.8% |
 
 ### opportunistic buys, ranked quintiles (all priced)
 
 | group | n | 20d net / hit / excess | 40d net / hit / excess | 60d net / hit / excess |
 |---|---|---|---|---|
-| Q1 | 1801 | 0.1% / 44% / -1.2% | 1.1% / 51% / -1.6% | 2.9% / 57% / -1.1% |
-| Q2 | 1822 | 1.3% / 45% / -0.3% | 1.3% / 49% / -1.6% | 3.7% / 52% / -0.6% |
-| Q3 | 1824 | 7.6% / 45% / 6.2% | 1.8% / 47% / -1.1% | 3.4% / 50% / -0.8% |
-| Q4 | 1822 | 2.6% / 44% / 1.1% | 1.9% / 47% / -0.9% | 5.6% / 48% / 1.4% |
-| Q5 | 1834 | 1.3% / 44% / -0.2% | 2.8% / 46% / -0.2% | 2.9% / 45% / -1.3% |
+| Q1 | 1721 | -0.2% (med -0.8%) / 44% / -1.5% | 0.8% (med 0.3%) / 51% / -1.9% | 2.7% (med 1.7%) / 57% / -1.4% |
+| Q2 | 1732 | 0.0% (med -1.1%) / 45% / -1.5% | 1.1% (med -0.1%) / 49% / -1.7% | 3.4% (med 0.7%) / 52% / -0.8% |
+| Q3 | 1735 | 0.6% (med -1.3%) / 45% / -1.0% | 1.2% (med -0.8%) / 47% / -1.7% | 2.5% (med 0.2%) / 51% / -1.6% |
+| Q4 | 1732 | -0.2% (med -1.5%) / 44% / -1.8% | 1.3% (med -0.9%) / 48% / -1.5% | 3.4% (med -1.0%) / 48% / -0.7% |
+| Q5 | 1745 | 0.7% (med -1.6%) / 45% / -0.8% | 1.7% (med -1.4%) / 47% / -1.2% | 2.5% (med -2.2%) / 46% / -1.7% |
 
-Q5 minus Q1 mean net return, opportunistic (all priced): 20d: 1.2%, 40d: 1.8%, 60d: -0.0%
+Q5 minus Q1 mean net return, opportunistic (all priced): 20d: 0.9%, 40d: 1.0%, 60d: -0.2%
 
 ### opportunistic buys, ranked quintiles (liquid)
 
 | group | n | 20d net / hit / excess | 40d net / hit / excess | 60d net / hit / excess |
 |---|---|---|---|---|
-| Q1 | 731 | 0.4% / 52% / -0.7% | 1.6% / 55% / -0.9% | 3.2% / 59% / -0.7% |
-| Q2 | 746 | 2.0% / 54% / 0.6% | 3.3% / 58% / 0.5% | 4.2% / 57% / -0.2% |
-| Q3 | 743 | 1.5% / 53% / -0.1% | 2.3% / 51% / -0.7% | 3.6% / 54% / -0.9% |
-| Q4 | 746 | 0.7% / 48% / -0.8% | 2.1% / 52% / -0.7% | 4.2% / 50% / -0.2% |
-| Q5 | 760 | 0.6% / 50% / -0.9% | 2.2% / 51% / -0.9% | 3.3% / 52% / -1.2% |
+| Q1 | 731 | 0.4% (med 0.4%) / 52% / -0.8% | 1.5% (med 1.0%) / 55% / -1.0% | 3.1% (med 3.0%) / 59% / -0.9% |
+| Q2 | 746 | 1.9% (med 0.9%) / 54% / 0.5% | 3.0% (med 2.5%) / 58% / 0.2% | 3.6% (med 3.5%) / 57% / -0.8% |
+| Q3 | 742 | 1.3% (med 0.7%) / 53% / -0.3% | 1.4% (med 0.5%) / 51% / -1.6% | 3.0% (med 1.3%) / 54% / -1.4% |
+| Q4 | 746 | 0.5% (med -0.6%) / 48% / -1.0% | 1.9% (med 0.8%) / 52% / -0.9% | 3.5% (med 0.3%) / 50% / -0.9% |
+| Q5 | 760 | 0.4% (med -0.1%) / 50% / -1.1% | 2.0% (med 0.5%) / 51% / -1.0% | 2.9% (med 0.9%) / 52% / -1.6% |
 
-Q5 minus Q1 mean net return, opportunistic (liquid): 20d: 0.3%, 40d: 0.6%, 60d: 0.1%
+Q5 minus Q1 mean net return, opportunistic (liquid): 20d: 0.1%, 40d: 0.5%, 60d: -0.2%
 
 Caveats: events overlap in time and across names (not independent); fixed equal-weight score with four features, nothing fitted, but several tables were examined so a single good-looking cell can be luck; costs are assumptions; daily closes only. Not financial advice.
