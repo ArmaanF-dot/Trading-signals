@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry><title>4 - Acme (0000111111) (Issuer)</title><link href="https://www.sec.gov/Archives/edgar/data/111111/000011111126000001/0000111111-26-000001-index.htm"/><category term="4"/><id>urn:tag:sec.gov,2008:accession-number=0000111111-26-000001</id></entry>
+  <entry><title>8-K - Other</title><link href="https://www.sec.gov/x-index.htm"/><category term="8-K"/><id>urn:tag:sec.gov,2008:accession-number=0000999999-26-000002</id></entry>
+  <entry><title>4/A</title><link href="https://www.sec.gov/y-index.htm"/><category term="4/A"/><id>urn:tag:sec.gov,2008:accession-number=0000888888-26-000003</id></entry>
+</feed>
