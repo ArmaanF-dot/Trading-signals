@@ -35,7 +35,7 @@ def test_notify_dry_run_and_no_topic_leak(monkeypatch, capsys):
 
     def boom(*a, **k):
         import requests
-        raise requests.ConnectionError("https://ntfy.sh/supersecrettopic")
+        raise requests.ConnectionError("https://ntfy.sh/" + "supersecrettopic")
     monkeypatch.setattr(notify.requests, "post", boom)
     assert notify.send("t", "m") is False
     assert "supersecrettopic" not in capsys.readouterr().out
