@@ -119,12 +119,16 @@
     const f = DATA.feed;
     if (!f || !f.rows?.length) return;
     $("#p-feed").hidden = false;
+    $("#feed-asof").textContent = f.as_of ? "as of " + f.as_of : "";
+    $("#feed-note").textContent = f.disclaimer || "";
+    if (f.track_record) { $("#track").hidden = false; $("#track-text").textContent = f.track_record; }
     const cols = f.columns.slice(0, 12);
     $("#feed thead").innerHTML = "<tr>" + cols.map((c) => `<th>${esc(c)}</th>`).join("") + "</tr>";
     $("#feed tbody").innerHTML = f.rows.map((r) => "<tr>" + cols.map((c) => {
       const v = r[c]; const n = Number(v);
       const isRet = /ret|return|excess/i.test(c) && v !== "" && !isNaN(n);
-      return `<td class="${isRet ? "r" : ""}">${isRet ? pct(Math.abs(n) < 5 ? n * 100 : n, 1) : esc(v)}</td>`;
+      if (c === "stance") return `<td class="${v === "avoid" ? "down" : v === "watch" ? "up" : "muted"}">${esc(v)}</td>`;
+      return `<td class="${isRet ? "r" : ""}" title="${esc(v)}">${isRet ? pct(Math.abs(n) < 5 ? n * 100 : n, 1) : esc(v)}</td>`;
     }).join("") + "</tr>").join("");
   }
 

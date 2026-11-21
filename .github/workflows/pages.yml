@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths: ["dashboard/**", "edge/dashboard.py", "signals/**", "data/fca_shorts/**", ".github/workflows/pages.yml"]
   workflow_run:
-    workflows: [form4, fca]
+    workflows: [form4, fca, feed]
     types: [completed]
   schedule:
     # Every 30 minutes, 07:00-21:30 UTC on weekdays (covers London and New York hours),

@@ -101,3 +101,15 @@ def test_build_copies_static_files(tmp_path, monkeypatch):
     monkeypatch.setattr(d, "build_data", lambda: {"signals": {"watchlist": [], "avoid": []}, "brief": {"source": "rules"}})
     out = d.main(tmp_path / "site")
     assert (out / "index.html").exists() and (out / "app.js").exists() and (out / "data.json").exists()
+
+
+def test_feed_reads_json_and_sorts_avoid_first(tmp_path):
+    p = tmp_path / "feed.json"
+    p.write_text(json.dumps({"as_of": "2026-11-21", "disclaimer": "x", "signals": [
+        {"date": "2026-11-20", "stance": "watch", "symbol": "A", "market": "US", "summary": "s", "evidence": "e"},
+        {"date": "2026-11-19", "stance": "avoid", "symbol": "B", "market": "UK", "summary": "s", "evidence": "e"},
+        {"date": "2026-11-21", "stance": "watch", "symbol": "C", "market": "US", "summary": "s", "evidence": "e"}]}))
+    f = d.feed(p, tmp_path / "missing.md")
+    assert [r["symbol"] for r in f["rows"]] == ["B", "C", "A"]
+    assert f["track_record"] is None and f["as_of"] == "2026-11-21"
+    assert d.feed(tmp_path / "nope.json") is None

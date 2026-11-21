@@ -23,8 +23,9 @@ from edge.store import read_csv
 SOURCE_DIR = config.ROOT / "dashboard"
 SITE_DIR = config.ROOT / "_site"
 
-# Optional feed from the daily signal feed work (read if present, never written here).
-FEED_CANDIDATES = ["signals/feed.csv", "signals/daily_feed.csv", "signals/signal_feed.csv"]
+# Daily signal feed written by `python run.py feed` (read only here).
+FEED_JSON = config.ROOT / "signals" / "feed.json"
+TRACK_MD = config.ROOT / "signals" / "track_record.md"
 
 WATCH_DAYS = 30            # Form 4 clusters shown as watchlist inputs
 AVOID_LOOKBACK_DAYS = 30   # window for rising aggregate shorts
@@ -158,17 +159,19 @@ def combo_hits() -> list[dict]:
                          "total_net_short_pct", "ret_5d", "ret_20d"])
 
 
-def feed() -> dict | None:
-    """The daily signal feed written by the feed pipeline, if it exists. Shown as-is."""
-    for rel in FEED_CANDIDATES:
-        p = config.ROOT / rel
-        df = read_csv(p)
-        if not df.empty:
-            date_col = next((c for c in df.columns if "date" in c.lower()), None)
-            if date_col:
-                df = df.sort_values(date_col, ascending=False)
-            return {"path": rel, "columns": list(df.columns), "rows": df.head(100).to_dict("records")}
-    return None
+def feed(path: Path = FEED_JSON, track: Path = TRACK_MD) -> dict | None:
+    """The daily signal feed (signals/feed.json) and its track record, shown as-is."""
+    try:
+        f = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+    cols = ["date", "stance", "symbol", "market", "summary", "evidence"]
+    rows = [{c: s.get(c) for c in cols} for s in f.get("signals", [])]
+    order = {"avoid": 0, "watch": 1}
+    rows.sort(key=lambda r: str(r["date"] or ""), reverse=True)
+    rows.sort(key=lambda r: order.get(r["stance"], 2))
+    return {"as_of": f.get("as_of"), "disclaimer": f.get("disclaimer"), "columns": cols, "rows": rows[:100],
+            "track_record": track.read_text()[:6000] if track.exists() else None}
 
 
 # ---------- delayed quotes ----------
