@@ -1,0 +1,22 @@
+{
+  "as_of": "2026-11-21",
+  "lookback_days": 30,
+  "disclaimer": "Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first.",
+  "signals": [
+    {
+      "id": "form4:0001647639:2026-11-19",
+      "symbol": "UPST",
+      "market": "US",
+      "signal": "form4_cluster",
+      "stance": "watch",
+      "date": "2026-11-20",
+      "summary": "2 insiders bought $1,811,053 (window from 2026-11-19): Gu Paul (Chief Executive Officer, Director); Girouard Dave (Director, 10% owner)",
+      "metrics": {
+        "n_insiders": 2,
+        "total_value": 1811053.0,
+        "market_cap": 1567682448.0
+      },
+      "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    }
+  ]
+}
