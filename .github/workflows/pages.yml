@@ -32,7 +32,7 @@ jobs:
           # Optional. Without them the page uses a rule-based brief and the browser fetches analyst data.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          PREVIOUS_DATA_URL: https://armaanf-dot.github.io/trading-signals/data.json
+          PREVIOUS_DATA_URL: https://armaanf-dot.github.io/Trading-signals/data.json
       - uses: actions/upload-pages-artifact@v3
         with: {path: _site}
   deploy:

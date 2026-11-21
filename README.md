@@ -33,7 +33,7 @@ Thresholds live in `config.py`.
 
 ## Jarvis dashboard
 
-A dark, Bloomberg-style homescreen hosted on GitHub Pages: `https://armaanf-dot.github.io/trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
+A dark, Bloomberg-style homescreen hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
 
 | Panel | Source | Freshness |
 |---|---|---|
