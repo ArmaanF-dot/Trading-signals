@@ -93,8 +93,8 @@ def trade_returns(closes: pd.Series, public_date: str, horizons=config.BACKTEST_
     if closes.empty:
         return out
     after = closes[closes.index > pd.Timestamp(public_date)]
-    if after.empty:
-        return out
+    if after.empty or (after.index[0] - pd.Timestamp(public_date)).days > config.MAX_ENTRY_GAP_DAYS:
+        return out  # price history does not cover the event (recycled ticker, halt)
     p0 = float(after.iloc[0])
     out["entry_date"], out["entry_price"] = after.index[0].strftime("%Y-%m-%d"), p0
     for h in horizons:

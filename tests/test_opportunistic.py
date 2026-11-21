@@ -103,3 +103,23 @@ def test_evaluate_and_report_end_to_end():
     txt = op.report(pd.concat([ev, op.evaluate(ev0.assign(ticker="BBB", kind="routine"), fetch_bars=lambda s: b)], ignore_index=True))
     assert "Opportunistic vs routine" in txt and "Survivorship" in txt
     assert "No priced events" in op.report(ev.assign(have_prices=False))
+
+
+def test_unpriced_when_history_does_not_cover_the_event():
+    b = bars()
+    # recycled ticker: the series only starts long after the filing
+    late = b.iloc[300:]
+    assert op.features_and_returns(late, b.index[100].strftime("%Y-%m-%d"))["entry_date"] == ""
+    # too little history before the filing
+    assert op.features_and_returns(b, b.index[5].strftime("%Y-%m-%d"))["entry_date"] == ""
+    # a long gap right after the filing date (e.g. trading halt) is also rejected
+    gap = pd.concat([b.iloc[:100], b.iloc[130:]])
+    assert op.features_and_returns(gap, b.index[99].strftime("%Y-%m-%d"))["entry_date"] == ""
+
+
+def test_negative_volume_is_ignored_and_winsorised_mean():
+    b = bars()
+    b.iloc[290:301, 1] = -5e6
+    assert op.features_and_returns(b, b.index[300].strftime("%Y-%m-%d"))["adv"] > 0
+    x = pd.Series([0.01] * 98 + [20.0, -0.5])
+    assert op._wmean(x) < 0.05

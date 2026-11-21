@@ -67,3 +67,8 @@ def test_load_range_skips_missing_quarters():
         return make_zip() if (y, q) == (2024, 1) else None
     df = bt.load_range(2024, 2024, dl=dl)
     assert len(calls) == 4 and len(df) == 2
+
+
+def test_entry_gap_rejected():
+    late = closes().iloc[50:]  # history starts long after the filing
+    assert bt.trade_returns(late, "2024-01-09")["entry_date"] == ""
