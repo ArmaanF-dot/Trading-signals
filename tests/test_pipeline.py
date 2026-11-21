@@ -44,3 +44,8 @@ def test_notify_dry_run_and_no_topic_leak(monkeypatch, capsys):
 def test_run_py_usage(capsys):
     import run
     assert run.main(["run.py"]) == 2
+
+
+def test_sec_user_agent_is_sanitised(monkeypatch):
+    monkeypatch.setenv("SEC_USER_AGENT", '  Jane Doe\n jane@example.com \r\n')
+    assert config.sec_user_agent() == "Jane Doe jane@example.com"

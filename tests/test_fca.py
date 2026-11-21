@@ -37,3 +37,16 @@ def test_process_snapshots_and_events(tmp_path, monkeypatch, capsys):
     assert "DRY RUN" in capsys.readouterr().out
     run.process(snap([("Bar", "GB2", 0.7, "d")]), "2026-11-20")  # same day again: no duplicates
     assert len(pd.read_csv(tmp_path / "events.csv")) == 2
+
+
+def test_parse_csv_survives_bom_and_mojibake():
+    text = (FIX / "fca_ansp.csv").read_text()
+    assert len(shorts.parse_csv("\ufeff" + text)) == 2
+    assert len(shorts.parse_csv("\u00ef\u00bb\u00bf" + text)) == 2  # BOM mis-decoded as latin-1
+
+
+def test_download_decodes_bom(monkeypatch):
+    class R:
+        content = b"\xef\xbb\xbf" + (FIX / "fca_ansp.csv").read_bytes()
+    monkeypatch.setattr(shorts.http, "get", lambda *a, **k: R())
+    assert shorts.download().startswith("Name of Company")
