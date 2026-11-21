@@ -77,3 +77,13 @@ def sec_user_agent() -> str:
             'such as "Your Name you@example.com".'
         )
     return ua
+
+# --- backtest ---
+INSIDER_DATASET_URLS = [
+    "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/{y}q{q}_form345.zip",
+    "https://www.sec.gov/files/datastandardsinnovation/data/insider-transactions-data-sets/{y}q{q}_form345.zip",
+]
+ROUND_TRIP_COST = 0.025  # 2.5% round trip spread/commission assumption for small caps
+BACKTEST_HORIZONS = (5, 20, 60)
+BACKTEST_BENCHMARK = "iwm.us"  # Russell 2000 ETF
+REPORTS_DIR = ROOT / "reports"

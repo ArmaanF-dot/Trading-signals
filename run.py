@@ -1,11 +1,15 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|all"
+USAGE = "usage: python run.py form4|fca|combo|all | backtest START_YEAR END_YEAR"
 
 
 def main(argv: list[str]) -> int:
     what = argv[1] if len(argv) > 1 else ""
+    if what == "backtest":
+        from edge.form4 import backtest
+        backtest.main(int(argv[2]), int(argv[3]))
+        return 0
     if what not in ("form4", "fca", "combo", "all"):
         print(USAGE)
         return 2
