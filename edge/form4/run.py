@@ -3,7 +3,7 @@ import pandas as pd
 
 import config
 from edge import notify, prices, store
-from edge.form4 import cluster, fetch, parse
+from edge.form4 import cluster, fetch, marketcap, parse
 
 CLUSTER_KEY = ["issuer_cik", "window_start"]
 
@@ -43,12 +43,13 @@ def detect_and_alert() -> pd.DataFrame:
     buys = store.read_csv(config.FORM4_BUYS_CSV)
     if buys.empty:
         return pd.DataFrame()
-    clusters = cluster.find_clusters(cluster.load_buys(buys))
+    clusters = marketcap.apply_cap_filter(cluster.find_clusters(cluster.load_buys(buys)))
     new = store.append_dedupe(config.FORM4_CLUSTERS_CSV, clusters.astype(str), CLUSTER_KEY)
     for r in new.itertuples():
         notify.send(
             f"Insider cluster: {r.ticker or r.issuer}",
-            f"{r.n_insiders} insiders bought ${float(r.total_value):,.0f} by {r.signal_date}\n{r.insiders}",
+            f"{r.n_insiders} insiders bought ${float(r.total_value):,.0f} by {r.signal_date}\n{r.insiders}"
+            + (f"\nMarket cap ~${float(r.market_cap) / 1e6:,.0f}m" if r.market_cap not in ("", "nan") else ""),
             priority="high", tags=["moneybag"],
         )
     return new
