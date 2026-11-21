@@ -4,7 +4,7 @@ from edge import combo, prices
 
 
 def fca(rows):
-    return pd.DataFrame(rows, columns=["holder", "issuer", "isin", "net_short_pct", "position_date"])
+    return pd.DataFrame(rows, columns=["issuer", "isin", "net_short_pct", "position_date"])
 
 
 def rns(rows):
@@ -16,7 +16,7 @@ def test_combo_matches_on_isin_and_threshold():
              ("2026-11-16", "Foo", "GB1", "FOO", "Bob", "CFO", "1", "1", "20000", ""),
              ("2026-11-16", "Low", "GB2", "LOW", "Cy", "CEO", "1", "1", "9000", ""),
              ("2026-11-16", "None", "GB3", "NON", "Di", "CEO", "1", "1", "9000", "")])
-    f = fca([("A", "Foo", "GB1", 0.4, ""), ("B", "Foo", "GB1", 0.3, ""), ("A", "Low", "GB2", 0.2, "")])
+    f = fca([("Foo", "GB1", 0.7, ""), ("Low", "GB2", 0.2, "")])
     out = combo.find_combos(r, f, today="2026-11-20")
     assert list(out["isin"]) == ["GB1"]
     row = out.iloc[0]
@@ -25,7 +25,7 @@ def test_combo_matches_on_isin_and_threshold():
 
 def test_combo_ignores_old_buys():
     r = rns([("2026-08-01", "Foo", "GB1", "FOO", "Ann", "CEO", "1", "1", "50000", "")])
-    assert combo.find_combos(r, fca([("A", "Foo", "GB1", 1.0, "")]), today="2026-11-20").empty
+    assert combo.find_combos(r, fca([("Foo", "GB1", 1.0, "")]), today="2026-11-20").empty
 
 
 def test_returns_for():

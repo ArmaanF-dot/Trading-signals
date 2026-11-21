@@ -1,5 +1,4 @@
-"""FCA pipeline: download -> snapshot -> diff against previous snapshot -> alerts."""
-import io
+"""FCA pipeline (aggregate net shorts): download -> snapshot -> diff against previous snapshot -> alerts."""
 from datetime import date
 
 import pandas as pd
@@ -24,11 +23,11 @@ def process(cur: pd.DataFrame, today: str) -> pd.DataFrame:
     events = shorts.diff(prev, cur, today)
     tick = load_isin_tickers()
     events["ticker"] = events["isin"].map(tick).fillna("")
-    new = store.append_dedupe(config.FCA_EVENTS_CSV, events.astype(str), ["date", "event", "holder", "isin"])
+    new = store.append_dedupe(config.FCA_EVENTS_CSV, events.astype(str), ["date", "event", "isin"])
     for r in new.itertuples():
         if r.event in config.FCA_ALERT_EVENTS:
             notify.send(f"FCA short {r.event}: {r.issuer}",
-                        f"{r.holder}\n{float(r.prev_pct):.2f}% -> {float(r.new_pct):.2f}% ({r.isin})",
+                        f"{float(r.prev_pct):.2f}% -> {float(r.new_pct):.2f}% ({r.isin})",
                         tags=["chart_with_downwards_trend"])
     return new
 
@@ -41,6 +40,6 @@ def update_returns() -> None:
 
 
 def run() -> None:
-    cur = shorts.parse_xlsx(io.BytesIO(shorts.download()))
+    cur = shorts.parse_csv(shorts.download())
     process(cur, date.today().isoformat())
     update_returns()

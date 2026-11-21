@@ -44,9 +44,9 @@ CLUSTER_WINDOW_DAYS = 10
 CLUSTER_MIN_VALUE = 100_000
 
 # --- FCA short positions ---
-# NOTE: this URL may need updating if the first run 404s; check the FCA
-# "Short positions" page for the current daily-update spreadsheet link.
-FCA_SHORTS_URL = "https://www.fca.org.uk/publication/data/short-positions-daily-update.xlsx"
+# Daily aggregate (anonymised) net short positions CSV; the FCA stopped publishing
+# named positions when the new regime started on 13 July 2026.
+FCA_SHORTS_URL = "https://www.fca.org.uk/publication/documents/aggregated-current-net-short-positions.csv"
 FCA_CHANGE_THRESHOLD_PP = 0.1   # report increases/decreases of at least this many pp
 FCA_ALERT_EVENTS = {"new", "cover"}  # event types that trigger an ntfy alert
 

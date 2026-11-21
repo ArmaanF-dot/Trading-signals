@@ -7,11 +7,13 @@ Cheap, free-data signals for markets institutions ignore (UK/US small caps). Dai
 | Command | Signal | Output |
 |---|---|---|
 | `python run.py form4` | US SEC Form 4 cluster buys: at least 2 insiders, 10 days, $100k+ | `data/form4_buys.csv`, `signals/form4_clusters.csv` |
-| `python run.py fca` | FCA named-fund short positions: daily diff (new / cover / increase / decrease) | `data/fca_shorts/*.csv`, `signals/fca_events.csv` |
-| `python run.py combo` | UK director buy (RNS) on an ISIN where funds are net short | `signals/combo.csv` |
+| `python run.py fca` | FCA aggregate net short positions: daily diff per company (new / cover / increase / decrease) | `data/fca_shorts/*.csv`, `signals/fca_events.csv` |
+| `python run.py combo` | UK director buy (RNS) on an ISIN with an aggregate net short of at least 0.5% | `signals/combo.csv` |
 | `python run.py all` | All of the above | |
 
 Thresholds live in `config.py`.
+
+> **Data change:** since 13 July 2026 the FCA publishes only anonymised *aggregate* net shorts (one number per company, T+2), not named funds. The pipeline uses that daily CSV, so it cannot tell you *who* is short, only how much.
 
 ## Return tracking
 
@@ -43,6 +45,6 @@ date,company,isin,ticker,director,role,shares,price,value_gbp,source_url
 
 ## Known caveats
 
-- The FCA spreadsheet URL in `config.py` is unverified; if the first run 404s, copy the current link from the FCA short positions page.
+- The FCA file URL was checked against the FCA page on 21 November 2026; if it ever 404s, copy the current link from the "Notification and disclosure of net short positions" page.
 - The EDGAR feed shows only the latest ~300 filings, so the 2-hourly schedule matters; gaps are not backfilled.
 - Parsers are tested offline against fixtures; live formats may drift.
