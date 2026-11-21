@@ -7,7 +7,7 @@ from edge.fca import shorts
 from edge.rns import directors
 
 COMBO_COLUMNS = ["signal_date", "company", "isin", "ticker", "n_directors", "director_value_gbp",
-                 "total_net_short_pct", "price_at_signal", "ret_5d", "ret_20d"]
+                 "total_net_short_pct", "price_at_signal", "ret_5d", "ret_20d", "bench_ret_5d", "bench_ret_20d"]
 
 
 def find_combos(rns: pd.DataFrame, fca: pd.DataFrame, min_short: float = config.COMBO_MIN_NET_SHORT_PCT,
@@ -30,7 +30,7 @@ def find_combos(rns: pd.DataFrame, fca: pd.DataFrame, min_short: float = config.
             "isin": isin, "ticker": last.get("ticker", ""), "n_directors": g["director"].nunique(),
             "director_value_gbp": round(g["value_gbp"].sum(), 2),
             "total_net_short_pct": round(float(s.loc[isin, "total"]), 3),
-            "price_at_signal": "", "ret_5d": "", "ret_20d": "",
+            "price_at_signal": "", "ret_5d": "", "ret_20d": "", "bench_ret_5d": "", "bench_ret_20d": "",
         })
     return pd.DataFrame(rows, columns=COMBO_COLUMNS)
 
@@ -47,5 +47,5 @@ def run(today: str | None = None) -> pd.DataFrame:
                     priority="high", tags=["rotating_light"])
     df = store.read_csv(config.COMBO_CSV)
     if not df.empty:
-        prices.fill_returns(df, "ticker", "signal_date", "uk").to_csv(config.COMBO_CSV, index=False)
+        prices.fill_returns(df, "ticker", "signal_date", "uk", bench_symbol=config.UK_BENCHMARKS[0]).to_csv(config.COMBO_CSV, index=False)
     return new

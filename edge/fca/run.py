@@ -36,7 +36,7 @@ def update_returns() -> None:
     df = store.read_csv(config.FCA_EVENTS_CSV)
     if df.empty:
         return
-    prices.fill_returns(df, "ticker", "date", "uk").to_csv(config.FCA_EVENTS_CSV, index=False)
+    prices.fill_returns(df, "ticker", "date", "uk", bench_symbol=config.UK_BENCHMARKS[0]).to_csv(config.FCA_EVENTS_CSV, index=False)
 
 
 def run() -> None:

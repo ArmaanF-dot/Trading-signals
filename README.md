@@ -27,9 +27,13 @@ Thresholds live in `config.py`.
 
 `python run.py fca-study` (Actions: "fca-study") rebuilds each ISIN's aggregate net short from the FCA's archived named positions, finds moves of 0.5pp or more, and measures forward returns versus a UK index ETF with stamp duty and liquidity-tiered costs. It also fills `data/isin_ticker.csv`, which the live FCA pipeline uses for return tracking. Output: `reports/fca_shorts_study.md`.
 
+## Signal feed and track record
+
+`python run.py feed` writes `signals/feed.json` and `signals/feed.md` (current signals with stance avoid, watch or info, and the backtest evidence for each) plus `signals/track_record.md` (what the live signals actually did, versus a benchmark, once enough have a 20-day return). `feed.yml` runs it daily after the FCA update. Every record says plainly that the backtests found no standalone edge: use it as an input, not an instruction.
+
 ## Return tracking
 
-Every signal CSV has `price_at_signal`, `ret_5d` and `ret_20d` columns. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
+Every signal CSV has `price_at_signal`, `ret_5d`, `ret_20d` and benchmark columns `bench_ret_5d`, `bench_ret_20d`, measured from the first close after the signal became public. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
 
 FCA events need a ticker to get returns: add optional `data/isin_ticker.csv` with `isin,ticker` columns.
 

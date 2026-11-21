@@ -112,3 +112,16 @@ UK_BENCHMARKS = ["VMID.L", "ISF.L"]  # FTSE 250 ETF, falling back to FTSE 100 ET
 # Assumptions, not measured.
 UK_LIQUIDITY_COST_TIERS = [(10_000_000, 0.009), (2_000_000, 0.017), (0, 0.035)]
 UK_LIQUID_MIN_ADV = 2_000_000
+
+# --- signal feed (for the agent council) ---
+FEED_JSON = SIGNALS_DIR / "feed.json"
+FEED_MD = SIGNALS_DIR / "feed.md"
+TRACK_RECORD_MD = SIGNALS_DIR / "track_record.md"
+FEED_LOOKBACK_DAYS = 30
+FEED_DISCLAIMER = "Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first."
+FEED_EVIDENCE = {
+    "form4_cluster": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only.",
+    "fca_short_rise": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short.",
+    "uk_combo": "Untested: no free history of director dealings. Treat as an idea to inspect by hand.",
+}
+MIN_TRACK_N = 30  # do not read anything into a track record smaller than this

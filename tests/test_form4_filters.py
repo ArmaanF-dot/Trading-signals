@@ -54,3 +54,16 @@ def test_fetch_shares_outstanding_parses_xbrl(monkeypatch):
     assert marketcap.fetch_shares_outstanding("1") == 120.0
     monkeypatch.setattr(marketcap.http, "get", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("404")))
     assert marketcap.fetch_shares_outstanding("1") is None
+
+
+def test_public_date_uses_first_seen_or_trade_date_plus_two():
+    rows = [("1", "A", "A", "o1", "X", "CEO", "a1", "2026-11-02", 1, 1, 80000, "False", "True", "False"),
+            ("1", "A", "A", "o2", "Y", "CFO", "a2", "2026-11-04", 1, 1, 80000, "False", "True", "False")]
+    df = pd.DataFrame(rows, columns=COLS).astype(str)
+    old = cluster.find_clusters(cluster.load_buys(df))           # no "seen" column: trade date + 2 days
+    assert old.iloc[0]["public_date"] == "2026-11-06"
+    df["seen"] = ["2026-11-05", ""]                              # one seen, one legacy blank
+    new = cluster.find_clusters(cluster.load_buys(df))
+    assert new.iloc[0]["public_date"] == "2026-11-06"            # max(seen, legacy fallback)
+    df["seen"] = ["2026-11-05", "2026-11-09"]
+    assert cluster.find_clusters(cluster.load_buys(df)).iloc[0]["public_date"] == "2026-11-09"
