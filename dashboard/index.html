@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jarvis</title>
+<meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot" id="pulse"></span>JARVIS</div>
+  <div class="clocks" id="clocks"></div>
+  <form class="cmd" id="cmd" autocomplete="off">
+    <input id="cmd-input" placeholder="Add ticker (e.g. AAPL) or type 'help'   [ / ]" spellcheck="false">
+  </form>
+  <button class="btn" id="open-settings" type="button" title="API keys and options">Keys</button>
+</header>
+
+<div class="tape" id="tape" aria-label="Ticker tape"></div>
+
+<main class="grid">
+  <section class="panel span2" id="p-brief">
+    <h2>Daily brief <span class="badge" id="brief-src"></span><span class="meta" id="built"></span></h2>
+    <p class="brief" id="brief">Loading…</p>
+  </section>
+
+  <section class="panel" id="p-watch">
+    <h2>My watchlist <span class="badge" id="us-status">US: no live feed</span></h2>
+    <table class="tbl" id="watch"><thead><tr><th>Ticker</th><th class="r">Last</th><th class="r">Chg</th><th></th></tr></thead><tbody></tbody></table>
+    <p class="note" id="watch-note"></p>
+  </section>
+
+  <section class="panel" id="p-crypto">
+    <h2>Crypto <span class="badge live" id="crypto-status">connecting</span></h2>
+    <table class="tbl" id="crypto"><thead><tr><th>Pair</th><th class="r">Last</th><th class="r">24h</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel span2" id="p-insider">
+    <h2>US insider clusters <span class="badge">watchlist input</span></h2>
+    <p class="note">Two or more insiders (at least one officer or director) buying $100k+ within 10 days, market cap up to $2bn. The 2023-25 backtest found <b>no edge after costs</b>, so these are names to research, not buys. Click a row to add it to your watchlist and load analyst trends.</p>
+    <div class="scroll"><table class="tbl" id="insider"><thead><tr><th>Date</th><th>Ticker</th><th>Company</th><th class="r">Insiders</th><th class="r">Value</th><th class="r">Mkt cap</th><th class="r">5d</th><th class="r">20d</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="panel" id="p-analyst">
+    <h2>Analyst trends <span class="badge">Finnhub</span></h2>
+    <div class="analyst-pick"><select id="analyst-sym"></select></div>
+    <div id="analyst"></div>
+  </section>
+
+  <section class="panel" id="p-avoid">
+    <h2>Avoid: rising UK shorts <span class="badge warn">filter</span></h2>
+    <p class="note">FCA aggregate net short up 0.5pp or more in 30 days. Historically about 1.4% behind the market over 60 days: skip new longs.</p>
+    <table class="tbl" id="avoid"><thead><tr><th>Company</th><th class="r">Short</th><th class="r">Rise</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel" id="p-uk">
+    <h2>UK markets <span class="badge delayed">delayed</span></h2>
+    <table class="tbl" id="uk"><thead><tr><th>Name</th><th class="r">Last</th><th class="r">Chg</th></tr></thead><tbody></tbody></table>
+    <p class="note" id="uk-note">No free live UK feed exists. Prices are Yahoo quotes (about 15 minutes delayed) captured when the page was last rebuilt.</p>
+  </section>
+
+  <section class="panel" id="p-ref">
+    <h2>US and macro <span class="badge" id="ref-badge">delayed</span></h2>
+    <table class="tbl" id="ref"><thead><tr><th>Name</th><th class="r">Last</th><th class="r">Chg</th><th class="r">5d</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel" id="p-shorted">
+    <h2>Most shorted UK <span class="badge">FCA aggregate</span></h2>
+    <table class="tbl" id="shorted"><thead><tr><th>Company</th><th class="r">Net short</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel" id="p-combo">
+    <h2>UK combo <span class="badge">director buy + shorted</span></h2>
+    <table class="tbl" id="combo"><thead><tr><th>Date</th><th>Company</th><th class="r">Short</th><th class="r">Dir. £</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel span2" id="p-feed" hidden>
+    <h2>Signal feed <span class="badge">forward returns</span><span class="meta" id="feed-asof"></span></h2>
+    <p class="note" id="feed-note"></p>
+    <div class="scroll"><table class="tbl" id="feed"><thead></thead><tbody></tbody></table></div>
+    <details class="track" id="track" hidden><summary>Track record</summary><pre id="track-text"></pre></details>
+  </section>
+</main>
+
+<footer class="foot">Not financial advice. Paper trade first. Live: Alpaca IEX or Finnhub (US, your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK, macro). Signals: SEC Form 4, FCA.</footer>
+
+<dialog id="settings">
+  <form method="dialog" class="settings">
+    <h2>Keys and options</h2>
+    <p class="note">Keys are saved only in this browser (localStorage). They are never sent anywhere except the provider they belong to, and never reach the repository.</p>
+    <label>Alpaca key ID <input id="k-alpaca-id" autocomplete="off" spellcheck="false"></label>
+    <label>Alpaca secret <input id="k-alpaca-secret" type="password" autocomplete="off"></label>
+    <p class="note">Free plan: IEX real-time stream, one connection at a time. Paper-account keys work.</p>
+    <label>Finnhub API key <input id="k-finnhub" type="password" autocomplete="off"></label>
+    <p class="note">Free plan: analyst recommendation trends, previous close, and a US trade stream used when no Alpaca keys are set.</p>
+    <label>Crypto source
+      <select id="k-crypto"><option value="coinbase">Coinbase</option><option value="binance">Binance</option></select>
+    </label>
+    <div class="row"><button class="btn" value="cancel">Cancel</button><button class="btn primary" id="save-settings" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

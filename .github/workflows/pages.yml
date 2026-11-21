@@ -1,0 +1,46 @@
+name: dashboard
+on:
+  push:
+    branches: [main]
+    paths: ["dashboard/**", "edge/dashboard.py", "signals/**", "data/fca_shorts/**", ".github/workflows/pages.yml"]
+  workflow_run:
+    workflows: [form4, fca, feed]
+    types: [completed]
+  schedule:
+    # Every 30 minutes, 07:00-21:30 UTC on weekdays (covers London and New York hours),
+    # so the delayed UK and macro quotes stay fresh.
+    - cron: "*/30 7-21 * * 1-5"
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt anthropic
+      - run: python run.py dashboard
+        env:
+          # Optional. Without them the page uses a rule-based brief and the browser fetches analyst data.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          PREVIOUS_DATA_URL: https://armaanf-dot.github.io/Trading-signals/data.json
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: _site}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

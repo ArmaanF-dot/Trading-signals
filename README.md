@@ -31,6 +31,23 @@ Thresholds live in `config.py`.
 
 `python run.py feed` writes `signals/feed.json` and `signals/feed.md` (current signals with stance avoid, watch or info, and the backtest evidence for each) plus `signals/track_record.md` (what the live signals actually did, versus a benchmark, once enough have a 20-day return). `feed.yml` runs it daily after the FCA update. Every record says plainly that the backtests found no standalone edge: use it as an input, not an instruction.
 
+## Jarvis dashboard
+
+A dark, Bloomberg-style homescreen hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
+
+| Panel | Source | Freshness |
+|---|---|---|
+| My watchlist (type a ticker in the command bar) | Alpaca IEX websocket, or Finnhub trade websocket | Live, with your own free keys |
+| Crypto | Coinbase or Binance public websocket | Live, no key |
+| UK markets, US and macro | Yahoo chart endpoint at build time | Delayed (~15 min plus rebuild gap), labelled |
+| US insider clusters | `signals/form4_clusters.csv` | Watchlist input only (no edge in backtest) |
+| Avoid: rising UK shorts | FCA aggregate snapshots and `signals/fca_events.csv`, rise of 0.5pp+ in 30 days | Avoid filter |
+| Most shorted UK, UK combo | latest FCA snapshot, `signals/combo.csv` | Daily |
+| Analyst trends | Finnhub free recommendation trends | On demand |
+| Daily brief | Claude (if `ANTHROPIC_API_KEY` secret is set, once a day), otherwise rule-based | Each rebuild |
+
+**Keys:** live-data keys are typed into the page (Keys button) and kept only in that browser's localStorage. They never go into the repo. Optional GitHub Secrets: `ANTHROPIC_API_KEY` (AI brief) and `FINNHUB_API_KEY` (pre-fills analyst trends). **First time:** Settings, Pages, Source "GitHub Actions".
+
 ## Return tracking
 
 Every signal CSV has `price_at_signal`, `ret_5d`, `ret_20d` and benchmark columns `bench_ret_5d`, `bench_ret_20d`, measured from the first close after the signal became public. They are filled automatically from free Yahoo Finance closes once the horizon has passed (blank until then). Returns are gross: **subtract spreads (roughly 2-3% round trip on small caps) before trusting any backtest.**
