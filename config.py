@@ -171,3 +171,8 @@ ML_FIRST_FORMATION = "2000-01"  # features need a year of daily history (prices 
 ML_FIRST_PREDICTION = "2005-01"  # first walk-forward model is trained on 2000-01 .. 2004-11 formations
 ML_SPLIT = "2013-01"  # variant chosen on 2005-2012 walk-forward predictions; 2013 onward is the held-out test
 ML_COSTS = MOMENTUM_COSTS
+
+# Frontier / commodity-linked country ETF study (edge/frontier.py)
+FRONTIER_COSTS = [0.003, 0.02, 0.03]  # round trip: liquid country ETF, then the house 2% and 3%
+FRONTIER_SPLIT = "2016-01"  # first out-of-sample formation month
+FRONTIER_FIRST_FORMATION = "2011-06"
