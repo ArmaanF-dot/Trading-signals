@@ -12,62 +12,96 @@
   const num = (v) => v !== null && v !== undefined && v !== "" && !isNaN(v);
   const fmt = (v, d = 2) => !num(v) ? "–" : Number(v).toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
   const px = (v) => !num(v) ? "–" : fmt(v, v >= 1 ? 2 : 4);
+  const signed = (v, d = 1) => !num(v) ? "–" : `${v >= 0 ? "+" : "−"}${fmt(Math.abs(v), d)}%`;
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Change chip. Small moves stay quiet; moves at or past `hot` get the bright treatment.
   // invert: for things where up is bad news (the fear gauge), colour a rise red.
-  const chg = (v, d = 2, invert = false) => !num(v) ? '<span class="chg flat">–</span>'
-    : `<span class="chg ${Math.abs(v) < 0.005 ? "flat" : (v > 0) !== invert ? "up" : "down"}">${v > 0 ? "▲" : v < 0 ? "▼" : ""} ${fmt(Math.abs(v), d)}%</span>`;
+  const chg = (v, { d = 2, invert = false, hot = 3 } = {}) => {
+    if (!num(v)) return '<span class="chg flat">–</span>';
+    const a = Math.abs(v), dir = a < 0.005 ? "flat" : (v > 0) !== invert ? "up" : "down";
+    const lvl = a >= hot ? "s3" : a >= 0.5 ? "s2" : "s1";
+    return `<span class="chg ${dir} ${lvl}">${v > 0 ? "▲" : v < 0 ? "▼" : ""} ${fmt(a, d)}%</span>`;
+  };
   const shortDate = (iso) => { const d = new Date(iso + "T12:00:00Z"); return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }); };
   const pctTxt = (v, d = 1) => !num(v) ? "–" : `<span class="${v >= 0 ? "up" : "down"}">${v >= 0 ? "+" : "−"}${fmt(Math.abs(v), d)}%</span>`;
   const money = (v, cur = "$") => !num(v) ? "–" : v >= 1e9 ? `${cur}${fmt(v / 1e9, 1)}bn` : v >= 1e6 ? `${cur}${fmt(v / 1e6, 1)}m` : `${cur}${fmt(v / 1e3, 0)}k`;
-  const daysAgo = (iso) => {
-    const d = new Date(iso + "T12:00:00Z"); if (isNaN(d)) return "";
-    const n = Math.round((Date.now() - d) / 864e5);
-    return n <= 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`;
-  };
+  const ageDays = (iso) => { const d = new Date(iso + "T12:00:00Z"); return isNaN(d) ? Infinity : Math.round((Date.now() - d) / 864e5); };
+  const daysAgo = (iso) => { const n = ageDays(iso); return !isFinite(n) ? "" : n <= 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`; };
+  // Only touch the DOM when something actually changed, so hover states, clicks and
+  // animations aren't interrupted by the live ticks.
+  const setHTML = (el, html) => { if (el && el.__html !== html) { el.__html = html; el.innerHTML = html; } };
+  const setText = (el, t) => { if (el && el.textContent !== t) el.textContent = t; };
+  const setClass = (el, c) => { if (el && el.getAttribute("class") !== c) el.setAttribute("class", c); };
 
   let DATA = { markets: { uk_delayed: [], us_reference: [] }, signals: { watchlist: [], avoid: [], most_shorted: [], combo: [] }, analyst: {}, uk_names: [] };
+  let loaded = false;
   const keys = () => ({ aid: store.get("alpacaId", ""), asec: store.get("alpacaSecret", ""), fh: store.get("finnhub", ""), crypto: store.get("crypto", "coinbase") });
   let watch = store.get("watch", ["SPY", "QQQ", "IWM", "AAPL", "NVDA", "MSFT"]);
   const us = {};      // sym -> {price, prev, src}
   const crypto = {};  // coin -> {price, open}
   const hist = {};    // key -> recent live prices, for sparklines
   const last = {};    // for flash direction
+  const sys = { us: "delayed", crypto: "connecting" };
+  const INDEX_FUNDS = ["SPY", "QQQ", "IWM", "DIA"];
 
-  // ---------- header: greeting and market hours ----------
+  // ---------- header: greeting, systems line and market hours ----------
   const MARKETS = [
     { name: "London", tz: "Europe/London", open: [8, 0], close: [16, 30] },
     { name: "New York", tz: "America/New_York", open: [9, 30], close: [16, 0], pre: [4, 0], post: [20, 0] },
     { name: "Tokyo", tz: "Asia/Tokyo", open: [9, 0], close: [15, 30] },
   ];
+  const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   function tzParts(tz) {
     const p = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", weekday: "short", hour12: false }).formatToParts(new Date());
     const g = (t) => p.find((x) => x.type === t)?.value;
     return { h: +g("hour") % 24, m: +g("minute"), wd: g("weekday") };
   }
+  const dur = (mins) => mins >= 1440 ? `${Math.floor(mins / 1440)}d ${Math.floor((mins % 1440) / 60)}h` : mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
+  function marketState(mk) {
+    const { h, m, wd } = tzParts(mk.tz);
+    const now = h * 60 + m, at = (a) => a[0] * 60 + a[1], di = DAYS.indexOf(wd), weekday = di >= 0 && di < 5;
+    let st = "shut", label = "closed";
+    if (weekday && now >= at(mk.open) && now < at(mk.close)) { st = "open"; label = "open"; }
+    else if (weekday && mk.pre && now >= at(mk.pre) && now < at(mk.open)) { st = "pre"; label = "pre-market"; }
+    else if (weekday && mk.post && now >= at(mk.close) && now < at(mk.post)) { st = "pre"; label = "after hours"; }
+    let next;
+    if (st === "open") next = { verb: "closes", mins: at(mk.close) - now };
+    else {
+      let days = 0;  // holidays aren't known here, so this is the usual timetable
+      if (!(weekday && now < at(mk.open))) { days = 1; let d = (di + 1) % 7; while (d >= 5) { days++; d = (d + 1) % 7; } }
+      next = { verb: "opens", mins: days * 1440 + at(mk.open) - now };
+    }
+    return { st, label, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, next };
+  }
   function renderHeader() {
     const h = new Date().getHours();
-    $("#greeting").textContent = h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
-    $("#today").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-    $("#clocks").innerHTML = MARKETS.map((mk) => {
-      const { h: hh, m, wd } = tzParts(mk.tz);
-      const mins = hh * 60 + m, at = (a) => a[0] * 60 + a[1];
-      const weekday = !["Sat", "Sun"].includes(wd);
-      let st = "shut", label = "closed";
-      if (weekday && mins >= at(mk.open) && mins < at(mk.close)) { st = "open"; label = "open"; }
-      else if (weekday && mk.pre && mins >= at(mk.pre) && mins < at(mk.open)) { st = "pre"; label = "pre-market"; }
-      else if (weekday && mk.post && mins >= at(mk.close) && mins < at(mk.post)) { st = "pre"; label = "after hours"; }
-      const time = `${String(hh).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      return `<span class="pill ${st}"><i></i>${mk.name} <b>${label}</b> · ${time}</span>`;
-    }).join("");
+    const name = String(store.get("name", "") || "").trim();
+    setText($("#greeting"), (h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + (name ? `, ${name}` : ""));
+    setText($("#today"), new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }));
+    const states = MARKETS.map((mk) => ({ mk, ...marketState(mk) }));
+    setHTML($("#clocks"), states.map((s) => `<span class="pill ${s.st}"><i></i>${s.mk.name} <b>${s.label}</b><span class="t">${s.time}</span></span>`).join(""));
+    const soon = states.slice().sort((a, b) => a.next.mins - b.next.mins)[0];
+    setHTML($("#next"), soon ? `Next: <b>${soon.mk.name} ${soon.next.verb}</b> in ${dur(soon.next.mins)}` : "");
+  }
+  function renderSys() {
+    const dot = (st) => st === "live" ? "live" : st === "error" ? "err" : "wait";
+    const b = new Date(DATA.generated_at);
+    const when = isNaN(b) ? "" : b.toDateString() === new Date().toDateString()
+      ? b.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+      : b.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    setHTML($("#sys"), `<span><i class="${dot(sys.crypto)}"></i>Crypto ${esc(sys.crypto)}</span><span><i class="${dot(sys.us)}"></i>US ${esc(sys.us)}</span>`
+      + (when ? `<span><i class="${Date.now() - b < 45 * 60000 ? "live" : "wait"}"></i>Data ${esc(when)}</span>` : ""));
+    $("#pulse").classList.toggle("on", sys.us === "live" || sys.crypto === "live");
   }
 
   // ---------- sparklines ----------
   function spark(values, up) {
     const v = (values || []).filter(num);
-    if (v.length < 2) return '<svg class="spark"></svg>';
+    if (v.length < 2) return "";
     const lo = Math.min(...v), hi = Math.max(...v), span = hi - lo || 1;
-    const pts = v.map((y, i) => `${(i / (v.length - 1)) * 100},${26 - ((y - lo) / span) * 22}`).join(" ");
-    const col = up ? "var(--up)" : "var(--down)";
-    return `<svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+    const pts = v.map((y, i) => `${((i / (v.length - 1)) * 100).toFixed(2)},${(31 - ((y - lo) / span) * 27).toFixed(2)}`).join(" ");
+    const dir = up ? "up" : "down";
+    return `<svg class="spark ${dir}" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,34 ${pts} 100,34" fill="url(#sg-${dir})"/><polyline class="ln" points="${pts}"/></svg>`;
   }
   function pushHist(key, p) {
     const h = hist[key] || (hist[key] = []);
@@ -75,75 +109,229 @@
     if (!h.length || now - h[h.length - 1].t > 4000) h.push({ t: now, p }); else h[h.length - 1].p = p;
     if (h.length > 90) h.shift();
   }
+  function flash(el, p, v) {
+    if (!num(p) || !num(v) || p === v) return;
+    el.classList.remove("flash-up", "flash-down");
+    void el.offsetWidth;  // restart the animation
+    el.classList.add(v > p ? "flash-up" : "flash-down");
+  }
+  function setPrice(el, key, v, cur = "", empty = "–") {
+    const txt = num(v) ? cur + px(v) : empty;
+    if (el.textContent === txt) return;
+    flash(el, last[key], v);
+    el.textContent = txt;
+    if (num(v)) last[key] = v;
+  }
 
   // ---------- market tiles ----------
+  // hot: the size of move (in %) that counts as big for that market.
   const TILES = [
-    { key: "^FTSE", name: "FTSE 100", what: "Biggest UK companies" },
-    { key: "^FTMC", name: "FTSE 250", what: "Mid-sized UK companies" },
-    { key: "SPY", name: "S&P 500", what: "Biggest US companies (SPY fund)" },
-    { key: "QQQ", name: "Nasdaq 100", what: "US tech giants (QQQ fund)" },
-    { key: "IWM", name: "Russell 2000", what: "Small US companies (IWM fund)" },
-    { key: "BTC", name: "Bitcoin", what: "US$, change over 24h", crypto: true },
-    { key: "ETH", name: "Ethereum", what: "US$, change over 24h", crypto: true },
-    { key: "^VIX", name: "Fear gauge", what: "VIX: higher means more nervous", invert: true },
-    { key: "GBPUSD=X", name: "Pound", what: "Dollars per pound" },
-    { key: "GC=F", name: "Gold", what: "US$ per ounce" },
+    { key: "^FTSE", name: "FTSE 100", what: "Biggest UK companies", who: "the biggest UK companies", hot: 1.5, mood: true },
+    { key: "^FTMC", name: "FTSE 250", what: "Mid-sized UK companies", who: "mid-sized UK companies", hot: 1.5, mood: true },
+    { key: "SPY", name: "S&P 500", what: "Biggest US companies", who: "the biggest US companies", hot: 1.5, mood: true },
+    { key: "QQQ", name: "Nasdaq 100", what: "US tech giants", who: "US tech giants", hot: 1.5, mood: true },
+    { key: "IWM", name: "Russell 2000", what: "Small US companies", who: "small US companies", hot: 2, mood: true },
+    { key: "BTC", name: "Bitcoin", what: "US$, change over 24h", crypto: true, hot: 5 },
+    { key: "ETH", name: "Ethereum", what: "US$, change over 24h", crypto: true, hot: 6 },
+    { key: "^VIX", name: "Fear gauge", what: "VIX: higher is more nervous", invert: true, hot: 15 },
+    { key: "GBPUSD=X", name: "Pound", what: "Dollars per pound", who: "the pound", hot: 0.8 },
+    { key: "GC=F", name: "Gold", what: "US$ per ounce", who: "gold", hot: 2 },
   ];
+  const VIX = TILES.find((t) => t.key === "^VIX");
+  const cryptoHot = (c) => c === "BTC" ? 5 : c === "ETH" ? 6 : 8;
   function quoteFor(sym) {
     return [...DATA.markets.uk_delayed, ...DATA.markets.us_reference].find((q) => q.symbol === sym);
   }
+  function tileState(t) {
+    if (t.crypto) {
+      const c = crypto[t.key] || {};
+      return { price: c.price, change: num(c.price) && c.open ? (c.price / c.open - 1) * 100 : null, line: (hist[t.key] || []).map((x) => x.p), live: num(c.price) };
+    }
+    const q = quoteFor(t.key) || {}, l = us[t.key];
+    if (l && l.src === "live") {
+      const line = (q.closes || []).length >= 2 ? [...q.closes.slice(0, -1), l.price] : (hist[t.key] || []).map((x) => x.p);
+      return { price: l.price, change: l.prev ? (l.price / l.prev - 1) * 100 : q.change_pct, line, live: true };
+    }
+    return { price: q.price, change: q.change_pct, line: q.closes, live: false };
+  }
+  function isHot(t, s) {
+    if (t === VIX) return (num(s.price) && s.price >= 30) || (num(s.change) && s.change >= t.hot);
+    return num(s.change) && Math.abs(s.change) >= t.hot;
+  }
+  const tileEls = {};
+  function buildTiles() {
+    const box = $("#tiles");
+    box.innerHTML = "";
+    for (const t of TILES) {
+      const el = document.createElement("div");
+      el.className = "tile";
+      el.hidden = !t.crypto;
+      el.innerHTML = `<div class="tt"><span class="name"><i class="src"></i>${esc(t.name)}</span><span class="flag"></span></div>`
+        + `<div class="val">…</div><div class="cbox"></div><div class="sbox"></div><div class="what">${esc(t.what)}</div>`;
+      box.appendChild(el);
+      tileEls[t.key] = el;
+    }
+  }
   function renderTiles() {
-    $("#tiles").innerHTML = TILES.map((t) => {
-      let price, change, line, live = false;
-      if (t.crypto) {
-        const c = crypto[t.key] || {};
-        price = c.price; change = num(c.price) && c.open ? (c.price / c.open - 1) * 100 : null;
-        line = (hist[t.key] || []).map((x) => x.p); live = num(c.price);
-      } else {
-        const q = quoteFor(t.key) || {};
-        const l = us[t.key];
-        if (l && l.src === "live") { price = l.price; change = l.prev ? (l.price / l.prev - 1) * 100 : q.change_pct; live = true; line = (hist[t.key] || []).map((x) => x.p); }
-        else { price = q.price; change = q.change_pct; line = q.closes; }
-        if (!num(price)) return "";
-      }
-      const up = (num(change) ? change >= 0 : true) !== !!t.invert;
-      return `<div class="tile"><div class="name"><span class="${live ? "live-dot" : "delayed-dot"}"></span>${esc(t.name)}</div>
-        <div class="val ${flashCls("t" + t.key, price)}">${num(price) ? px(price) : "…"}</div>${chg(change, 2, t.invert)}<div class="what">${esc(t.what)}</div>${spark(line, up)}</div>`;
-    }).join("") || '<div class="empty">Prices appear after the next rebuild.</div>';
+    for (const t of TILES) {
+      const el = tileEls[t.key], s = tileState(t);
+      if (!t.crypto && !num(s.price)) { el.hidden = true; continue; }
+      el.hidden = false;
+      const hot = isHot(t, s);
+      setClass(el, hot ? `tile hot ${t === VIX ? "is-warn" : s.change >= 0 ? "is-up" : "is-down"}` : "tile");
+      setText(el.querySelector(".flag"), hot ? (t === VIX ? "Elevated" : "Big move") : "");
+      setClass(el.querySelector(".src"), "src " + (s.live ? "live" : "delayed"));
+      setPrice(el.querySelector(".val"), "t" + t.key, s.price, "", "…");
+      setHTML(el.querySelector(".cbox"), chg(s.change, { invert: t.invert, hot: t.hot }) + (t.crypto ? '<span class="per">24h</span>' : ""));
+      setHTML(el.querySelector(".sbox"), spark(s.line, (num(s.change) ? s.change >= 0 : true) !== !!t.invert));
+    }
+  }
+
+  // ---------- market mood gauge ----------
+  function buildGauge() {
+    let s = "";
+    for (let i = 0; i <= 16; i++) {
+      const a = Math.PI * (1 - i / 16), maj = i % 4 === 0, r2 = maj ? 108 : 104;
+      s += `<line${maj ? ' class="maj"' : ""} x1="${(110 + 100 * Math.cos(a)).toFixed(1)}" y1="${(110 - 100 * Math.sin(a)).toFixed(1)}" x2="${(110 + r2 * Math.cos(a)).toFixed(1)}" y2="${(110 - r2 * Math.sin(a)).toFixed(1)}"/>`;
+    }
+    $("#g-ticks").innerHTML = s;
+  }
+  let needleNow = -90, needleTo = 0, needleRaf = 0;
+  function drawNeedle(deg) {
+    $("#needle").setAttribute("transform", `rotate(${deg.toFixed(2)} 110 110)`);
+    const r = ((90 - deg) * Math.PI) / 180, x = 110 + 90 * Math.cos(r), y = 110 - 90 * Math.sin(r);
+    $("#g-val").setAttribute("d", Math.abs(deg) < 0.4 ? "M110 20 L110 20" : `M110 20 A90 90 0 0 ${deg > 0 ? 1 : 0} ${x.toFixed(2)} ${y.toFixed(2)}`);
+  }
+  function setNeedle(deg) {
+    needleTo = deg;
+    if (reduceMotion) { needleNow = deg; drawNeedle(deg); return; }
+    if (needleRaf) return;
+    const step = () => {
+      const d = needleTo - needleNow;
+      needleNow = Math.abs(d) < 0.05 ? needleTo : needleNow + d * 0.08;
+      drawNeedle(needleNow);
+      needleRaf = needleNow === needleTo ? 0 : requestAnimationFrame(step);
+    };
+    needleRaf = requestAnimationFrame(step);
+  }
+  const vixBand = (v) => !num(v) ? null : v < 15 ? ["calm", "is-up"] : v < 20 ? ["normal", ""] : v < 30 ? ["a bit nervous", "is-warn"] : ["very nervous", "is-down"];
+  function renderMood() {
+    const rows = TILES.filter((t) => t.mood).map((t) => ({ t, s: tileState(t) })).filter((r) => num(r.s.change));
+    const n = rows.length, avg = n ? rows.reduce((a, r) => a + r.s.change, 0) / n : null;
+    const ups = rows.filter((r) => r.s.change > 0).length, downs = rows.filter((r) => r.s.change < 0).length;
+    const big = rows.slice().sort((a, b) => Math.abs(b.s.change) - Math.abs(a.s.change))[0];
+    const vix = tileState(VIX), band = vixBand(vix.price), live = rows.some((r) => r.s.live);
+    const word = !num(avg) ? "Waiting" : avg <= -1.5 ? "Sell-off" : avg <= -0.4 ? "Down day" : avg < 0.4 ? "Mixed" : avg < 1.5 ? "Up day" : "Rally";
+    const mood = !num(avg) ? "flat" : avg >= 0.4 ? "up" : avg <= -0.4 ? "down" : "flat";
+    if (document.body.dataset.mood !== mood) document.body.dataset.mood = mood;
+    setText($("#mood-word"), word);
+    setText($("#mood-avg"), num(avg) ? `${signed(avg, 2)} average across ${n} main indices` : "");
+    setText($("#mood-tag"), live ? "live" : "latest session");
+    setClass($("#mood-tag"), "tag" + (live ? " live" : ""));
+    setNeedle(num(avg) ? (Math.max(-2, Math.min(2, avg)) / 2) * 90 : 0);
+    let line = "Waiting for prices.";
+    if (n) {
+      line = ups === n ? "Every main index is up." : downs === n ? "Every main index is down."
+        : ups > downs ? `Most main indices are up (${ups} of ${n}).` : downs > ups ? `Most main indices are down (${downs} of ${n}).` : "The main indices are split.";
+      if (band) line += ` The fear gauge is ${fmt(vix.price, 1)}, which is ${band[0]}.`;
+    }
+    setText($("#mood-line"), line);
+    const ro = (label, value, sub, cls = "") => `<div class="ro ${cls}"><small>${label}</small><b>${value}</b><span>${sub}</span></div>`;
+    setHTML($("#readouts"), [
+      ro("Fear gauge", num(vix.price) ? fmt(vix.price, 1) : "–", band ? band[0] : "no data", band ? band[1] : ""),
+      ro("Up / down", n ? `${ups} / ${downs}` : "–", "main indices"),
+      ro("Biggest move", big ? signed(big.s.change) : "–", big ? esc(big.t.name) : "no data",
+        big ? `${big.s.change >= 0 ? "is-up" : "is-down"}${Math.abs(big.s.change) >= big.t.hot ? " hot" : ""}` : ""),
+    ].join(""));
+  }
+
+  // ---------- needs your attention ----------
+  // Priority order: fear gauge, big market moves, fresh insider buying, crypto swings,
+  // watchlist swings, then the top name to steer clear of. At most six.
+  const CRYPTO = [["BTC", "Bitcoin"], ["ETH", "Ethereum"], ["SOL", "Solana"], ["XRP", "XRP"], ["DOGE", "Dogecoin"], ["ADA", "Cardano"], ["LINK", "Chainlink"]];
+  function alertsList() {
+    const out = [];
+    const add = (tone, ico, title, detail) => out.push({ tone, ico, title, detail });
+    const move = (v) => `${v > 0 ? "up" : "down"} ${fmt(Math.abs(v), 1)}%`;
+    const v = tileState(VIX);
+    if (num(v.price) && v.price >= 30) add("warn", "!", `Fear gauge at ${fmt(v.price, 1)}`, "Investors are very nervous. Expect big swings.");
+    else if (num(v.change) && v.change >= VIX.hot) add("warn", "!", `Fear gauge up ${fmt(v.change, 0)}%`, "Nerves are rising fast today.");
+    for (const t of TILES) {
+      if (t === VIX || t.crypto) continue;
+      const s = tileState(t);
+      if (isHot(t, s)) add(s.change > 0 ? "up" : "down", s.change > 0 ? "▲" : "▼", `${t.name} ${move(s.change)}`, `An unusually ${s.change > 0 ? "strong" : "weak"} day for ${t.who}.`);
+    }
+    for (const r of (DATA.signals.watchlist || []).filter((r) => ageDays(r.signal_date) <= 7).slice(0, 2))
+      add("info", "◆", `Insiders buying ${r.ticker || r.issuer}`, `${r.n_insiders ?? "Several"} insiders spent ${money(r.total_value)}, ${daysAgo(r.signal_date)}. Worth researching.`);
+    for (const [c, name] of CRYPTO) {
+      const q = crypto[c] || {}, ch = num(q.price) && q.open ? (q.price / q.open - 1) * 100 : null;
+      if (num(ch) && Math.abs(ch) >= cryptoHot(c)) add(ch > 0 ? "up" : "down", ch > 0 ? "▲" : "▼", `${name} ${move(ch)} in 24h`, "A big swing, even for crypto.");
+    }
+    for (const s of watch) {
+      if (INDEX_FUNDS.includes(s)) continue;
+      const q = us[s] || {}, ch = num(q.price) && q.prev ? (q.price / q.prev - 1) * 100 : null;
+      if (num(ch) && Math.abs(ch) >= 3) add(ch > 0 ? "up" : "down", ch > 0 ? "▲" : "▼", `${s} ${move(ch)}`, "A big move for a stock on your watchlist.");
+    }
+    const a = (DATA.signals.avoid || [])[0];
+    if (a) add("down", "✕", `Steer clear of ${titleCase(a.issuer)}`, `Short bets up ${fmt(a.delta_pp, 1)} points this month, to ${fmt(a.new_pct, 1)}%.`);
+    return out.slice(0, 6);
+  }
+  function renderAlerts() {
+    const list = loaded ? alertsList() : [];
+    const cnt = $("#alert-count");
+    cnt.hidden = !list.length;
+    setText(cnt, String(list.length));
+    const calm = (t, d) => `<div class="alert calm"><span class="ico">◇</span><span class="tx"><b>${t}</b><span class="d">${d}</span></span></div>`;
+    setHTML($("#alerts"), list.length
+      ? list.map((a) => `<div class="alert is-${a.tone}"><span class="ico">${a.ico}</span><span class="tx"><b>${esc(a.title)}</b><span class="d">${esc(a.detail)}</span></span></div>`).join("")
+      : loaded ? calm("All quiet. Nothing stands out right now.", "Big moves, fresh insider buying and big swings on your watchlist will show up here.")
+        : calm("Scanning…", "Checking markets and signals."));
   }
 
   // ---------- live lists ----------
   let dirty = true;
   const mark = () => { dirty = true; };
-  function flashCls(key, v) {
-    const p = last[key]; last[key] = v;
-    if (p === undefined || v === p || !num(v) || !num(p)) return "";
-    return v > p ? "flash-up" : "flash-down";
-  }
   const SRC_LABEL = { live: "live", delayed: "delayed", quote: "last close", iex: "last trade" };
-  function renderWatch() {
-    const list = $("#watch");
-    if (!watch.length) { list.innerHTML = '<li class="empty">Add a stock above to follow it here.</li>'; return; }
-    list.innerHTML = watch.map((s) => {
-      const q = us[s] || {};
-      const c = num(q.price) && q.prev ? (q.price / q.prev - 1) * 100 : null;
-      return `<li><span class="sym">${esc(s)}${q.src ? `<small>${esc(SRC_LABEL[q.src] || q.src)}</small>` : ""}</span>
-        <span class="price ${flashCls("w" + s, q.price)}">${num(q.price) ? "$" + px(q.price) : "–"}</span>${chg(c)}
-        <button class="x" data-rm="${esc(s)}" title="Remove ${esc(s)}" aria-label="Remove ${esc(s)}">×</button></li>`;
-    }).join("");
+  // Rows are built once per set of symbols and then updated cell by cell, so the
+  // remove buttons stay put while prices stream in.
+  function keyed(box, ids, skeleton) {
+    const want = ids.join("|");
+    if (box.__keys !== want) {
+      box.__keys = want;
+      box.innerHTML = ids.map((k) => `<li>${skeleton(k)}</li>`).join("");
+    }
+    return box.children;
   }
-  const CRYPTO = [["BTC", "Bitcoin"], ["ETH", "Ethereum"], ["SOL", "Solana"], ["XRP", "XRP"], ["DOGE", "Dogecoin"], ["ADA", "Cardano"], ["LINK", "Chainlink"]];
+  function renderWatch() {
+    const box = $("#watch");
+    if (!watch.length) {
+      if (box.__keys !== "") { box.__keys = ""; box.innerHTML = '<li class="empty">Add a stock above to follow it here.</li>'; }
+      return;
+    }
+    const lis = keyed(box, watch, (s) => `<span class="sym"></span><span class="price"></span><span class="cc"></span><button class="x" data-rm="${esc(s)}" title="Remove ${esc(s)}" aria-label="Remove ${esc(s)}">×</button>`);
+    watch.forEach((s, i) => {
+      const li = lis[i], q = us[s] || {};
+      const c = num(q.price) && q.prev ? (q.price / q.prev - 1) * 100 : null;
+      setClass(li, num(c) && Math.abs(c) >= 3 && !INDEX_FUNDS.includes(s) ? `hot ${c >= 0 ? "is-up" : "is-down"}` : "");
+      setHTML(li.children[0], `${esc(s)}${q.src ? `<small>${esc(SRC_LABEL[q.src] || q.src)}</small>` : ""}`);
+      setPrice(li.children[1], "w" + s, q.price, "$");
+      setHTML(li.children[2], chg(c));
+    });
+  }
   function renderCrypto() {
-    $("#crypto").innerHTML = CRYPTO.map(([c, name]) => {
-      const q = crypto[c] || {};
+    const lis = keyed($("#crypto"), CRYPTO.map(([c]) => c), (c) => `<span class="sym">${esc(CRYPTO.find((x) => x[0] === c)[1])}<small>${c}</small></span><span class="price"></span><span class="cc"></span>`);
+    CRYPTO.forEach(([c], i) => {
+      const li = lis[i], q = crypto[c] || {};
       const ch = num(q.price) && q.open ? (q.price / q.open - 1) * 100 : null;
-      return `<li><span class="sym">${name}<small>${c}</small></span><span class="price ${flashCls("c" + c, q.price)}">${num(q.price) ? "$" + px(q.price) : "–"}</span>${chg(ch)}</li>`;
-    }).join("");
+      setClass(li, num(ch) && Math.abs(ch) >= cryptoHot(c) ? `hot ${ch >= 0 ? "is-up" : "is-down"}` : "");
+      setPrice(li.children[1], "c" + c, q.price, "$");
+      setHTML(li.children[2], chg(ch, { hot: cryptoHot(c) }));
+    });
   }
   function render() {
     if (!dirty) return;
     dirty = false;
-    renderTiles(); renderWatch(); renderCrypto();
+    renderTiles(); renderWatch(); renderCrypto(); renderMood(); renderAlerts();
   }
   setInterval(render, 600);
 
@@ -156,41 +344,57 @@
     if (/Director/i.test(s)) return "including a director";
     return "";
   }
-  function renderSignals() {
-    const S = DATA.signals;
-    $("#insider").innerHTML = S.watchlist.length ? S.watchlist.slice(0, 6).map((r) => {
-      const who = [`${r.n_insiders ?? "Several"} insiders bought`, rolesOf(r.insiders)].filter(Boolean).join(", ");
-      const since = num(r.ret_20d) ? ` · ${pctTxt(r.ret_20d * 100)} in the 20 days after` : num(r.ret_5d) ? ` · ${pctTxt(r.ret_5d * 100)} in the 5 days after` : "";
-      return `<div class="sig ${r.ticker ? "click" : ""}" data-sym="${esc(r.ticker || "")}" title="${esc(r.insiders)}">
-        <span class="t">${esc(r.ticker || r.issuer)}<small>${esc(r.ticker ? r.issuer : "")}</small></span><span class="big">${money(r.total_value)}</span>
-        <span class="line">${esc(who)}.</span>
-        <span class="when">${esc(daysAgo(r.signal_date))}${num(r.market_cap) ? ` · company worth ${money(r.market_cap)}` : ""}${since}</span></div>`;
-    }).join("") : '<div class="empty">No insider buying clusters in the last 30 days.</div>';
-
-    $("#avoid").innerHTML = S.avoid.length ? S.avoid.slice(0, 6).map((r) => `<div class="sig" title="${esc(r.isin)}">
-        <span class="t">${esc(r.issuer)}${r.ticker ? `<small>${esc(r.ticker)}</small>` : ""}</span><span class="big down">${fmt(r.new_pct, 1)}% shorted</span>
-        <span class="line">Short bets up ${fmt(r.delta_pp, 1)} points since ${esc(shortDate(r.since))}.</span></div>`).join("")
-      : '<div class="empty">No UK shares saw a big jump in short bets this month.</div>';
-
-    $("#shorted-top").innerHTML = (S.most_shorted || []).slice(0, 5).map((r) =>
-      `<li>${esc(titleCase(r.issuer))}<span>${fmt(r.net_short_pct, 1)}%</span></li>`).join("") || '<li class="muted">No data yet.</li>';
-  }
   function titleCase(s) {
     s = String(s || "");
     return s === s.toUpperCase() ? s.toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()).replace(/\bPlc\b/g, "plc") : s;
   }
+  function renderSignals() {
+    const S = DATA.signals;
+    setHTML($("#insider"), S.watchlist.length ? S.watchlist.slice(0, 6).map((r) => {
+      const who = [`${r.n_insiders ?? "Several"} insiders bought`, rolesOf(r.insiders)].filter(Boolean).join(", ");
+      const since = num(r.ret_20d) ? ` · ${pctTxt(r.ret_20d * 100)} in the 20 days after` : num(r.ret_5d) ? ` · ${pctTxt(r.ret_5d * 100)} in the 5 days after` : "";
+      const fresh = ageDays(r.signal_date) <= 7 ? '<span class="new">New</span>' : "";
+      return `<div class="sig good ${r.ticker ? "click" : ""}" data-sym="${esc(r.ticker || "")}" title="${esc(r.insiders)}">
+        <span class="t">${fresh}${esc(r.ticker || r.issuer)}<small>${esc(r.ticker ? r.issuer : "")}</small></span><span class="big">${money(r.total_value)}</span>
+        <span class="line">${esc(who)}.</span>
+        <span class="when">${esc(daysAgo(r.signal_date))}${num(r.market_cap) ? ` · company worth ${money(r.market_cap)}` : ""}${since}</span></div>`;
+    }).join("") : '<div class="empty">No insider buying clusters in the last 30 days.</div>');
+
+    setHTML($("#avoid"), S.avoid.length ? S.avoid.slice(0, 6).map((r) => `<div class="sig bad" title="${esc(r.isin)}">
+        <span class="t">${esc(titleCase(r.issuer))}${r.ticker ? `<small>${esc(r.ticker)}</small>` : ""}</span><span class="big">${fmt(r.new_pct, 1)}% shorted</span>
+        <span class="line">Short bets up ${fmt(r.delta_pp, 1)} points since ${esc(shortDate(r.since))}.</span></div>`).join("")
+      : '<div class="empty">No UK shares saw a big jump in short bets this month.</div>');
+
+    const top = (S.most_shorted || []).slice(0, 5), mx = Math.max(1, ...top.map((r) => +r.net_short_pct || 0));
+    setHTML($("#shorted-top"), top.map((r) => `<li><span class="nm">${esc(titleCase(r.issuer))}</span><span class="v">${fmt(r.net_short_pct, 1)}%</span>`
+      + `<span class="bar2"><i style="width:${Math.round(((+r.net_short_pct || 0) / mx) * 100)}%"></i></span></li>`).join("") || '<li class="muted">No data yet.</li>');
+  }
+  // Make the numbers in the brief easy to spot: signed moves in green or red (a rising
+  // fear gauge counts as bad news), other percentages and money amounts in bright white.
+  function highlight(p) {
+    return p.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([£$€]\d[\d,]*(?:\.\d+)?(?:\s?(?:bn|m|k|billion|million)\b)?)|(?<![\w.,])([+\-−]?)(\d+(?:\.\d+)?)(%|pp\b)/g,
+      (m, cash, sign, n, unit, off, str) => {
+        if (cash) return `<span class="hl">${cash}</span>`;
+        let dir = unit === "%" && sign ? (sign === "+" ? "up" : "down") : "";
+        const clause = str.slice(Math.max(0, off - 80), off).split(/[,;:]|\.\s|\b(?:and|while|but|as)\b/i).pop();
+        if (dir && /VIX|gauge|volatil/i.test(clause)) dir = dir === "up" ? "down" : "up";
+        return `<span class="hl${dir ? " " + dir : ""}">${m}</span>`;
+      });
+  }
   function renderBrief() {
     const text = DATA.brief?.text || "No brief yet.";
-    $("#brief").innerHTML = text.split(/\n\s*\n/).map((p) => `<p>${esc(p.trim())}</p>`).join("");
+    setHTML($("#brief"), text.split(/\n\s*\n/).map((p) => `<p>${highlight(esc(p.trim()))}</p>`).join(""));
+    $("#brief").classList.toggle("short", text.length < 360);
     const ai = DATA.brief?.source === "ai";
-    $("#brief-src").textContent = ai ? "written by Claude" : "automatic summary";
+    setText($("#brief-src"), ai ? "written by Claude" : "automatic summary");
+    setClass($("#brief-src"), "tag" + (ai ? " ai" : ""));
     const built = new Date(DATA.generated_at);
-    $("#built").textContent = isNaN(built) ? "" : "Updated " + built.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) + ". Prices marked delayed were captured then.";
+    setText($("#built"), isNaN(built) ? "" : "Updated " + built.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) + ". Prices marked delayed were captured then.");
   }
 
   // ---------- more detail ----------
   function table(sel, rows, fn, cols, empty) {
-    $(sel + " tbody").innerHTML = rows.length ? rows.map(fn).join("") : `<tr><td colspan="${cols}" class="empty muted">${empty}</td></tr>`;
+    setHTML($(sel + " tbody"), rows.length ? rows.map(fn).join("") : `<tr><td colspan="${cols}" class="empty muted">${empty}</td></tr>`);
   }
   function renderDetail() {
     const S = DATA.signals;
@@ -208,22 +412,22 @@
     $("#feed-note").textContent = f.disclaimer || "";
     if (f.track_record) { $("#track").hidden = false; $("#track-text").textContent = f.track_record; }
     const cols = f.columns.filter((c) => c !== "evidence").slice(0, 8);
-    $("#feed thead").innerHTML = "<tr>" + cols.map((c) => `<th>${esc(c[0].toUpperCase() + c.slice(1))}</th>`).join("") + "</tr>";
-    $("#feed tbody").innerHTML = f.rows.map((r) => `<tr title="${esc(r.evidence || "")}">` + cols.map((c) => {
+    setHTML($("#feed thead"), "<tr>" + cols.map((c) => `<th>${esc(c[0].toUpperCase() + c.slice(1))}</th>`).join("") + "</tr>");
+    setHTML($("#feed tbody"), f.rows.map((r) => `<tr title="${esc(r.evidence || "")}">` + cols.map((c) => {
       const v = r[c];
       if (c === "stance") return `<td class="${v === "avoid" ? "down" : v === "watch" ? "up" : "muted"}">${esc(v)}</td>`;
       return `<td title="${esc(v)}">${esc(v)}</td>`;
-    }).join("") + "</tr>").join("");
+    }).join("") + "</tr>").join(""));
   }
   function renderStatic() {
-    renderBrief(); renderSignals(); renderDetail();
+    renderBrief(); renderSignals(); renderDetail(); renderSys();
     for (const q of DATA.markets.us_reference) if (!us[q.symbol] && /^[A-Z]+$/.test(q.symbol)) us[q.symbol] = { price: q.price, prev: q.prev_close, src: "delayed" };
     fillAnalystPicker(); mark();
   }
 
   // ---------- analysts ----------
   function fillAnalystPicker() {
-    const syms = [...new Set([...DATA.signals.watchlist.map((r) => r.ticker).filter(Boolean), ...watch])].filter((s) => /^[A-Z.\-]+$/.test(s) && !["SPY", "QQQ", "IWM", "DIA"].includes(s));
+    const syms = [...new Set([...DATA.signals.watchlist.map((r) => r.ticker).filter(Boolean), ...watch])].filter((s) => /^[A-Z.\-]+$/.test(s) && !INDEX_FUNDS.includes(s));
     const sel = $("#analyst-sym"); const cur = sel.value;
     sel.innerHTML = syms.map((s) => `<option>${esc(s)}</option>`).join("");
     if (syms.includes(cur)) sel.value = cur;
@@ -287,7 +491,13 @@
     }
   }
   function onTrade(s, p) { us[s] = { ...(us[s] || {}), price: p, src: "live" }; pushHist(s, p); mark(); }
-  function setUsStatus(text, live) { const b = $("#us-status"); b.textContent = text; b.className = "tag" + (live ? " live" : ""); $("#pulse").classList.toggle("on", !!live); }
+  function setUsStatus(text, live) {
+    const b = $("#us-status");
+    b.textContent = text; b.title = text;
+    b.className = "tag" + (live ? " live" : /connect/.test(text) ? " wait" : text === "delayed" ? " delayed" : "");
+    sys.us = live ? "live" : /error/i.test(text) ? "error" : text;
+    renderSys();
+  }
   function connectUS() {
     if (usWs) { usWs.onclose = null; try { usWs.close(); } catch { /* */ } usWs = null; }
     const { aid, asec, fh } = keys();
@@ -324,7 +534,7 @@
   function connectCrypto() {
     if (cWs) { cWs.onclose = null; try { cWs.close(); } catch { /* */ } }
     const src = keys().crypto;
-    const status = (t, live) => { const b = $("#crypto-status"); b.textContent = t; b.className = "tag" + (live ? " live" : ""); };
+    const status = (t, live) => { const b = $("#crypto-status"); b.textContent = t; b.className = "tag" + (live ? " live" : " wait"); sys.crypto = t; renderSys(); };
     const coins = CRYPTO.map(([c]) => c);
     const onTick = (c, price, open) => { crypto[c] = { price, open }; pushHist(c, price); mark(); };
     if (src === "binance") {
@@ -364,15 +574,17 @@
   // ---------- settings ----------
   function openSettings() {
     const k = keys();
+    $("#k-name").value = store.get("name", "");
     $("#k-alpaca-id").value = k.aid; $("#k-alpaca-secret").value = k.asec; $("#k-finnhub").value = k.fh; $("#k-crypto").value = k.crypto;
     $("#settings").showModal();
   }
   $("#open-settings").addEventListener("click", openSettings);
   $("#settings").addEventListener("close", () => {
     if ($("#settings").returnValue !== "save") return;
+    store.set("name", $("#k-name").value.trim().slice(0, 30));
     store.set("alpacaId", $("#k-alpaca-id").value.trim()); store.set("alpacaSecret", $("#k-alpaca-secret").value.trim());
     store.set("finnhub", $("#k-finnhub").value.trim()); store.set("crypto", $("#k-crypto").value);
-    connectUS(); connectCrypto(); fillAnalystPicker();
+    renderHeader(); connectUS(); connectCrypto(); fillAnalystPicker();
   });
 
   // ---------- install as an app ----------
@@ -385,11 +597,12 @@
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   // ---------- boot ----------
+  buildGauge(); buildTiles();
   renderHeader(); setInterval(renderHeader, 30000);
-  renderSignals();
+  renderSys(); render();
   fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : Promise.reject(r.status))
-    .then((d) => { DATA = { ...DATA, ...d }; renderStatic(); })
-    .catch(() => { $("#brief").innerHTML = "<p>Couldn't load today's data. The page may still be building; try again in a minute.</p>"; })
+    .then((d) => { DATA = { ...DATA, ...d }; loaded = true; renderStatic(); })
+    .catch(() => { loaded = true; renderSignals(); mark(); $("#brief").innerHTML = "<p>Couldn't load today's data. The page may still be building; try again in a minute.</p>"; })
     .finally(() => { connectUS(); connectCrypto(); });
   // Refresh build-time data every 10 minutes without restarting the live streams.
   setInterval(() => fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((d) => { if (d) { DATA = { ...DATA, ...d }; renderStatic(); } }).catch(() => {}), 600000);
