@@ -1,6 +1,6 @@
 /* Jarvis service worker: keeps the app shell available offline and shows the last
    data.json when the network is down. Live websockets are never touched. */
-const CACHE = "jarvis-v3";
+const CACHE = "jarvis-v4";
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
