@@ -29,6 +29,8 @@ Thresholds live in `config.py`.
 
 `python run.py momentum` (Actions: "momentum") backtests 12-1 month cross-sectional momentum on point-in-time S&P 500 members since 2000 (top decile or quintile, held 1 or 2 months with overlapping cohorts), against an equal-weight universe benchmark. Variants are chosen on formations before 2013 and judged on 2013 onwards, at a realistic 0.2% round trip and the house 2% and 3%. Output: `reports/momentum_backtest.md` and `reports/momentum_monthly.csv`.
 
+`python run.py oil-tanks` tests whether free Sentinel-2 images (10 m) of the Cushing, Oklahoma tank farm can track EIA weekly Cushing crude stocks, by measuring the roof shadows of floating-roof tanks across 2018-2026. It runs offline from `data/oil_tanks/`; `scripts/oil_tanks_fetch.py` rebuilds the shadow file from the public AWS archive. Verdict: a faint real signal, far too noisy to call weekly changes, so no edge. Output: `reports/oil_tank_satellite.md`.
+
 ## Post-earnings drift study
 
 `python run.py pead-study` (Actions: "pead-study") tests post-earnings announcement drift on liquid US stocks (20-day average dollar volume at least $20m, price at least $5). Earnings dates are 8-K filings with Item 2.02 from EDGAR; the surprise is the stock's reaction around the filing minus SPY. Events are ranked into quintiles against the previous quarter's reactions only, entered one close after the reaction is known, and held 20, 40 and 60 trading days. The rule (buy the top quintile) is judged out of sample (2022 onward) after realistic and 2.5% costs. Output: `reports/pead_study.md` and `reports/pead_events.csv.gz`.
