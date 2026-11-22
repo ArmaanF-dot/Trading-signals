@@ -282,6 +282,8 @@
   window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; $("#install").hidden = false; });
   window.addEventListener("appinstalled", () => { $("#install").hidden = true; installEvt = null; });
   $("#install").addEventListener("click", async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; $("#install").hidden = true; });
+  const standalone = matchMedia("(display-mode: standalone)").matches;
+  if (/Windows/.test(navigator.userAgent) && !standalone) $("#win-app").hidden = false;
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   // ---------- boot ----------

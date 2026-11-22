@@ -381,10 +381,33 @@ def previous_brief(url: str | None, today: date, get=requests.get) -> str | None
     return None
 
 
+APP_DIR = config.ROOT / "app"
+
+
+def package_windows_app(out_dir: Path, app_dir: Path = APP_DIR) -> Path | None:
+    """Zip the Windows installer (bat files and icon) into the site, so the page can offer
+    a real download. A raw .bat link on GitHub only shows the code."""
+    files = sorted(p for p in app_dir.glob("*") if p.suffix in (".bat", ".ico")) if app_dir.exists() else []
+    if not files:
+        return None
+    import zipfile
+    (out_dir / "app").mkdir(parents=True, exist_ok=True)
+    zpath = out_dir / "app" / "jarvis-app.zip"
+    with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in files:
+            z.write(f, f"Jarvis/{f.name}")
+        z.writestr("Jarvis/README.txt", "Unzip this folder, then double-click install-app.bat.\r\n"
+                   "It adds Jarvis to the Start Menu and desktop and opens it in its own window.\r\n"
+                   "If Windows SmartScreen warns you, click More info, then Run anyway.\r\n"
+                   "Undo with app-remove.bat.\r\n")
+    return zpath
+
+
 def main(out_dir: Path = SITE_DIR) -> Path:
     if out_dir.exists():
         shutil.rmtree(out_dir)
     shutil.copytree(SOURCE_DIR, out_dir)
+    package_windows_app(out_dir)
     data = build_data()
     (out_dir / "data.json").write_text(json.dumps(data, default=str, indent=1))
     print(f"dashboard: wrote {out_dir} ({len(data['signals']['watchlist'])} watch, "
