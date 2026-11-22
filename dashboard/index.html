@@ -154,7 +154,14 @@
     <div id="analyst"></div>
   </section>
 
-  <section class="card more block rise" style="--i:11">
+  <section class="card block rise" style="--i:11" id="p-risk" hidden>
+    <div class="card-head"><h2>Risk-adjusted record</h2><span class="badge" id="risk-badge">No leverage</span></div>
+    <p class="hint">Sharpe is return per unit of risk after costs: above 1 is strong, around 0.5 is what the market gives you for free. Edge strips out the market's own move, so it shows what the signal itself added. Worst drop is the deepest fall from a peak.</p>
+    <div class="scroll"><table class="tbl" id="risk"><thead><tr><th>Strategy</th><th>Record</th><th class="r">Sharpe</th><th class="r">Edge Sharpe</th><th class="r">Worst drop</th><th class="r">Leverage</th></tr></thead><tbody></tbody></table></div>
+    <p class="hint small" id="risk-note"></p>
+  </section>
+
+  <section class="card more block rise" style="--i:12">
     <details>
       <summary>
         <span><h2>More detail</h2><span class="hint">All prices, UK short positions, director buys and the signal log</span></span>

@@ -30,6 +30,8 @@ SITE_DIR = config.ROOT / "_site"
 # Daily signal feed written by `python run.py feed` (read only here).
 FEED_JSON = config.ROOT / "signals" / "feed.json"
 TRACK_MD = config.ROOT / "signals" / "track_record.md"
+TRACK_JSON = config.ROOT / "signals" / "track_record.json"     # written by edge/track.py
+RISK_JSON = config.ROOT / "reports" / "risk_summary.json"      # written by edge/risk.py
 
 WATCH_DAYS = 30            # Form 4 clusters shown as watchlist inputs
 AVOID_LOOKBACK_DAYS = 30   # window for rising aggregate shorts
@@ -176,6 +178,27 @@ def feed(path: Path = FEED_JSON, track: Path = TRACK_MD) -> dict | None:
     rows.sort(key=lambda r: order.get(r["stance"], 2))
     return {"as_of": f.get("as_of"), "disclaimer": f.get("disclaimer"), "columns": cols, "rows": rows[:100],
             "track_record": track.read_text()[:6000] if track.exists() else None}
+
+
+def _risk_row(r: dict, kind: str) -> dict:
+    net, edge = r.get("net") or {}, r.get("edge") or {}
+    return {"kind": kind, "name": r.get("signal") or r.get("study"), "period": r.get("period"),
+            "ready": r.get("ready", True), "priced": r.get("priced"), "sharpe": net.get("sharpe"),
+            "maxdd": net.get("maxdd"), "edge_sharpe": edge.get("sharpe"), "edge_maxdd": edge.get("maxdd"),
+            "leverage": (r.get("sizing") or {}).get("leverage") or 0.0, "sizing": (r.get("sizing") or {}).get("text")}
+
+
+def risk_record(track: Path = TRACK_JSON, studies: Path = RISK_JSON) -> dict | None:
+    """Sharpe, drawdown and the leverage line for each live signal and each backtest study."""
+    rows, guidance = [], None
+    for path, key, kind in ((track, "signals", "live"), (studies, "studies", "backtest")):
+        try:
+            d = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        guidance = guidance or d.get("guidance")
+        rows += [_risk_row(r, kind) for r in d.get(key, [])]
+    return {"guidance": guidance, "rows": rows} if rows else None
 
 
 # ---------- delayed quotes ----------
@@ -358,6 +381,7 @@ def build_data(today: date | None = None, get=requests.get, env=os.environ) -> d
             "combo": c,
         },
         "feed": feed(),
+        "risk": risk_record(),
         "uk_names": uk_name_quotes(a, c, get),
         "analyst": analyst_trends([r["ticker"] for r in w if r.get("ticker")], env.get("FINNHUB_API_KEY"), get),
     }

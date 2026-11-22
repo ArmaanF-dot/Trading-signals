@@ -588,8 +588,24 @@
       return `<td title="${esc(v)}">${esc(v)}</td>`;
     }).join("") + "</tr>").join(""));
   }
+  function renderRisk() {
+    const R = DATA.risk;
+    if (!R || !R.rows?.length) return;
+    $("#p-risk").hidden = false;
+    const pc = (v) => (v == null ? "–" : fmt(v * 100, 0) + "%");
+    const tone = (v) => (v == null ? "muted" : v >= 1 ? "up" : v < 0 ? "down" : "");
+    const anyLev = R.rows.some((r) => r.leverage > 0);
+    setText($("#risk-badge"), anyLev ? "Leverage possible" : "No leverage");
+    table("#risk", R.rows, (r) => {
+      const rec = r.kind === "live" ? (r.ready ? `Live, ${esc(r.period)}` : `Live, ${r.priced || 0} priced so far`) : `Backtest, ${esc(r.period)}`;
+      return `<tr title="${esc(r.sizing || "")}"><td>${esc(r.name)}</td><td class="muted">${rec}</td>` +
+        `<td class="r">${fmt(r.sharpe, 2)}</td><td class="r ${tone(r.edge_sharpe)}">${fmt(r.edge_sharpe, 2)}</td>` +
+        `<td class="r">${pc(r.maxdd)}</td><td class="r">${r.leverage > 0 ? fmt(r.leverage, 2) + "x" : "None"}</td></tr>`;
+    }, 6, "No record yet.");
+    setText($("#risk-note"), (R.guidance || "") + " Hover over or tap a row for the reasoning.");
+  }
   function renderStatic() {
-    renderBrief(); renderSignals(); renderDetail(); renderSys();
+    renderBrief(); renderSignals(); renderDetail(); renderRisk(); renderSys();
     for (const q of DATA.markets.us_reference) if (!us[q.symbol] && /^[A-Z]+$/.test(q.symbol)) us[q.symbol] = { price: q.price, prev: q.prev_close, src: "delayed" };
     fillAnalystPicker(); mark();
   }

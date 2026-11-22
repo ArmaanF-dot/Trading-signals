@@ -1,0 +1,239 @@
+{
+ "guidance": "Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.",
+ "studies": [
+  {
+   "study": "12-1 momentum (S&P 500)",
+   "period": "2013-02 to 2026-11",
+   "months": 166,
+   "net": {
+    "n": 166,
+    "ann": 0.1237,
+    "vol": 0.1565,
+    "sharpe": 0.8262,
+    "t": 3.0729,
+    "maxdd": -0.2014
+   },
+   "edge": {
+    "n": 166,
+    "ann": -0.0039,
+    "vol": 0.079,
+    "sharpe": -0.0103,
+    "t": -0.0381,
+    "maxdd": -0.2139
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.01 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": ""
+  },
+  {
+   "study": "Short-term reversal (S&P 500)",
+   "period": "2013-01 to 2026-11",
+   "months": 167,
+   "net": {
+    "n": 167,
+    "ann": 0.0703,
+    "vol": 0.2214,
+    "sharpe": 0.4153,
+    "t": 1.5492,
+    "maxdd": -0.3884
+   },
+   "edge": {
+    "n": 167,
+    "ann": -0.0489,
+    "vol": 0.0989,
+    "sharpe": -0.4589,
+    "t": -1.7117,
+    "maxdd": -0.5275
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.46 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "Daily book compounded to months."
+  },
+  {
+   "study": "ML rank, gradient boosting (S&P 500)",
+   "period": "2013-02 to 2026-10",
+   "months": 165,
+   "net": {
+    "n": 165,
+    "ann": 0.121,
+    "vol": 0.1776,
+    "sharpe": 0.7355,
+    "t": 2.7275,
+    "maxdd": -0.3119
+   },
+   "edge": {
+    "n": 165,
+    "ann": -0.0048,
+    "vol": 0.0401,
+    "sharpe": -0.0997,
+    "t": -0.3696,
+    "maxdd": -0.1256
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.10 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": ""
+  },
+  {
+   "study": "Quality and value tilts (S&P 500)",
+   "period": "2018-08 to 2026-11",
+   "months": 100,
+   "net": {
+    "n": 100,
+    "ann": 0.0876,
+    "vol": 0.2127,
+    "sharpe": 0.502,
+    "t": 1.4493,
+    "maxdd": -0.3368
+   },
+   "edge": {
+    "n": 100,
+    "ann": -0.0169,
+    "vol": 0.0696,
+    "sharpe": -0.2106,
+    "t": -0.6078,
+    "maxdd": -0.2091
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.21 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": ""
+  },
+  {
+   "study": "Frontier country ETFs",
+   "period": "2016-02 to 2026-11",
+   "months": 130,
+   "net": {
+    "n": 130,
+    "ann": -0.0188,
+    "vol": 0.1351,
+    "sharpe": -0.073,
+    "t": -0.2402,
+    "maxdd": -0.3119
+   },
+   "edge": {
+    "n": 130,
+    "ann": -0.0202,
+    "vol": 0.0796,
+    "sharpe": -0.2159,
+    "t": -0.7105,
+    "maxdd": -0.3029
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.22 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "Edge is the long-only excess over the equal-weight ETF basket, net of costs."
+  },
+  {
+   "study": "Form 4 cluster buys (US)",
+   "period": "2023-01 to 2026-01",
+   "months": 37,
+   "net": {
+    "n": 37,
+    "ann": -0.212,
+    "vol": 0.1957,
+    "sharpe": -1.1067,
+    "t": -1.9433,
+    "maxdd": -0.5653
+   },
+   "edge": {
+    "n": 37,
+    "ann": -0.3184,
+    "vol": 0.1328,
+    "sharpe": -2.7708,
+    "t": -4.8654,
+    "maxdd": -0.7054
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -2.77 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "20-day trades, 2.5% round trip, edge vs IWM. No fitted parameters."
+  },
+  {
+   "study": "Form 4 opportunistic insiders (US)",
+   "period": "2023-01 to 2026-01",
+   "months": 37,
+   "net": {
+    "n": 37,
+    "ann": -0.0245,
+    "vol": 0.1427,
+    "sharpe": -0.1033,
+    "t": -0.1815,
+    "maxdd": -0.2983
+   },
+   "edge": {
+    "n": 37,
+    "ann": -0.1734,
+    "vol": 0.053,
+    "sharpe": -3.5389,
+    "t": -6.214,
+    "maxdd": -0.4374
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -3.54 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "20-day trades, liquidity-tiered costs."
+  },
+  {
+   "study": "FCA short rises, shorted (UK)",
+   "period": "2016-12 to 2026-07",
+   "months": 116,
+   "net": {
+    "n": 116,
+    "ann": -0.2782,
+    "vol": 0.206,
+    "sharpe": -1.4563,
+    "t": -4.5277,
+    "maxdd": -0.956
+   },
+   "edge": {
+    "n": 116,
+    "ann": -0.1893,
+    "vol": 0.1225,
+    "sharpe": -1.635,
+    "t": -5.0836,
+    "maxdd": -0.8667
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -1.64 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "Short the stock for 20 days after a rise; borrow cost ignored, so this flatters it."
+  },
+  {
+   "study": "Post-earnings drift, top quintile (US)",
+   "period": "2022-01 to 2026-10",
+   "months": 58,
+   "net": {
+    "n": 58,
+    "ann": 0.0022,
+    "vol": 0.1468,
+    "sharpe": 0.0873,
+    "t": 0.1918,
+    "maxdd": -0.2077
+   },
+   "edge": {
+    "n": 58,
+    "ann": -0.0961,
+    "vol": 0.0758,
+    "sharpe": -1.2904,
+    "t": -2.8368,
+    "maxdd": -0.4385
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -1.29 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "Out of sample from 2022; 20-day trades, edge vs SPY."
+  }
+ ]
+}

@@ -15,3 +15,11 @@ No signals logged yet.
 
 No signals logged yet.
 
+## Risk-adjusted record
+
+Monthly cohorts of 20-day trades after the assumed cost; FCA rises taken as shorts. Edge is the excess over the benchmark (IWM for US, the UK index ETF for UK). Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+- **Form 4 clusters**: None: 0 priced signals, too few to judge (need 30).
+- **FCA short rises, shorted**: None: no signals logged yet.
+- **UK combo**: None: no signals logged yet.
+

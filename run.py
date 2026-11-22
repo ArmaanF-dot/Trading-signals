@@ -1,7 +1,51 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | reversal | ml-rank | quality-value | oil-tanks | dashboard"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard"
+
+
+def study_runner(what: str, argv: list[str]):
+    """The backtest studies; each writes to reports/, after which the risk summary is rebuilt."""
+    if what == "oil-tanks":
+        from edge import oil_tanks
+        return oil_tanks.main
+    if what == "pead-study":
+        from edge import pead
+        return pead.main
+    if what == "quality-value":
+        from edge import quality_value
+        return quality_value.main
+    if what == "ml-rank":
+        from edge import ml_rank
+        return ml_rank.main
+    if what == "reversal":
+        from edge import reversal
+        return reversal.main
+    if what == "frontier":
+        from edge import frontier
+        return frontier.main
+    if what == "momentum":
+        from edge import momentum
+        return momentum.main
+    if what == "fca-study":
+        from edge.fca import backtest as fb
+        return fb.main
+    if what == "opportunistic":
+        from edge.form4 import opportunistic
+        return lambda: opportunistic.main(int(argv[2]), int(argv[3]))
+    if what == "backtest":
+        from edge.form4 import backtest
+        return lambda: backtest.main(int(argv[2]), int(argv[3]))
+    return None
+
+
+def refresh_risk() -> None:
+    """Rebuild reports/risk_summary.md|json (Sharpe, drawdown, leverage line) from the study outputs."""
+    try:
+        from edge import risk
+        risk.run()
+    except Exception as exc:  # a failed summary must not fail the study that just finished
+        print(f"risk summary failed: {type(exc).__name__}: {exc}")
 
 
 def main(argv: list[str]) -> int:
@@ -10,45 +54,14 @@ def main(argv: list[str]) -> int:
         from edge import dashboard
         dashboard.main()
         return 0
-    if what == "oil-tanks":
-        from edge import oil_tanks
-        oil_tanks.main()
+    if what == "risk":
+        from edge import risk
+        print(risk.run())
         return 0
-    if what == "pead-study":
-        from edge import pead
-        pead.main()
-        return 0
-    if what == "quality-value":
-        from edge import quality_value
-        quality_value.main()
-        return 0
-    if what == "ml-rank":
-        from edge import ml_rank
-        ml_rank.main()
-        return 0
-    if what == "reversal":
-        from edge import reversal
-        reversal.main()
-        return 0
-    if what == "frontier":
-        from edge import frontier
-        frontier.main()
-        return 0
-    if what == "momentum":
-        from edge import momentum
-        momentum.main()
-        return 0
-    if what == "fca-study":
-        from edge.fca import backtest as fb
-        fb.main()
-        return 0
-    if what == "opportunistic":
-        from edge.form4 import opportunistic
-        opportunistic.main(int(argv[2]), int(argv[3]))
-        return 0
-    if what == "backtest":
-        from edge.form4 import backtest
-        backtest.main(int(argv[2]), int(argv[3]))
+    study = study_runner(what, argv)
+    if study:
+        study()
+        refresh_risk()
         return 0
     if what not in ("form4", "fca", "combo", "feed", "all"):
         print(USAGE)

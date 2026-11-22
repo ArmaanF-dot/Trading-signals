@@ -19,3 +19,15 @@ Events (aggregate net short moved by >= 0.5pp): 12041; with prices: 6724. Public
 | rise to >= 3% aggregate | 1201 | -0.3% (med -1.2%) / -1.3% / -0.1% | 0.1% (med -0.8%) / -1.6% / -0.3% | 0.2% (med -0.7%) / -2.5% / -1.3% |
 
 Caveats: events cluster in time (market-wide moves); aggregate rebuilt from holder disclosures so closures that were never recorded would inflate it; ISIN-to-ticker mapping can miss delisted names; several cuts examined, so a lone good-looking cell may be luck. Not financial advice.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2016-12 to 2026-07 (116 months), realistic costs. Net book: Sharpe -1.46, volatility 20.6%, max drawdown -96%. Edge (net excess over the benchmark): Sharpe -1.64, volatility 12.2%, max drawdown -87%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -1.64 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

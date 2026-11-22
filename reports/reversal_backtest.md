@@ -68,3 +68,15 @@ Chosen in sample (best net Sharpe at 0.2%, days before 2013-01-01): **5-day dip,
 - The 0.2% round trip is realistic for S&P 500 names with a commission-free broker; 2%, 3% are the project's small-cap house assumptions, shown as a stress test.
 
 Daily series: `reports/reversal_daily.csv`.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2013-01 to 2026-11 (167 months), realistic costs. Net book: Sharpe 0.42, volatility 22.1%, max drawdown -39%. Edge (net excess over the benchmark): Sharpe -0.46, volatility 9.9%, max drawdown -53%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -0.46 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

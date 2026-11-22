@@ -619,3 +619,7 @@ fieldset .hint { margin-top: -4px; }
   .rank li { grid-template-columns: 16px minmax(0, 1fr) 22% 44px; }
   .themes { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* risk-adjusted record: show every row, a little air before the footnote */
+#p-risk .scroll { max-height: none; }
+#p-risk #risk-note { margin-top: 12px; }

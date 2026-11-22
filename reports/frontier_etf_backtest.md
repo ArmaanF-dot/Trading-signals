@@ -56,3 +56,15 @@ Long leg minus the equal-weight ETF universe: +1.0% a year gross (t 0.41). Mean 
 - Average monthly turnover of the chosen variant: 172%.
 
 Monthly series: `reports/frontier_etf_monthly.csv`.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2016-02 to 2026-11 (130 months), realistic costs. Net book: Sharpe -0.07, volatility 13.5%, max drawdown -31%. Edge (net excess over the benchmark): Sharpe -0.22, volatility 8.0%, max drawdown -30%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -0.22 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

@@ -44,3 +44,15 @@ Chosen in sample (best net Sharpe at 0.2%, formations before 2013-01): **top 20%
 - The 0.2% round trip is realistic for S&P 500 names; 2%, 3% are the project's small-cap house assumptions and are shown as a stress test.
 
 Monthly series: `reports/momentum_monthly.csv`.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2013-02 to 2026-11 (166 months), realistic costs. Net book: Sharpe 0.83, volatility 15.7%, max drawdown -20%. Edge (net excess over the benchmark): Sharpe -0.01, volatility 7.9%, max drawdown -21%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -0.01 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

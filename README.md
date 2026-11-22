@@ -41,6 +41,12 @@ Thresholds live in `config.py`.
 
 `python run.py feed` writes `signals/feed.json` and `signals/feed.md` (current signals with stance avoid, watch or info, and the backtest evidence for each) plus `signals/track_record.md` (what the live signals actually did, versus a benchmark, once enough have a 20-day return). `feed.yml` runs it daily after the FCA update. Every record says plainly that the backtests found no standalone edge: use it as an input, not an instruction.
 
+## Sharpe, drawdown and leverage sizing
+
+`python run.py risk` (also run after every study) writes `reports/risk_summary.md` and `.json`: for each study's out-of-sample period at realistic costs, the Sharpe ratio, volatility and max drawdown of the book itself (net) and of its excess over the benchmark (edge, a market-hedged book), plus a leverage line. It also adds a "Risk and sizing" section to each study's own report. Event studies become monthly cohorts of 20-day trades. The live track record (`signals/track_record.md` and `.json`) gets the same measures, and Hugo shows both in its "Risk-adjusted record" card.
+
+The leverage rule is deliberately conservative: none unless the out-of-sample edge Sharpe net of costs is at least 1.0 over 36 months or more, then size to 10% volatility, capped by half-Kelly and 2x. No study so far qualifies.
+
 ## Hugo dashboard
 
 A lively, professional market homescreen with a voice assistant, hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).

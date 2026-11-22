@@ -41,3 +41,15 @@ Q5 minus Q1 mean net return, opportunistic (all priced): 20d: 0.9%, 40d: 1.0%, 6
 Q5 minus Q1 mean net return, opportunistic (liquid): 20d: 0.1%, 40d: 0.5%, 60d: -0.2%
 
 Caveats: events overlap in time and across names (not independent); fixed equal-weight score with four features, nothing fitted, but several tables were examined so a single good-looking cell can be luck; costs are assumptions; daily closes only. Not financial advice.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2023-01 to 2026-01 (37 months), realistic costs. Net book: Sharpe -0.10, volatility 14.3%, max drawdown -30%. Edge (net excess over the benchmark): Sharpe -3.54, volatility 5.3%, max drawdown -44%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -3.54 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

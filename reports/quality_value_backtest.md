@@ -80,3 +80,15 @@ Chosen in sample (best net Sharpe at 0.2%, formations before 2018-07): **qv, top
 - Sanity check, market caps at 2015-12: AAPL $587bn, MSFT $443bn, NVDA $18bn, JPM $243bn.
 
 Monthly series of the chosen variant: `reports/quality_value_monthly.csv`.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2018-08 to 2026-11 (100 months), realistic costs. Net book: Sharpe 0.50, volatility 21.3%, max drawdown -34%. Edge (net excess over the benchmark): Sharpe -0.21, volatility 7.0%, max drawdown -21%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -0.21 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->
