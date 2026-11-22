@@ -256,11 +256,16 @@
     const v = tileState(VIX);
     if (num(v.price) && v.price >= 30) add("warn", "!", `Fear gauge at ${fmt(v.price, 1)}`, "Investors are very nervous. Expect big swings.");
     else if (num(v.change) && v.change >= VIX.hot) add("warn", "!", `Fear gauge up ${fmt(v.change, 0)}%`, "Nerves are rising fast today.");
-    for (const t of TILES) {
-      if (t === VIX || t.crypto) continue;
-      const s = tileState(t);
-      if (isHot(t, s)) add(s.change > 0 ? "up" : "down", s.change > 0 ? "▲" : "▼", `${t.name} ${move(s.change)}`, `An unusually ${s.change > 0 ? "strong" : "weak"} day for ${t.who}.`);
+    // Big moves in two or more main indices the same way are one story, so they share
+    // one alert and leave room for signals.
+    const hot = TILES.filter((t) => t !== VIX && !t.crypto).map((t) => ({ t, s: tileState(t) })).filter((x) => isHot(x.t, x.s));
+    const singles = hot.filter((x) => !x.t.mood);
+    for (const dir of [-1, 1]) {
+      const g = hot.filter((x) => x.t.mood && Math.sign(x.s.change) === dir).sort((a, b) => Math.abs(b.s.change) - Math.abs(a.s.change));
+      if (g.length >= 2) add(dir > 0 ? "up" : "down", dir > 0 ? "▲" : "▼", `Big ${dir > 0 ? "rises" : "falls"} in ${g.length} main indices`, g.map((x) => `${x.t.name} ${signed(x.s.change)}`).join(", ") + ".");
+      else singles.unshift(...g);
     }
+    for (const { t, s } of singles) add(s.change > 0 ? "up" : "down", s.change > 0 ? "▲" : "▼", `${t.name} ${move(s.change)}`, `An unusually ${s.change > 0 ? "strong" : "weak"} day for ${t.who}.`);
     for (const r of (DATA.signals.watchlist || []).filter((r) => ageDays(r.signal_date) <= 7).slice(0, 2))
       add("info", "◆", `Insiders buying ${r.ticker || r.issuer}`, `${r.n_insiders ?? "Several"} insiders spent ${money(r.total_value)}, ${daysAgo(r.signal_date)}. Worth researching.`);
     for (const [c, name] of CRYPTO) {
