@@ -1,12 +1,15 @@
-/* Jarvis: market homescreen. Live data comes straight from the providers' public
+/* Hugo: market homescreen. Live data comes straight from the providers' public
    websockets using keys kept in this browser's localStorage; the rest comes from
    data.json, rebuilt by GitHub Actions. */
 (() => {
   "use strict";
   const $ = (s) => document.querySelector(s);
+  // Saved settings keep the "jarvis." prefix from before the rename, so keys, the
+  // watchlist and the colour scheme carry over.
+  const PREFIX = "jarvis.";
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("jarvis." + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
-    set(k, v) { try { localStorage.setItem("jarvis." + k, JSON.stringify(v)); } catch { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(PREFIX + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); } catch { /* private mode */ } },
   };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const num = (v) => v !== null && v !== undefined && v !== "" && !isNaN(v);
@@ -750,7 +753,7 @@
     if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); addSym(card.dataset.sym); }
   });
 
-  // ---------- Ask Jarvis ----------
+  // ---------- Ask Hugo ----------
   // Questions are answered here in the browser from the data already on the page, so
   // nothing leaves the device except, for voice, the audio your browser sends to its own
   // speech service. Answers can be read aloud with a British voice where one exists.
@@ -851,14 +854,14 @@
     return found;
   }
   function answer(raw) {
-    const q = raw.toLowerCase().replace(/[’`]/g, "'").replace(/^(?:hey |ok |okay )?jarvis[,!.]?\s*/, "").replace(/[?!.]+$/, "").replace(/\s+/g, " ").trim();
+    const q = raw.toLowerCase().replace(/[’`]/g, "'").replace(/^(?:hey |ok |okay )?(?:hugo|jarvis)[,!.]?\s*/, "").replace(/[?!.]+$/, "").replace(/\s+/g, " ").trim();
     let m = q.match(/^(?:please |can you |could you )?(?:add|watch|follow)\s+([a-z][a-z .\-]{0,20}?)(?:\s+to\b.*|\s+please)?$/);
     if (m) return addSym(m[1]) ? `Done. ${toTicker(m[1])} is on your watchlist.` : `"${m[1]}" doesn't look like a US ticker. Try a symbol such as TSLA.`;
     m = q.match(/^(?:please |can you |could you )?(?:remove|drop|unfollow|delete)\s+([a-z][a-z .\-]{0,20}?)(?:\s+from\b.*|\s+please)?$/);
     if (m) { const s = toTicker(m[1]); if (watch.includes(s)) { rmSym(s); return `Done. ${s} is off your watchlist.`; } return `${s} isn't on your watchlist.`; }
     if (/^(?:thanks|thank you|cheers|ta)\b/.test(q)) return "Any time.";
     if (/^(?:hi|hello|hey|morning|good (?:morning|afternoon|evening))\b/.test(q) && q.split(" ").length <= 4) return `${$("#greeting").textContent}. Ask me how the market's doing, what needs your attention, or the price of anything on the board.`;
-    if (/who are you|what are you/.test(q)) return "I'm Jarvis, your market assistant. I keep an eye on prices, signals and your watchlist, and I'll flag what matters.";
+    if (/who are you|what are you/.test(q)) return "I'm Hugo, your market assistant. I keep an eye on prices, signals and your watchlist, and I'll flag what matters.";
     if (/\bhelp\b|what can you|what do you (?:do|know)/.test(q)) return "Ask me how the market's doing, what needs your attention, about the fear gauge, any index, crypto, the pound or gold, a stock on your watchlist, insider buying, shares to avoid, or market hours. I can also add or remove watchlist stocks: try \"add Tesla\". Or say \"read me the brief\".";
     if (/\bwhat time\b|\bthe time\b/.test(q)) return `It's ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}.`;
     if (/\bbrief\b|summar|recap|catch me up|what happened|\bnews\b/.test(q)) return DATA.brief?.text ? plain(DATA.brief.text) : "There's no brief yet today.";
@@ -927,7 +930,7 @@
   $("#ans-speak").addEventListener("click", () => { if (synth?.speaking) { synth.cancel(); busy(false); $("#ans-speak").classList.remove("on"); } else speak(lastAnswer); });
   if (!synth) $("#ans-speak").hidden = true;
 
-  // Voice input: press the microphone, ask, and Jarvis answers out loud.
+  // Voice input: press the microphone, ask, and Hugo answers out loud.
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   let rec = null;
   if (SR) {
@@ -956,7 +959,7 @@
       };
       rec.onend = () => {
         mic.classList.remove("on"); busy(false); rec = null;
-        inp.placeholder = "Ask Jarvis about the markets";
+        inp.placeholder = "Ask Hugo about the markets";
         if (final.trim()) { inp.value = ""; ask(final.trim(), { byVoice: true }); }
       };
       try { rec.start(); } catch { rec.onend(); }

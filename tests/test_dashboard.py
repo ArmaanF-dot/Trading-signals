@@ -139,5 +139,5 @@ def test_windows_app_is_zipped_into_site(tmp_path):
     import zipfile
     z = d.package_windows_app(tmp_path)
     names = zipfile.ZipFile(z).namelist()
-    assert "Jarvis/install-app.bat" in names and "Jarvis/jarvis.ico" in names and "Jarvis/README.txt" in names
+    assert "Hugo/install-app.bat" in names and "Hugo/hugo.ico" in names and "Hugo/README.txt" in names
     assert d.package_windows_app(tmp_path, app_dir=tmp_path / "none") is None

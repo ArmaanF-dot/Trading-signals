@@ -1,4 +1,4 @@
-"""Build the Jarvis dashboard: copies the static page in dashboard/ to _site/ and writes
+"""Build the Hugo dashboard: copies the static page in dashboard/ to _site/ and writes
 _site/data.json from the repo's signal files plus a few free delayed quotes.
 
 Live data (Alpaca IEX, crypto, Finnhub) is fetched by the browser with keys the user types
@@ -392,12 +392,12 @@ def package_windows_app(out_dir: Path, app_dir: Path = APP_DIR) -> Path | None:
         return None
     import zipfile
     (out_dir / "app").mkdir(parents=True, exist_ok=True)
-    zpath = out_dir / "app" / "jarvis-app.zip"
+    zpath = out_dir / "app" / "hugo-app.zip"
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for f in files:
-            z.write(f, f"Jarvis/{f.name}")
-        z.writestr("Jarvis/README.txt", "Unzip this folder, then double-click install-app.bat.\r\n"
-                   "It adds Jarvis to the Start Menu and desktop and opens it in its own window.\r\n"
+            z.write(f, f"Hugo/{f.name}")
+        z.writestr("Hugo/README.txt", "Unzip this folder, then double-click install-app.bat.\r\n"
+                   "It adds Hugo to the Start Menu and desktop and opens it in its own window.\r\n"
                    "If Windows SmartScreen warns you, click More info, then Run anyway.\r\n"
                    "Undo with app-remove.bat.\r\n")
     return zpath
