@@ -375,7 +375,7 @@ def main() -> None:
     results = {}
     for v in VARIANTS:
         picks, sizes, uni = picks_for(panel, rets, v[0], v[1], config.QV_MIN_RANKED)
-        results[v] = mo.run_from_picks(picks, sizes, rets, uni, v[2], costs)
+        results[v] = mo.run_picks(picks, sizes, rets, uni, v[2], costs)
     chosen = mo.pick_variant(results, split, costs[0])
     cm = pd.Period("2015-12", "M")
     check = ", ".join(f"{t} ${panel[cm].at[t, 'mcap'] / 1e9:,.0f}bn" for t in ("AAPL", "MSFT", "NVDA", "JPM", "XOM")

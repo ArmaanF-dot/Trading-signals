@@ -29,6 +29,8 @@ Thresholds live in `config.py`.
 
 `python run.py momentum` (Actions: "momentum") backtests 12-1 month cross-sectional momentum on point-in-time S&P 500 members since 2000 (top decile or quintile, held 1 or 2 months with overlapping cohorts), against an equal-weight universe benchmark. Variants are chosen on formations before 2013 and judged on 2013 onwards, at a realistic 0.2% round trip and the house 2% and 3%. Output: `reports/momentum_backtest.md` and `reports/momentum_monthly.csv`.
 
+`python run.py ml-rank` (Actions: "ml-rank") tests whether machine learning can combine weak price/volume features (momentum, reversal, volatility, 52-week high, beta, liquidity, volume trend, biggest recent 3-day move) into a ranking of point-in-time S&P 500 members. A gradient-boosted tree model and a ridge baseline are refitted each January on past months only (walk-forward), and the top slice is held 1 or 3 months. Variants are chosen on 2005-2012 predictions and judged on 2013 onwards at 0.2%, 2% and 3% round trips. Output: `reports/ml_rank_backtest.md` and `reports/ml_rank_monthly.csv`.
+
 `python run.py oil-tanks` tests whether free Sentinel-2 images (10 m) of the Cushing, Oklahoma tank farm can track EIA weekly Cushing crude stocks, by measuring the roof shadows of floating-roof tanks across 2018-2026. It runs offline from `data/oil_tanks/`; `scripts/oil_tanks_fetch.py` rebuilds the shadow file from the public AWS archive. Verdict: a faint real signal, far too noisy to call weekly changes, so no edge. Output: `reports/oil_tank_satellite.md`.
 
 ## Post-earnings drift study

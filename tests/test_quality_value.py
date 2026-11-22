@@ -97,6 +97,6 @@ def test_picks_and_backtest_rank_by_signal():
     panel = {m: pd.DataFrame({"gpa": drift + rng.normal(0, 0.001, 150)}, index=tick) for m in idx}
     picks, sizes, uni = qv.picks_for(panel, rets, "gpa", 0.1, 100)
     assert len(picks[idx[0]]) == 15 and idx[-1] not in picks
-    df = mo.run_from_picks(picks, sizes, rets, uni, 3, [0.002, 0.02])
+    df = mo.run_picks(picks, sizes, rets, uni, 3, [0.002, 0.02])
     assert (df["gross"] > df["bench_ew"]).mean() > 0.9
     assert df["turnover"].iloc[1:].mean() < 0.5  # overlapping cohorts rebuild a third of the book a month
