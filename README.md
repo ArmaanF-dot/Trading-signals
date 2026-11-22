@@ -44,9 +44,9 @@ A dark, Bloomberg-style homescreen hosted on GitHub Pages: `https://armaanf-dot.
 | Avoid: rising UK shorts | FCA aggregate snapshots and `signals/fca_events.csv`, rise of 0.5pp+ in 30 days | Avoid filter |
 | Most shorted UK, UK combo | latest FCA snapshot, `signals/combo.csv` | Daily |
 | Analyst trends | Finnhub free recommendation trends | On demand |
-| Daily brief | Claude (if `ANTHROPIC_API_KEY` secret is set, once a day), otherwise rule-based | Each rebuild |
+| Daily brief | Claude once a day on your Claude plan (`CLAUDE_CODE_OAUTH_TOKEN` secret), or the API (`ANTHROPIC_API_KEY`), otherwise rule-based | Each rebuild |
 
-**Keys:** live-data keys are typed into the page (Keys button) and kept only in that browser's localStorage. They never go into the repo. Optional GitHub Secrets: `ANTHROPIC_API_KEY` (AI brief) and `FINNHUB_API_KEY` (pre-fills analyst trends). **First time:** Settings, Pages, Source "GitHub Actions".
+**Keys:** live-data keys are typed into the page (Keys button) and kept only in that browser's localStorage. They never go into the repo. Optional GitHub Secrets: `CLAUDE_CODE_OAUTH_TOKEN` (AI brief on your Claude plan: run `claude setup-token` locally and paste the token), `ANTHROPIC_API_KEY` (API fallback for the brief) and `FINNHUB_API_KEY` (pre-fills analyst trends). **First time:** Settings, Pages, Source "GitHub Actions".
 
 ## Return tracking
 
