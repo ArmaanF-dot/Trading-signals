@@ -1,0 +1,42 @@
+{
+ "guidance": "Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.",
+ "min_signals": 30,
+ "signals": [
+  {
+   "signal": "Form 4 clusters",
+   "side": "long",
+   "cost": 0.025,
+   "logged": 1,
+   "priced": 0,
+   "ready": false,
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: 0 priced signals, too few to judge (need 30)."
+   }
+  },
+  {
+   "signal": "FCA short rises, shorted",
+   "side": "short",
+   "cost": 0.017,
+   "logged": 0,
+   "priced": 0,
+   "ready": false,
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: no signals logged yet."
+   }
+  },
+  {
+   "signal": "UK combo",
+   "side": "long",
+   "cost": 0.017,
+   "logged": 0,
+   "priced": 0,
+   "ready": false,
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: no signals logged yet."
+   }
+  }
+ ]
+}

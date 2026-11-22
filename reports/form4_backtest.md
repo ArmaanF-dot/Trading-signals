@@ -45,3 +45,15 @@ Clusters found: 3156. With usable prices: 2595 (82%); the rest (often delisted n
 | 60d | 944 | 2.42% | -0.79% | 47% | -3.64% |
 
 Caveats: no point-in-time market-cap filter; clusters overlap in time (not independent); returns use daily closes (no intraday slippage); small samples are noisy. Not financial advice.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2023-01 to 2026-01 (37 months), realistic costs. Net book: Sharpe -1.11, volatility 19.6%, max drawdown -57%. Edge (net excess over the benchmark): Sharpe -2.77, volatility 13.3%, max drawdown -71%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -2.77 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

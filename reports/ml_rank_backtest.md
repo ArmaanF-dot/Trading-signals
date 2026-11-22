@@ -92,3 +92,15 @@ Chosen on 2005-01 to 2013-01 walk-forward predictions (best net Sharpe at 0.2%):
 - The 0.2% round trip is realistic for S&P 500 names; 2%, 3% are the project's house assumptions, shown as a stress test.
 
 Monthly series of the chosen variant: `reports/ml_rank_monthly.csv`.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2013-02 to 2026-10 (165 months), realistic costs. Net book: Sharpe 0.74, volatility 17.8%, max drawdown -31%. Edge (net excess over the benchmark): Sharpe -0.10, volatility 4.0%, max drawdown -13%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -0.10 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->

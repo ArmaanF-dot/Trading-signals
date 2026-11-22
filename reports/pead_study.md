@@ -41,3 +41,15 @@ Surprise = earnings announcement return (close before the filing day to the firs
 Pre-set rule: buy the top quintile, hold 60 days, judged out of sample. No edge: the top quintile did not beat SPY out of sample.
 
 Caveats: survivorship (delisted and acquired companies are missing, which flatters long returns); Item 2.02 also covers some pre-announcements and restatements; the long-short line ignores borrow costs and needs two round trips; trades overlap in time, which the monthly t-statistic only partly allows for. Not financial advice.
+
+<!-- risk-sizing:start -->
+## Risk and sizing
+
+Period 2022-01 to 2026-10 (58 months), realistic costs. Net book: Sharpe 0.09, volatility 14.7%, max drawdown -21%. Edge (net excess over the benchmark): Sharpe -1.29, volatility 7.6%, max drawdown -44%.
+
+**Suggested leverage:** None: out-of-sample edge Sharpe -1.29 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
+
+Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
+
+All studies side by side: `reports/risk_summary.md`.
+<!-- risk-sizing:end -->
