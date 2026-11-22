@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | momentum | dashboard"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | momentum | oil-tanks | dashboard"
 
 
 def main(argv: list[str]) -> int:
@@ -9,6 +9,10 @@ def main(argv: list[str]) -> int:
     if what == "dashboard":
         from edge import dashboard
         dashboard.main()
+        return 0
+    if what == "oil-tanks":
+        from edge import oil_tanks
+        oil_tanks.main()
         return 0
     if what == "momentum":
         from edge import momentum
