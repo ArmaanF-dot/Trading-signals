@@ -277,6 +277,13 @@
     connectUS(); connectCrypto(); fillAnalystPicker();
   });
 
+  // ---------- install as an app ----------
+  let installEvt = null;
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; $("#install").hidden = false; });
+  window.addEventListener("appinstalled", () => { $("#install").hidden = true; installEvt = null; });
+  $("#install").addEventListener("click", async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; $("#install").hidden = true; });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
   // ---------- boot ----------
   renderClocks(); setInterval(renderClocks, 15000);
   fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : Promise.reject(r.status))
