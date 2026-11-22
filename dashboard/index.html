@@ -2,24 +2,55 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jarvis</title>
 <meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&family=Rajdhani:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0e14">
+<meta name="theme-color" content="#04060b">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
-<body>
+<body data-mood="flat">
+<!-- Background: glow, a slow grid floor and fine scanlines. Purely decorative. -->
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="floor"><div class="plane"></div></div>
+  <div class="scan"></div>
+</div>
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sg-up" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22f5a0" stop-opacity=".32"/><stop offset="1" stop-color="#22f5a0" stop-opacity="0"/></linearGradient>
+    <linearGradient id="sg-down" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4d6d" stop-opacity=".3"/><stop offset="1" stop-color="#ff4d6d" stop-opacity="0"/></linearGradient>
+  </defs>
+</svg>
+
 <div class="wrap">
-  <header class="top">
-    <div class="hello">
-      <div class="logo"><span class="dot" id="pulse"></span>Jarvis</div>
-      <h1 id="greeting">Hello</h1>
-      <p class="sub" id="today"></p>
+  <header class="top rise" style="--i:0">
+    <div class="id">
+      <svg class="core" id="pulse" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="core-glow"><stop offset="0" stop-color="currentColor" stop-opacity=".75"/><stop offset=".45" stop-color="currentColor" stop-opacity=".22"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient>
+        </defs>
+        <circle class="halo" cx="50" cy="50" r="34" fill="url(#core-glow)"/>
+        <circle class="ring r0" cx="50" cy="50" r="47"/>
+        <circle class="ring r1" cx="50" cy="50" r="41"/>
+        <circle class="ring r2" cx="50" cy="50" r="34.5"/>
+        <circle class="ring r3" cx="50" cy="50" r="29"/>
+        <circle class="ring r4" cx="50" cy="50" r="21"/>
+        <circle class="nucleus" cx="50" cy="50" r="10"/>
+        <circle class="spark-dot" cx="50" cy="50" r="3.2"/>
+      </svg>
+      <div class="hello">
+        <div class="logo">Jarvis<small>Market systems</small></div>
+        <h1 id="greeting">Hello</h1>
+        <p class="sub"><span id="today"></span><span class="sys" id="sys"></span></p>
+      </div>
     </div>
     <div class="actions">
       <button class="btn" id="install" type="button" hidden>Install app</button>
@@ -28,26 +59,63 @@
     </div>
   </header>
 
-  <div class="markets-open" id="clocks" aria-label="Market hours"></div>
+  <div class="clockbar rise" style="--i:1">
+    <div class="markets-open" id="clocks" aria-label="Market hours"></div>
+    <span class="next" id="next"></span>
+  </div>
 
-  <section class="card brief-card">
-    <div class="card-head"><h2>Today's brief</h2><span class="tag" id="brief-src"></span></div>
-    <div class="brief" id="brief"><p>Loading…</p></div>
-    <p class="fine" id="built"></p>
+  <div class="hero">
+    <section class="card brief-card rise" style="--i:2">
+      <div class="fx" aria-hidden="true">
+        <svg class="wm" viewBox="0 0 200 200"><circle cx="100" cy="100" r="97"/><circle class="d1" cx="100" cy="100" r="84"/><circle cx="100" cy="100" r="66"/><circle class="d2" cx="100" cy="100" r="50"/><circle cx="100" cy="100" r="30"/></svg>
+      </div>
+      <div class="card-head"><h2>Today's brief</h2><span class="tag" id="brief-src"></span></div>
+      <div class="brief" id="brief"><p>Loading…</p></div>
+      <p class="fine" id="built"></p>
+    </section>
+    <section class="card mood-card rise" style="--i:3">
+      <div class="card-head"><h2>Market mood</h2><span class="tag" id="mood-tag">latest session</span></div>
+      <svg class="gauge" viewBox="0 0 220 134" role="img" aria-labelledby="mood-word">
+        <defs>
+          <linearGradient id="g-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ff4d6d"/><stop offset=".33" stop-color="#ffb020"/>
+            <stop offset=".5" stop-color="#3fe0ff"/><stop offset="1" stop-color="#22f5a0"/>
+          </linearGradient>
+        </defs>
+        <path class="g-track" d="M20 110 A90 90 0 0 1 200 110"/>
+        <path class="g-scale" d="M20 110 A90 90 0 0 1 200 110"/>
+        <g class="g-ticks" id="g-ticks"></g>
+        <path class="g-val" id="g-val" d=""/>
+        <text class="g-lbl" x="20" y="128" text-anchor="middle">−2%</text>
+        <text class="g-lbl" x="200" y="128" text-anchor="middle">+2%</text>
+        <g class="needle" id="needle" transform="rotate(-90 110 110)">
+          <path d="M110 30 L114.5 110 L105.5 110 Z"/>
+          <circle cx="110" cy="110" r="8"/>
+        </g>
+      </svg>
+      <div class="mood-read"><b id="mood-word">Waiting</b><span id="mood-avg"></span></div>
+      <p class="mood-line" id="mood-line">Waiting for prices.</p>
+      <div class="readouts" id="readouts"></div>
+    </section>
+  </div>
+
+  <section class="attention rise" style="--i:4">
+    <div class="section-head"><h2>Needs your attention <span class="count" id="alert-count" hidden></span></h2><p class="hint">Only what stands out today: big moves, fresh signals and your watchlist.</p></div>
+    <div class="alerts" id="alerts"></div>
   </section>
 
-  <section>
-    <div class="section-head"><h2>Markets</h2><p class="hint">Green is up, red is down. <span class="live-dot"></span> live &nbsp;<span class="delayed-dot"></span> about 15 minutes delayed</p></div>
+  <section class="rise" style="--i:5">
+    <div class="section-head"><h2>Markets</h2><p class="hint">Green is up, red is down. Bright means a big move. <span class="live-dot"></span> live &nbsp;<span class="delayed-dot"></span> about 15 minutes delayed</p></div>
     <div class="tiles" id="tiles"></div>
   </section>
 
   <div class="two">
-    <section class="card">
+    <section class="card good rise" style="--i:6">
       <div class="card-head"><h2>Worth a look</h2><span class="tag good">US insiders buying</span></div>
       <p class="hint">Several bosses at the same company recently bought their own shares. Treat it as a reason to research the stock, not to buy it: on its own, this hasn't beaten the market after costs. Tap a card to add it to your watchlist.</p>
       <div class="cards" id="insider"></div>
     </section>
-    <section class="card">
+    <section class="card bad rise" style="--i:7">
       <div class="card-head"><h2>Steer clear</h2><span class="tag bad">UK short sellers piling in</span></div>
       <p class="hint">Funds betting against these UK shares increased their bets this month. Historically, these stocks lagged the market, so avoid buying them for now.</p>
       <div class="cards" id="avoid"></div>
@@ -57,7 +125,7 @@
   </div>
 
   <div class="two">
-    <section class="card">
+    <section class="card rise" style="--i:8">
       <div class="card-head"><h2>My watchlist</h2><span class="tag" id="us-status">delayed</span></div>
       <form class="add" id="cmd" autocomplete="off">
         <input id="cmd-input" placeholder="Add a US stock, e.g. AAPL" spellcheck="false" aria-label="Add a ticker">
@@ -66,25 +134,25 @@
       <ul class="list" id="watch"></ul>
       <p class="hint small" id="watch-note"></p>
     </section>
-    <section class="card">
+    <section class="card violet rise" style="--i:9">
       <div class="card-head"><h2>Crypto</h2><span class="tag" id="crypto-status">connecting</span></div>
       <p class="hint">Live prices. The change shown is over the last 24 hours.</p>
       <ul class="list" id="crypto"></ul>
     </section>
   </div>
 
-  <section class="card">
+  <section class="card rise" style="--i:10">
     <div class="card-head"><h2>What analysts say</h2><select id="analyst-sym" aria-label="Stock"></select></div>
     <div id="analyst"></div>
   </section>
 
-  <section class="card more">
+  <section class="card more rise" style="--i:11">
     <details>
       <summary><h2>More detail</h2><span class="hint">All prices, UK short positions, director buys and the signal log</span></summary>
       <div class="two inner">
         <div>
           <h3 class="mini">All markets <span class="tag delayed">delayed</span></h3>
-          <table class="tbl" id="ref"><thead><tr><th>Name</th><th class="r">Price</th><th class="r">Today</th><th class="r">5 days</th></tr></thead><tbody></tbody></table>
+          <div class="scroll"><table class="tbl" id="ref"><thead><tr><th>Name</th><th class="r">Price</th><th class="r">Today</th><th class="r">5 days</th></tr></thead><tbody></tbody></table></div>
         </div>
         <div>
           <h3 class="mini">Most shorted UK shares</h3>
@@ -92,7 +160,7 @@
         </div>
       </div>
       <h3 class="mini">UK director buys in heavily shorted shares</h3>
-      <table class="tbl" id="combo"><thead><tr><th>Date</th><th>Company</th><th class="r">Shorted</th><th class="r">Directors bought</th></tr></thead><tbody></tbody></table>
+      <div class="scroll"><table class="tbl" id="combo"><thead><tr><th>Date</th><th>Company</th><th class="r">Shorted</th><th class="r">Directors bought</th></tr></thead><tbody></tbody></table></div>
       <div id="p-feed" hidden>
         <h3 class="mini">Signal log <span class="fine" id="feed-asof"></span></h3>
         <p class="hint" id="feed-note"></p>
@@ -108,7 +176,8 @@
 <dialog id="settings">
   <form method="dialog" class="settings">
     <h2>Keys and options</h2>
-    <p class="hint">Keys are saved only on this device. They are sent only to the service they belong to and never reach the repository.</p>
+    <p class="hint">Everything here is saved only on this device. Keys are sent only to the service they belong to and never reach the repository.</p>
+    <label>Your first name (optional, for the greeting) <input id="k-name" autocomplete="off" spellcheck="false" maxlength="30"></label>
     <label>Alpaca key ID <input id="k-alpaca-id" autocomplete="off" spellcheck="false"></label>
     <label>Alpaca secret <input id="k-alpaca-secret" type="password" autocomplete="off"></label>
     <p class="hint">Free plan: live US prices from IEX. Paper-trading keys work.</p>
