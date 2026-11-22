@@ -21,12 +21,12 @@ def yahoo_symbol(ticker: str, market: str) -> str:
     return t.replace(".", "-")
 
 
-def fetch_bars(symbol: str) -> pd.DataFrame:
+def fetch_bars(symbol: str, url_template: str | None = None) -> pd.DataFrame:
     """Daily bars from Yahoo's chart endpoint: columns close (dividend/split adjusted) and
     volume (raw shares), indexed by date. Empty frame on any failure; never raises.
     Retries a few times on 429/5xx."""
     empty = pd.DataFrame(columns=["close", "volume"], dtype=float)
-    url = config.YAHOO_URL.format(symbol=symbol)
+    url = (url_template or config.YAHOO_URL).format(symbol=symbol)
     for attempt in range(3):
         try:
             resp = requests.get(url, headers={"User-Agent": config.YAHOO_USER_AGENT}, timeout=15)

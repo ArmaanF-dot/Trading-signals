@@ -61,6 +61,15 @@ COMBO_LOOKBACK_DAYS = 30  # director buys older than this are ignored
 # --- prices (return tracking) ---
 YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=10y&interval=1d"
 YAHOO_USER_AGENT = "Mozilla/5.0 (compatible; trading-signals-research)"
+YAHOO_MONTHLY_MAX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=max&interval=1mo"
+
+# --- momentum study (12-1 month cross-sectional momentum on S&P 500 members) ---
+# Point-in-time S&P 500 membership since 1996 (community-maintained, from Clenow's list plus Wikipedia changes).
+SP500_MEMBERSHIP_URL = "https://raw.githubusercontent.com/fja05680/sp500/master/S%26P%20500%20Historical%20Components%20%26%20Changes%20(Updated).csv"
+MOMENTUM_FIRST_FORMATION = "2000-01"
+MOMENTUM_SPLIT = "2013-01"  # first out-of-sample formation month; variants are chosen on earlier months only
+MOMENTUM_COSTS = [0.002, 0.02, 0.03]  # round trip: realistic for S&P 500 names, then the house 2% and 3%
+MOMENTUM_MAX_MONTHLY_RET = 2.0  # stock-month returns above +200% are treated as bad data (recycled tickers etc.)
 
 
 def ntfy_topic() -> str | None:

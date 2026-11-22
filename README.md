@@ -27,6 +27,8 @@ Thresholds live in `config.py`.
 
 `python run.py fca-study` (Actions: "fca-study") rebuilds each ISIN's aggregate net short from the FCA's archived named positions, finds moves of 0.5pp or more, and measures forward returns versus a UK index ETF with stamp duty and liquidity-tiered costs. It also fills `data/isin_ticker.csv`, which the live FCA pipeline uses for return tracking. Output: `reports/fca_shorts_study.md`.
 
+`python run.py momentum` (Actions: "momentum") backtests 12-1 month cross-sectional momentum on point-in-time S&P 500 members since 2000 (top decile or quintile, held 1 or 2 months with overlapping cohorts), against an equal-weight universe benchmark. Variants are chosen on formations before 2013 and judged on 2013 onwards, at a realistic 0.2% round trip and the house 2% and 3%. Output: `reports/momentum_backtest.md` and `reports/momentum_monthly.csv`.
+
 ## Post-earnings drift study
 
 `python run.py pead-study` (Actions: "pead-study") tests post-earnings announcement drift on liquid US stocks (20-day average dollar volume at least $20m, price at least $5). Earnings dates are 8-K filings with Item 2.02 from EDGAR; the surprise is the stock's reaction around the filing minus SPY. Events are ranked into quintiles against the previous quarter's reactions only, entered one close after the reaction is known, and held 20, 40 and 60 trading days. The rule (buy the top quintile) is judged out of sample (2022 onward) after realistic and 2.5% costs. Output: `reports/pead_study.md` and `reports/pead_events.csv.gz`.
