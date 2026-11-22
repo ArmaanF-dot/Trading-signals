@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | ml-rank | oil-tanks | dashboard"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | reversal | ml-rank | oil-tanks | dashboard"
 
 
 def main(argv: list[str]) -> int:
@@ -21,6 +21,10 @@ def main(argv: list[str]) -> int:
     if what == "ml-rank":
         from edge import ml_rank
         ml_rank.main()
+        return 0
+    if what == "reversal":
+        from edge import reversal
+        reversal.main()
         return 0
     if what == "momentum":
         from edge import momentum
