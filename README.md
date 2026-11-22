@@ -33,7 +33,7 @@ Thresholds live in `config.py`.
 
 ## Jarvis dashboard
 
-A calm, professional market homescreen hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
+A lively, professional market homescreen with a voice assistant, hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
 
 | Panel | Source | Freshness |
 |---|---|---|
@@ -44,8 +44,9 @@ A calm, professional market homescreen hosted on GitHub Pages: `https://armaanf-
 | Avoid: rising UK shorts | FCA aggregate snapshots and `signals/fca_events.csv`, rise of 0.5pp+ in 30 days | Avoid filter |
 | Most shorted UK, UK combo | latest FCA snapshot, `signals/combo.csv` | Daily |
 | Analyst trends | Finnhub free recommendation trends | On demand |
-| Market summary | Average move of the S&P 500, Nasdaq 100, Russell 2000, FTSE 100 and FTSE 250, a bar per index around zero, plus the VIX | Live where those prices are live |
+| Market mood | Animated gauge: needle at the average move of the S&P 500, Nasdaq 100, Russell 2000, FTSE 100 and FTSE 250, a marker per index, a bar per index around zero, plus the VIX | Live where those prices are live |
 | Needs your attention | Moves past each market's "big move" threshold, insider clusters from the last 7 days, big crypto and watchlist swings, the top avoid name | Live |
+| Ask Jarvis | Typed or spoken questions (browser speech recognition), answered in the page from the data above and read aloud | Live |
 | Daily brief | Claude once a day on your Claude plan (`CLAUDE_CODE_OAUTH_TOKEN` secret), or the API (`ANTHROPIC_API_KEY`), otherwise rule-based | Each rebuild |
 
 **As an app:** on Windows, press **Get Windows app** on the dashboard, unzip it and double-click `install-app.bat`. It adds a Jarvis shortcut to the Start Menu and desktop that opens in its own window (Edge app mode, no tabs or address bar), and can start Jarvis when you log in. Undo with `app/app-remove.bat`. On a phone or any other computer, open the page in Chrome or Edge and press **Install** (or "Add to Home Screen" in Safari); the page is a PWA with an offline shell.

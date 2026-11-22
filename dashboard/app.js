@@ -32,6 +32,50 @@
     scan: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   };
   const icon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
+
+  // ---------- motion helpers ----------
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Count a number up the first time it appears; later updates land directly.
+  function countTo(el, to, show, ms = 1000) {
+    el.__to = to;
+    if (reduceMotion || el.__counted || !num(to)) { setText(el, show(to)); el.__counted = num(to); return; }
+    el.__counted = true;
+    const t0 = performance.now();
+    const step = (t) => { const k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); el.textContent = show(el.__to * e); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  // Springs give the gauge needle and markers a physical feel: a little overshoot, then settle.
+  const springs = new Map();
+  let springRaf = 0, springT = 0;
+  function spring(name, to, apply, from) {
+    let s = springs.get(name);
+    if (!s) { s = { x: num(from) ? from : to, v: 0 }; springs.set(name, s); }
+    s.to = to; s.apply = apply;
+    if (reduceMotion) { s.x = to; s.v = 0; apply(to); return; }
+    if (!springRaf) springRaf = requestAnimationFrame(stepSprings);
+  }
+  function stepSprings(t) {
+    const dt = springT ? Math.min(0.032, (t - springT) / 1000) : 0.016;
+    springT = t;
+    let busy = false;
+    for (const s of springs.values()) {
+      s.v += (70 * (s.to - s.x) - 10 * s.v) * dt;
+      s.x += s.v * dt;
+      if (Math.abs(s.to - s.x) < 2e-4 && Math.abs(s.v) < 2e-3) { s.x = s.to; s.v = 0; } else busy = true;
+      s.apply(s.x);
+    }
+    springRaf = busy ? requestAnimationFrame(stepSprings) : 0;
+    if (!busy) springT = 0;
+  }
+
+  // ---------- themes ----------
+  const THEMES = { crimson: "#0d0b0a", swiss: "#f4f3ef", navy: "#08111f", graphite: "#0c0c0c" };
+  function applyTheme(t) {
+    t = THEMES[t] ? t : "crimson";
+    document.documentElement.dataset.theme = t;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEMES[t]);
+  }
+  applyTheme(store.get("theme", "crimson"));
   const shortDate = (iso) => { const d = new Date(iso + "T12:00:00Z"); return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }); };
   const pctTxt = (v, d = 1) => !num(v) ? "–" : `<span class="${v >= 0 ? "up" : "down"}">${v >= 0 ? "+" : "−"}${fmt(Math.abs(v), d)}%</span>`;
   const money = (v, cur = "$") => !num(v) ? "–" : v >= 1e9 ? `${cur}${fmt(v / 1e9, 1)}bn` : v >= 1e6 ? `${cur}${fmt(v / 1e6, 1)}m` : `${cur}${fmt(v / 1e3, 0)}k`;
@@ -81,7 +125,10 @@
       if (!(weekday && now < at(mk.open))) { days = 1; let d = (di + 1) % 7; while (d >= 5) { days++; d = (d + 1) % 7; } }
       next = { verb: "opens", mins: days * 1440 + at(mk.open) - now };
     }
-    return { st, label, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, next };
+    // How far through the current session (or pre-market / after hours) we are, 0 to 1.
+    const span = (a, b) => Math.max(0, Math.min(1, (now - at(a)) / (at(b) - at(a))));
+    const prog = st === "open" ? span(mk.open, mk.close) : label === "pre-market" ? span(mk.pre, mk.open) : label === "after hours" ? span(mk.close, mk.post) : 0;
+    return { st, label, prog, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`, next };
   }
   function renderHeader() {
     const h = new Date().getHours();
@@ -89,10 +136,10 @@
     setText($("#greeting"), (h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + (name ? `, ${name}` : ""));
     setText($("#today"), new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }));
     const states = MARKETS.map((mk) => ({ mk, ...marketState(mk) }));
-    setHTML($("#clocks"), states.map((s) => `<span class="sess ${s.st}"><span class="nm"><i class="dot"></i>${s.mk.name}</span>`
-      + `<span class="st"><b>${cap(s.label)}</b><span class="t">${s.time}</span></span></span>`).join(""));
+    setHTML($("#clocks"), states.map((s) => `<span class="sess ${s.st}" title="${s.mk.name}: ${s.next.verb} in ${dur(s.next.mins)}"><span class="nm"><i class="dot"></i>${s.mk.name}</span>`
+      + `<span class="st"><b>${cap(s.label)}</b><span class="t">${s.time}</span></span><span class="prog"><i style="width:${(s.prog * 100).toFixed(1)}%"></i></span></span>`).join(""));
     const soon = states.slice().sort((a, b) => a.next.mins - b.next.mins)[0];
-    setHTML($("#next"), soon ? `<b>${soon.mk.name} ${soon.next.verb}</b> in ${dur(soon.next.mins)}` : "");
+    setHTML($("#next"), soon ? `Next: <b>${soon.mk.name} ${soon.next.verb}</b> in ${dur(soon.next.mins)}` : "");
   }
   const dotFor = (st) => st === "live" ? "live" : /error/i.test(st) ? "err" : "delayed";
   function renderSys() {
@@ -112,12 +159,22 @@
 
   // ---------- sparklines ----------
   // Grey by default; the tile turns it green, red or amber only when the move is big.
-  function spark(values) {
+  // The line is created once (and draws in from the left), then its points are updated in
+  // place so live ticks don't restart the animation.
+  function setSpark(box, values) {
     const v = (values || []).filter(num);
-    if (v.length < 2) return "";
+    if (v.length < 2) { if (box.firstChild) { box.innerHTML = ""; } return; }
     const lo = Math.min(...v), hi = Math.max(...v), span = hi - lo || 1;
-    const pts = v.map((y, i) => `${((i / (v.length - 1)) * 100).toFixed(2)},${(30 - ((y - lo) / span) * 26).toFixed(2)}`).join(" ");
-    return `<svg class="spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true"><polygon class="ar" points="0,32 ${pts} 100,32"/><polyline class="ln" points="${pts}"/></svg>`;
+    const pts = v.map((y, i) => `${((i / (v.length - 1)) * 100).toFixed(2)},${(32 - ((y - lo) / span) * 28).toFixed(2)}`).join(" ");
+    let svg = box.firstChild;
+    if (!svg) {
+      box.innerHTML = '<svg class="spark draw" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><polygon class="ar"/><polyline class="ln"/></svg>';
+      svg = box.firstChild;
+    }
+    if (svg.__pts === pts) return;
+    svg.__pts = pts;
+    svg.children[0].setAttribute("points", `0,34 ${pts} 100,34`);
+    svg.children[1].setAttribute("points", pts);
   }
   function pushHist(key, p) {
     const h = hist[key] || (hist[key] = []);
@@ -204,49 +261,147 @@
       src.title = s.live ? "Live" : "About 15 minutes delayed";
       setPrice(el.querySelector(".val"), "t" + t.key, s.price, "", "…");
       setHTML(el.querySelector(".cbox"), chg(s.change, { invert: t.invert, hot: t.hot }) + (t.crypto ? '<span class="per">24h</span>' : ""));
-      setHTML(el.querySelector(".sbox"), spark(s.line));
+      setSpark(el.querySelector(".sbox"), s.line);
     }
   }
+  function ping(key) {
+    const el = tileEls[key];
+    if (!el || el.hidden) return;
+    el.classList.remove("ping"); void el.offsetWidth; el.classList.add("ping");
+  }
 
-  // ---------- market summary ----------
-  // A plain diverging bar chart of today's move in each main index around a zero line,
-  // with the average as the headline number. The scale snaps to a round number so
-  // small days look small and big days look big.
+  // ---------- ticker tape ----------
+  // Every market on the board plus watchlist stocks, scrolling. The content is doubled so
+  // the loop is seamless; both copies are updated in place.
+  function renderTape() {
+    const items = [];
+    for (const t of TILES) { const s = tileState(t); if (num(s.price)) items.push({ k: "t" + t.key, name: t.name, price: s.price, ch: s.change, invert: t.invert, cur: t.crypto ? "$" : "" }); }
+    for (const sym of watch) {
+      if (INDEX_FUNDS.includes(sym)) continue;
+      const q = us[sym] || {};
+      if (num(q.price)) items.push({ k: "w" + sym, name: sym, price: q.price, ch: q.prev ? (q.price / q.prev - 1) * 100 : null, cur: "$" });
+    }
+    const box = $("#tape"), ids = items.map((i) => i.k).join("|");
+    if (box.__ids !== ids) {
+      box.__ids = ids;
+      const one = items.map((i) => `<span class="tk" data-k="${esc(i.k)}"><b>${esc(i.name)}</b><span class="tp"></span><span class="cbox"></span></span>`).join("");
+      box.innerHTML = one + one;
+      box.style.animationDuration = Math.max(40, items.length * 5) + "s";
+    }
+    const els = box.children, n = items.length;
+    items.forEach((i, idx) => {
+      for (const el of [els[idx], els[idx + n]]) {
+        if (!el) continue;
+        setText(el.children[1], i.cur + px(i.price));
+        setHTML(el.children[2], chg(i.ch, { invert: i.invert, hot: 999 }));
+      }
+    });
+  }
+
+  // ---------- market mood ----------
+  // A precision gauge: the needle shows the average move of the five main indices, each
+  // index is a marker on the dial, and the scale snaps to a round number so small days
+  // look small and big days look big. Below it, one bar per index around a zero line.
   const vixBand = (v) => !num(v) ? null : v < 15 ? ["Calm", "up"] : v < 20 ? ["Normal", ""] : v < 30 ? ["A bit nervous", "warn"] : ["Very nervous", "down"];
   const toneOf = (v) => !num(v) || Math.abs(v) < 0.005 ? "" : v > 0 ? "up" : "down";
-  function renderMood() {
+  const MOOD_PHRASE = { "Sell-off": "a sell-off", "Down day": "a down day", Mixed: "a mixed day", "Up day": "an up day", Rally: "a rally" };
+  function moodState() {
     const rows = TILES.filter((t) => t.mood).map((t) => ({ t, s: tileState(t) })).filter((r) => num(r.s.change));
     const n = rows.length, avg = n ? rows.reduce((a, r) => a + r.s.change, 0) / n : null;
     const ups = rows.filter((r) => r.s.change > 0).length, downs = rows.filter((r) => r.s.change < 0).length;
     const big = rows.slice().sort((a, b) => Math.abs(b.s.change) - Math.abs(a.s.change))[0];
     const vix = tileState(VIX), band = vixBand(vix.price), live = rows.some((r) => r.s.live);
     const word = !num(avg) ? "Waiting" : avg <= -1.5 ? "Sell-off" : avg <= -0.4 ? "Down day" : avg < 0.4 ? "Mixed" : avg < 1.5 ? "Up day" : "Rally";
+    const mx = n ? Math.max(Math.abs(avg), ...rows.map((r) => Math.abs(r.s.change))) : 0;
+    const scale = [1, 2, 3, 5, 8, 10, 15, 20, 30, 50].find((x) => x >= mx * 1.08) || Math.ceil(mx);
+    return { rows, n, avg, ups, downs, big, vix, band, live, word, scale };
+  }
+  const G = { cx: 140, cy: 138, r: 104 };
+  const gpt = (f, r = G.r) => { const a = Math.PI / 2 - f * Math.PI / 2; return [G.cx + r * Math.cos(a), G.cy - r * Math.sin(a)]; };
+  const garc = (f0, f1, r = G.r) => {
+    const [x0, y0] = gpt(f0, r), [x1, y1] = gpt(f1, r);
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 0 ${f1 > f0 ? 1 : 0} ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  };
+  function buildGauge() {
+    let ticks = "";
+    for (let i = -10; i <= 10; i++) {
+      const maj = i % 5 === 0, [x0, y0] = gpt(i / 10, G.r + 10), [x1, y1] = gpt(i / 10, G.r + (maj ? 19 : 15));
+      ticks += `<line${maj ? ' class="maj"' : ""} x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"/>`;
+    }
+    $("#g-ticks").innerHTML = ticks;
+    $("#g-zone-d").setAttribute("d", garc(-1, 0));
+    $("#g-zone-u").setAttribute("d", garc(0, 1));
+  }
+  let needleTo = 0, swept = false;
+  function drawNeedle(f) {
+    $("#needle").setAttribute("transform", `rotate(${(f * 90).toFixed(2)} ${G.cx} ${G.cy})`);
+    const v = $("#g-val");
+    v.setAttribute("d", Math.abs(f) < 0.004 ? "" : garc(0, f));
+    setClass(v, "g-val " + (f > 0 ? "up" : "down"));
+  }
+  const breadthEls = {};
+  function renderMood() {
+    const m = moodState(), { rows, n, avg, ups, downs, big, vix, band, live, word, scale } = m;
     const tone = !num(avg) ? "" : avg >= 0.4 ? "up" : avg <= -0.4 ? "down" : "";
     setText($("#mood-word"), word);
     setClass($("#mood-word"), "badge" + (tone ? " " + tone : ""));
-    setText($("#mood-avg"), num(avg) ? signed(avg, 2) : "–");
+    countTo($("#mood-avg"), avg, (x) => num(x) ? signed(x, 2) : "–");
     setClass($("#mood-avg"), "hero-num" + (toneOf(avg) ? " " + toneOf(avg) : ""));
     setHTML($("#mood-tag"), live ? '<i class="dot live"></i>Live' : "Latest session");
-    let line = "Waiting for prices.";
-    if (n) {
-      line = `Average move across ${n} main indices. ` + (ups === n ? "Every one is up." : downs === n ? "Every one is down."
-        : ups > downs ? `Most are up (${ups} of ${n}).` : downs > ups ? `Most are down (${downs} of ${n}).` : "They are split.");
+    setText($("#mood-line"), !n ? "Waiting for prices." : `Average move across ${n} main indices. ` + (ups === n ? "Every one is up." : downs === n ? "Every one is down."
+      : ups > downs ? `Most are up (${ups} of ${n}).` : downs > ups ? `Most are down (${downs} of ${n}).` : "They are split."));
+    setHTML($("#g-lbls"), `<text x="${G.cx - G.r}" y="${G.cy + 18}" text-anchor="middle">−${scale}%</text>`
+      + `<text x="${G.cx}" y="${G.cy - G.r - 26}" text-anchor="middle">0</text><text x="${G.cx + G.r}" y="${G.cy + 18}" text-anchor="middle">+${scale}%</text>`);
+    // Index markers on the dial, each on its own spring.
+    const marks = $("#g-marks");
+    if (marks.__n !== rows.map((r) => r.t.key).join("|")) {
+      marks.__n = rows.map((r) => r.t.key).join("|");
+      marks.innerHTML = rows.map((r) => `<g class="g-mark" data-k="${esc(r.t.key)}"><title></title><circle r="5.5"/></g>`).join("");
     }
-    setText($("#mood-line"), line);
-    const mx = n ? Math.max(...rows.map((r) => Math.abs(r.s.change))) : 0;
-    const scale = [1, 2, 3, 5, 8, 10, 15, 20, 30, 50].find((x) => x >= mx * 1.05) || Math.ceil(mx);
-    setHTML($("#breadth"), n ? rows.map(({ t, s }) => {
-      const d = toneOf(s.change), w = Math.min(50, (Math.abs(s.change) / scale) * 50);
-      return `<div class="br-row" title="${esc(t.name)}: ${signed(s.change, 2)}${s.live ? " (live)" : ""}"><span class="lb">${esc(t.name)}</span>`
-        + `<span class="br-track">${d ? `<i class="br-bar ${d}" style="width:${w.toFixed(2)}%"></i>` : ""}</span><span class="vl ${d}">${signed(s.change, 2)}</span></div>`;
-    }).join("") + `<div class="br-axis" aria-hidden="true"><span></span><span class="scale"><span>−${scale}%</span><span>0</span><span>+${scale}%</span></span><span></span></div>` : "");
-    const stat = (label, value, sub, cls = "") => `<div class="stat"><small>${label}</small><b class="${cls}">${value}</b><span>${sub}</span></div>`;
-    setHTML($("#readouts"), [
-      stat("Fear gauge", num(vix.price) ? fmt(vix.price, 1) : "–", band ? `<i class="dot ${band[1]}"></i>${band[0]}` : "No data"),
-      stat("Rising / falling", n ? `${ups} / ${downs}` : "–", "Main indices"),
-      stat("Biggest move", big ? signed(big.s.change, 2) : "–", big ? esc(big.t.name) : "No data", big ? toneOf(big.s.change) : ""),
-    ].join(""));
+    rows.forEach((r, i) => {
+      const g = marks.children[i], f = Math.max(-1, Math.min(1, r.s.change / scale));
+      setClass(g, "g-mark " + (toneOf(r.s.change) || "flat"));
+      g.firstChild.textContent = `${r.t.name}: ${signed(r.s.change, 2)}`;
+      spring("m" + r.t.key, f, (x) => { const [px2, py2] = gpt(x); g.setAttribute("transform", `translate(${px2.toFixed(2)} ${py2.toFixed(2)})`); }, 0);
+    });
+    // The needle sweeps the full dial once when prices first arrive, then settles on the average.
+    needleTo = num(avg) ? Math.max(-1, Math.min(1, avg / scale)) : 0;
+    if (n && !swept) {
+      swept = true;
+      spring("needle", 1, drawNeedle, -1);
+      setTimeout(() => spring("needle", needleTo, drawNeedle), reduceMotion ? 0 : 650);
+    } else if (swept) spring("needle", needleTo, drawNeedle);
+    // One bar per index; elements are kept so widths animate.
+    const box = $("#breadth"), ids = rows.map((r) => r.t.key).join("|");
+    if (box.__ids !== ids) {
+      box.__ids = ids;
+      box.innerHTML = rows.map((r) => `<div class="br-row" data-k="${esc(r.t.key)}"><span class="lb">${esc(r.t.name)}</span><span class="br-track"><i class="br-bar"></i></span><span class="vl"></span></div>`).join("");
+      for (const row of box.children) breadthEls[row.dataset.k] = row;
+    }
+    rows.forEach((r) => {
+      const row = breadthEls[r.t.key], d = toneOf(r.s.change), bar = row.children[1].firstChild;
+      setClass(bar, "br-bar " + d);
+      const w = d ? Math.min(50, (Math.abs(r.s.change) / scale) * 50).toFixed(2) + "%" : "0%";
+      if (bar.style.width !== w) requestAnimationFrame(() => { bar.style.width = w; });
+      setText(row.children[2], signed(r.s.change, 2));
+      setClass(row.children[2], "vl " + d);
+      row.title = `${r.t.name}: ${signed(r.s.change, 2)}${r.s.live ? " (live)" : ""}`;
+    });
+    const stat = (label, id, sub) => `<div class="stat"><small>${label}</small><b id="${id}">–</b><span>${sub}</span></div>`;
+    setHTML($("#readouts"), stat("Fear gauge", "st-vix", band ? `<i class="dot ${band[1]}"></i>${band[0]}` : "No data")
+      + stat("Rising / falling", "st-rf", "Main indices") + stat("Biggest move", "st-big", big ? esc(big.t.name) : "No data"));
+    countTo($("#st-vix"), vix.price, (x) => num(x) ? fmt(x, 1) : "–");
+    setText($("#st-rf"), n ? `${ups} / ${downs}` : "–");
+    const sb = $("#st-big");
+    countTo(sb, big?.s.change, (x) => num(x) ? signed(x, 2) : "–");
+    setClass(sb, big ? toneOf(big.s.change) : "");
   }
+  // Hovering an index row lights up its marker on the dial.
+  $("#breadth").addEventListener("mouseover", (e) => {
+    const k = e.target.closest(".br-row")?.dataset.k;
+    for (const g of $("#g-marks").children) g.classList.toggle("hl", g.dataset.k === k);
+  });
+  $("#breadth").addEventListener("mouseleave", () => { for (const g of $("#g-marks").children) g.classList.remove("hl"); });
 
   // ---------- needs your attention ----------
   // Priority order: fear gauge, big market moves, fresh insider buying, crypto swings,
@@ -293,7 +448,7 @@
     const row = (cls, ico, title, detail, cat = "") => `<div class="alert ${cls}"><span class="ic">${icon(ico)}</span>`
       + `<div><p class="tt">${title}</p><p class="dd">${detail}</p></div>${cat ? `<span class="cat">${cat}</span>` : ""}</div>`;
     setHTML($("#alerts"), list.length
-      ? list.map((a) => row(`is-${a.tone}`, a.ico, esc(a.title), esc(a.detail), esc(a.cat))).join("")
+      ? list.map((a, i) => row(`is-${a.tone} in" style="--i:${i}`, a.ico, esc(a.title), esc(a.detail), esc(a.cat))).join("")
       : loaded ? row("calm is-up", "check", "All quiet. Nothing stands out right now.", "Big moves, fresh insider buying and big swings on your watchlist will show up here.")
         : row("calm", "scan", "Scanning…", "Checking markets and signals."));
   }
@@ -339,7 +494,7 @@
   function render() {
     if (!dirty) return;
     dirty = false;
-    renderTiles(); renderWatch(); renderCrypto(); renderMood(); renderAlerts();
+    renderTiles(); renderWatch(); renderCrypto(); renderMood(); renderAlerts(); renderTape();
   }
   setInterval(render, 600);
 
@@ -561,8 +716,17 @@
   }
 
   // ---------- watchlist ----------
+  // Spoken or typed company names map to tickers, so "add Apple" works.
+  const COMPANIES = {
+    apple: "AAPL", microsoft: "MSFT", nvidia: "NVDA", tesla: "TSLA", amazon: "AMZN", google: "GOOGL", alphabet: "GOOGL",
+    meta: "META", facebook: "META", netflix: "NFLX", amd: "AMD", intel: "INTC", palantir: "PLTR", coinbase: "COIN",
+    broadcom: "AVGO", oracle: "ORCL", salesforce: "CRM", adobe: "ADBE", disney: "DIS", nike: "NKE", boeing: "BA",
+    "berkshire": "BRK.B", "jp morgan": "JPM", jpmorgan: "JPM", visa: "V", mastercard: "MA", walmart: "WMT", costco: "COST",
+    uber: "UBER", airbnb: "ABNB", spotify: "SPOT", paypal: "PYPL", shopify: "SHOP", upstart: "UPST", "micro strategy": "MSTR", microstrategy: "MSTR",
+  };
+  const toTicker = (w) => COMPANIES[String(w).toLowerCase().trim()] || String(w).trim().toUpperCase();
   function addSym(s) {
-    s = s.trim().toUpperCase();
+    s = toTicker(s);
     if (!/^[A-Z][A-Z.\-]{0,9}$/.test(s)) return false;
     if (!watch.includes(s)) { watch.push(s); store.set("watch", watch); connectUS(); fillAnalystPicker(); }
     $("#analyst-sym").value = s; loadAnalyst(s); mark();
@@ -576,7 +740,7 @@
     if (!addSym(v)) inp.placeholder = `"${v}" isn't a ticker. Try AAPL or TSLA.`;
     else inp.placeholder = "Add a US stock, e.g. AAPL";
   });
-  document.addEventListener("keydown", (e) => { if (e.key === "/" && !/INPUT|SELECT/.test(document.activeElement?.tagName) && !$("#settings").open) { e.preventDefault(); $("#cmd-input").focus(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "/" && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName) && !$("#settings").open) { e.preventDefault(); $("#ask-input").focus(); } });
   document.addEventListener("click", (e) => {
     const rm = e.target.closest("[data-rm]"); if (rm) { e.stopPropagation(); rmSym(rm.dataset.rm); return; }
     const card = e.target.closest(".sig[data-sym]"); if (card && card.dataset.sym) addSym(card.dataset.sym);
@@ -586,16 +750,236 @@
     if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); addSym(card.dataset.sym); }
   });
 
+  // ---------- Ask Jarvis ----------
+  // Questions are answered here in the browser from the data already on the page, so
+  // nothing leaves the device except, for voice, the audio your browser sends to its own
+  // speech service. Answers can be read aloud with a British voice where one exists.
+  const ALIASES = [
+    [/\bftse ?250\b|\bmid[- ]?caps?\b|\bmid-sized\b/, "^FTMC"],
+    [/\bftse(?! ?250)\b|\bfootsie\b|\buk (?:market|stocks|shares)\b|\blondon (?:market|stocks|shares)\b|\bbritish (?:market|stocks|shares)\b/, "^FTSE"],
+    [/\bs ?& ?p\b|\bs and p\b|\bsp ?500\b|\bspy\b|\bwall street\b|\bus (?:market|stocks|shares)\b|\bamerican (?:market|stocks|shares)\b/, "SPY"],
+    [/\bnasdaq\b|\bqqq\b|\btech (?:stocks|shares)\b/, "QQQ"],
+    [/\brussell\b|\biwm\b|\bsmall[- ]?caps?\b/, "IWM"],
+    [/\bvix\b|\bfear\b|\bvolatil|\bnervous\b/, "^VIX"],
+    [/\bpound\b|\bsterling\b|\bgbp\b|\bcable\b/, "GBPUSD=X"],
+    [/\bgold\b/, "GC=F"],
+    [/\bbitcoin\b|\bbtc\b/, "BTC"], [/\bethereum\b|\beth\b|\bether\b/, "ETH"], [/\bsolana\b/, "SOL"], [/\bxrp\b|\bripple\b/, "XRP"],
+    [/\bdoge(?:coin)?\b/, "DOGE"], [/\bcardano\b/, "ADA"], [/\bchainlink\b/, "LINK"],
+  ];
+  const NUM_WORD = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
+  const moveWords = (v) => !num(v) ? "with no change figure yet" : Math.abs(v) < 0.05 ? "flat" : `${v > 0 ? "up" : "down"} ${fmt(Math.abs(v), Math.abs(v) < 10 ? 2 : 1)}%`;
+  const durWords = (mins) => {
+    const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60, pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+    return d ? `${pl(d, "day")}${h ? ` and ${pl(h, "hour")}` : ""}` : h ? `${pl(h, "hour")}${m ? ` and ${pl(m, "minute")}` : ""}` : pl(m, "minute");
+  };
+  const plain = (t) => String(t || "").replace(/\*\*(.+?)\*\*/g, "$1").trim();
+  function tileLabel(t) { return { "GC=F": "Gold", "GBPUSD=X": "The pound", "^VIX": "The fear gauge" }[t.key] || (t.crypto ? t.name : "The " + t.name); }
+  function fearText() {
+    const v = tileState(VIX), b = vixBand(v.price);
+    if (!num(v.price)) return "I don't have the fear gauge in this build yet.";
+    return `The fear gauge, the VIX, is at ${fmt(v.price, 1)}${num(v.change) ? `, ${moveWords(v.change)} today` : ""}. That's ${b[0].toLowerCase()}: under 15 is calm, 20 to 30 is nervous, and above 30 means investors expect big swings.`;
+  }
+  function describe(key) {
+    if (key === "^VIX") return fearText();
+    const coin = CRYPTO.find((c) => c[0] === key);
+    if (coin) {
+      const q = crypto[key] || {}, ch = num(q.price) && q.open ? (q.price / q.open - 1) * 100 : null;
+      return num(q.price) ? `${coin[1]} is at $${px(q.price)}, ${moveWords(ch)} over the last 24 hours.` : `${coin[1]}'s live price hasn't arrived yet.`;
+    }
+    const t = TILES.find((x) => x.key === key);
+    if (t) {
+      const s = tileState(t);
+      if (!num(s.price)) return `I don't have a price for ${tileLabel(t).replace(/^The /, "the ")} in this build.`;
+      const val = key === "GC=F" ? `$${px(s.price)} an ounce` : key === "GBPUSD=X" ? `$${px(s.price)}` : px(s.price);
+      return `${tileLabel(t)} is ${moveWords(s.change)} ${s.live ? "today" : "on the latest session"}, at ${val}.${isHot(t, s) ? " That's a big move for it." : ""}`;
+    }
+    const q = us[key];
+    if (q && num(q.price)) {
+      const c = q.prev ? (q.price / q.prev - 1) * 100 : null;
+      return `${key} is at $${px(q.price)}${num(c) ? `, ${moveWords(c)} on the day` : ""}${q.src === "live" ? ", live" : ""}.`;
+    }
+    const r = [...DATA.markets.uk_delayed, ...DATA.markets.us_reference, ...(DATA.uk_names || [])].find((x) => x.symbol === key);
+    if (r && num(r.price)) return `${r.name} is at ${px(r.price)}, ${moveWords(r.change_pct)} at the last update.`;
+    return null;
+  }
+  function moodText() {
+    const m = moodState();
+    if (!m.n) return "I don't have index prices yet. Give it a moment.";
+    let s = `It's ${MOOD_PHRASE[m.word] || "hard to call"}. The main indices are ${moveWords(m.avg)} on average`;
+    s += m.ups === m.n ? ", and every one is up." : m.downs === m.n ? ", and every one is down." : `, with ${m.ups} up and ${m.downs} down.`;
+    if (m.big) s += ` The biggest mover is the ${m.big.t.name}, ${moveWords(m.big.s.change)}.`;
+    if (m.band) s += ` The fear gauge is ${fmt(m.vix.price, 1)}, which is ${m.band[0].toLowerCase()}.`;
+    return s;
+  }
+  function attentionText() {
+    const l = alertsList();
+    if (!l.length) return "All quiet. Nothing stands out right now.";
+    return `${l.length === 1 ? "One thing stands out" : `${NUM_WORD[l.length] || l.length} things stand out`}.\n` + l.map((a) => `${a.title}. ${a.detail}`).join("\n");
+  }
+  function hoursText(q) {
+    const mk = /london|\buk\b|ftse|brit/.test(q) ? MARKETS[0] : /new york|\bny\b|\bus\b|wall street|americ|nasdaq|s ?& ?p/.test(q) ? MARKETS[1] : /tokyo|japan|nikkei/.test(q) ? MARKETS[2] : null;
+    return (mk ? [mk] : MARKETS).map((m) => {
+      const s = marketState(m);
+      return s.st === "open" ? `${m.name} is open and closes in ${durWords(s.next.mins)}.`
+        : `${m.name} is ${s.label === "closed" ? "closed" : `in ${s.label} trading`}, and opens in ${durWords(s.next.mins)}.`;
+    }).join(" ");
+  }
+  function insiderText() {
+    const w = DATA.signals.watchlist || [];
+    if (!w.length) return "No clusters of US insider buying in the last 30 days.";
+    return `${w.length === 1 ? "One company has" : `${NUM_WORD[w.length] || w.length} companies have`} clusters of insider buying in the last 30 days.\n`
+      + w.slice(0, 3).map((r) => `${r.ticker || titleCase(r.issuer)}: ${r.n_insiders ?? "several"} insiders spent ${money(r.total_value)}, ${daysAgo(r.signal_date)}.`).join("\n")
+      + "\nTreat them as ideas to research, not buys.";
+  }
+  function avoidText() {
+    const a = DATA.signals.avoid || [], top = DATA.signals.most_shorted || [];
+    if (!a.length) return top.length ? `No big jumps in UK short bets this month. The most bet-against share is ${titleCase(top[0].issuer)}, at ${fmt(top[0].net_short_pct, 1)}%.` : "No big jumps in UK short bets this month.";
+    return `I'd steer clear of ${a.slice(0, 3).map((r) => `${titleCase(r.issuer)} (short bets up ${fmt(r.delta_pp, 1)} points to ${fmt(r.new_pct, 1)}%)`).join(", ")}. Shares like these have tended to lag the market.`;
+  }
+  function analystText(sym) {
+    const rows = DATA.analyst?.[sym];
+    $("#analyst-sym").value = sym; loadAnalyst(sym);
+    if (!rows?.length) return keys().fh ? `I've opened ${sym} in the analyst panel below.` : `I need a free Finnhub key for analyst ratings. Add one in Settings.`;
+    const m = rows[0], b = (m.strongBuy || 0) + (m.buy || 0), h = m.hold || 0, s = (m.sell || 0) + (m.strongSell || 0);
+    return `Of ${b + h + s} analysts covering ${sym}, ${b} say buy, ${h} say hold and ${s} say sell.`;
+  }
+  function symbolsIn(q) {
+    const found = [];
+    for (const [re, k] of ALIASES) if (re.test(q) && !found.includes(k)) found.push(k);
+    for (const [name, tk] of Object.entries(COMPANIES)) if (new RegExp(`\\b${name}\\b`).test(q) && !found.includes(tk)) found.push(tk);
+    for (const w of q.toUpperCase().match(/\b[A-Z][A-Z.\-]{0,5}\b/g) || []) if ((watch.includes(w) || us[w]) && !found.includes(w)) found.push(w);
+    return found;
+  }
+  function answer(raw) {
+    const q = raw.toLowerCase().replace(/[’`]/g, "'").replace(/^(?:hey |ok |okay )?jarvis[,!.]?\s*/, "").replace(/[?!.]+$/, "").replace(/\s+/g, " ").trim();
+    let m = q.match(/^(?:please |can you |could you )?(?:add|watch|follow)\s+([a-z][a-z .\-]{0,20}?)(?:\s+to\b.*|\s+please)?$/);
+    if (m) return addSym(m[1]) ? `Done. ${toTicker(m[1])} is on your watchlist.` : `"${m[1]}" doesn't look like a US ticker. Try a symbol such as TSLA.`;
+    m = q.match(/^(?:please |can you |could you )?(?:remove|drop|unfollow|delete)\s+([a-z][a-z .\-]{0,20}?)(?:\s+from\b.*|\s+please)?$/);
+    if (m) { const s = toTicker(m[1]); if (watch.includes(s)) { rmSym(s); return `Done. ${s} is off your watchlist.`; } return `${s} isn't on your watchlist.`; }
+    if (/^(?:thanks|thank you|cheers|ta)\b/.test(q)) return "Any time.";
+    if (/^(?:hi|hello|hey|morning|good (?:morning|afternoon|evening))\b/.test(q) && q.split(" ").length <= 4) return `${$("#greeting").textContent}. Ask me how the market's doing, what needs your attention, or the price of anything on the board.`;
+    if (/who are you|what are you/.test(q)) return "I'm Jarvis, your market assistant. I keep an eye on prices, signals and your watchlist, and I'll flag what matters.";
+    if (/\bhelp\b|what can you|what do you (?:do|know)/.test(q)) return "Ask me how the market's doing, what needs your attention, about the fear gauge, any index, crypto, the pound or gold, a stock on your watchlist, insider buying, shares to avoid, or market hours. I can also add or remove watchlist stocks: try \"add Tesla\". Or say \"read me the brief\".";
+    if (/\bwhat time\b|\bthe time\b/.test(q)) return `It's ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}.`;
+    if (/\bbrief\b|summar|recap|catch me up|what happened|\bnews\b/.test(q)) return DATA.brief?.text ? plain(DATA.brief.text) : "There's no brief yet today.";
+    if (/attention|should i know|i should know|need to know|anything (?:important|new|interesting|to know|happening)|\balerts?\b|stand(?:s|ing)? out|what'?s up\b/.test(q)) return attentionText();
+    if (/\b(?:open|opens|close|closes|closing|opening|hours)\b/.test(q) && !/\bclosing price\b/.test(q)) return hoursText(q);
+    if (/insider|director|bosses|who(?:'s| is| are) buying|form 4/.test(q)) return insiderText();
+    if (/avoid|steer clear|stay away|\bshort|bet against|bearish/.test(q)) return avoidText();
+    const syms = symbolsIn(q);
+    if (/analyst|rating|recommend|upgrade|downgrade/.test(q) && syms.length) return analystText(syms[0]);
+    if (syms.length) {
+      syms.slice(0, 3).forEach((k) => ping(k));
+      return syms.slice(0, 3).map((k) => describe(k) || `I only have prices for the board and your watchlist. Say "add ${k}" to follow it.`).join("\n");
+    }
+    if (/\bmarkets?\b|\bmood\b|\bhow(?:'s| is| are)? (?:it|things|we|everything)\b|\btoday\b|\boverall\b|\bdoing\b|\bstocks\b/.test(q)) return moodText();
+    return "I'm not sure about that one. Try \"How's the Nasdaq doing?\", \"Anything I should know?\" or \"Read me the brief\".";
+  }
+
+  // Speech: answers are read aloud with a British English voice where the device has one.
+  const synth = window.speechSynthesis;
+  let voice = null;
+  function pickVoice() {
+    const vs = synth?.getVoices() || [];
+    voice = vs.find((v) => /en-GB/i.test(v.lang) && /Daniel|Arthur|George|Ryan|Oliver|UK English Male/i.test(v.name))
+      || vs.find((v) => /en-GB/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang)) || null;
+  }
+  if (synth) { pickVoice(); synth.addEventListener?.("voiceschanged", pickVoice); }
+  const busy = (on) => { $("#mark").classList.toggle("busy", on); $(".ask-ico").classList.toggle("busy", on); };
+  const spoken = (t) => t.replace(/−/g, "minus ").replace(/\+(?=\d)/g, "plus ").replace(/(\d)pp\b/g, "$1 points").replace(/\$(\d[\d,.]*)/g, "$1 dollars").replace(/\n/g, " ");
+  function speak(text) {
+    if (!synth || !text) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(spoken(text));
+    if (voice) u.voice = voice;
+    u.lang = voice?.lang || "en-GB"; u.rate = 1.03; u.pitch = 0.95;
+    u.onstart = () => { busy(true); $("#ans-speak").classList.add("on"); };
+    u.onend = u.onerror = () => { busy(false); $("#ans-speak").classList.remove("on"); };
+    synth.speak(u);
+  }
+  let typing = 0, lastAnswer = "";
+  function show(q, text) {
+    lastAnswer = text;
+    $("#answer").hidden = false;
+    setText($("#ans-q"), q);
+    const body = $("#ans-body"), html = (t) => t.split("\n").map((p) => `<p>${highlight(esc(p))}</p>`).join("");
+    clearInterval(typing);
+    if (reduceMotion) { body.innerHTML = html(text); return; }
+    let i = 0;
+    typing = setInterval(() => {
+      i = Math.min(text.length, i + 3);
+      body.innerHTML = html(text.slice(0, i)).replace(/<\/p>$/, i < text.length ? '<span class="caret"></span></p>' : "</p>");
+      if (i >= text.length) clearInterval(typing);
+    }, 16);
+  }
+  function ask(q, { byVoice = false } = {}) {
+    q = String(q || "").trim();
+    if (!q) return;
+    let text;
+    try { text = answer(q); } catch (err) { text = "Sorry, something went wrong working that out."; }
+    show(q, text);
+    const pref = store.get("speak", "voice");
+    if (pref === "always" || (pref === "voice" && byVoice)) speak(text);
+  }
+  $("#ask-form").addEventListener("submit", (e) => { e.preventDefault(); const inp = $("#ask-input"); ask(inp.value); inp.value = ""; });
+  $("#ask-chips").addEventListener("click", (e) => { const b = e.target.closest("[data-q]"); if (b) ask(b.dataset.q); });
+  $("#ans-close").addEventListener("click", () => { $("#answer").hidden = true; synth?.cancel(); busy(false); });
+  $("#ans-speak").addEventListener("click", () => { if (synth?.speaking) { synth.cancel(); busy(false); $("#ans-speak").classList.remove("on"); } else speak(lastAnswer); });
+  if (!synth) $("#ans-speak").hidden = true;
+
+  // Voice input: press the microphone, ask, and Jarvis answers out loud.
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec = null;
+  if (SR) {
+    $("#mic").hidden = false;
+    $("#mic").addEventListener("click", () => {
+      if (rec) { rec.stop(); return; }
+      synth?.cancel();
+      rec = new SR();
+      rec.lang = "en-GB"; rec.interimResults = true; rec.maxAlternatives = 1;
+      const inp = $("#ask-input"), mic = $("#mic");
+      let final = "";
+      mic.classList.add("on"); busy(true);
+      inp.value = ""; inp.placeholder = "Listening…";
+      rec.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const r = ev.results[i];
+          if (r.isFinal) final += r[0].transcript; else interim += r[0].transcript;
+        }
+        inp.value = (final + interim).trim();
+      };
+      rec.onerror = (ev) => {
+        const msg = ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "Microphone access is blocked. Allow it for this site in your browser settings."
+          : ev.error === "no-speech" ? "I didn't hear anything. Press the microphone and try again." : ev.error === "network" ? "Voice needs an internet connection." : "";
+        if (msg) show("(voice)", msg);
+      };
+      rec.onend = () => {
+        mic.classList.remove("on"); busy(false); rec = null;
+        inp.placeholder = "Ask Jarvis about the markets";
+        if (final.trim()) { inp.value = ""; ask(final.trim(), { byVoice: true }); }
+      };
+      try { rec.start(); } catch { rec.onend(); }
+    });
+  }
+
   // ---------- settings ----------
   function openSettings() {
     const k = keys();
     $("#k-name").value = store.get("name", "");
     $("#k-alpaca-id").value = k.aid; $("#k-alpaca-secret").value = k.asec; $("#k-finnhub").value = k.fh; $("#k-crypto").value = k.crypto;
+    $("#k-speak").value = store.get("speak", "voice");
+    const cur = document.documentElement.dataset.theme || "crimson";
+    for (const r of document.querySelectorAll('input[name="theme"]')) r.checked = r.value === cur;
     $("#settings").showModal();
   }
   $("#open-settings").addEventListener("click", openSettings);
+  // Colour schemes preview live; Cancel puts the saved one back.
+  for (const r of document.querySelectorAll('input[name="theme"]')) r.addEventListener("change", () => applyTheme(r.value));
   $("#settings").addEventListener("close", () => {
-    if ($("#settings").returnValue !== "save") return;
+    if ($("#settings").returnValue !== "save") { applyTheme(store.get("theme", "crimson")); return; }
+    store.set("theme", document.documentElement.dataset.theme || "crimson");
+    store.set("speak", $("#k-speak").value);
     store.set("name", $("#k-name").value.trim().slice(0, 30));
     store.set("alpacaId", $("#k-alpaca-id").value.trim()); store.set("alpacaSecret", $("#k-alpaca-secret").value.trim());
     store.set("finnhub", $("#k-finnhub").value.trim()); store.set("crypto", $("#k-crypto").value);
@@ -612,7 +996,7 @@
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   // ---------- boot ----------
-  buildTiles();
+  buildGauge(); buildTiles();
   renderHeader(); setInterval(renderHeader, 30000);
   renderSys(); render();
   fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : Promise.reject(r.status))
