@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jarvis</title>
-<meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals.">
+<meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals, and a voice assistant.">
+<script>try { var t = JSON.parse(localStorage.getItem("jarvis.theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0c0e">
+<meta name="theme-color" content="#0d0b0a">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,10 +20,10 @@
 <body>
 <header class="topbar">
   <div class="topbar-in">
-    <div class="brand">
-      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6"/><path d="M5.5 15.5 9.5 11.5 12.5 14.5 18.5 8.5"/></svg>
+    <a class="brand" href="./" aria-label="Jarvis">
+      <svg class="mark" id="mark" viewBox="0 0 32 32" aria-hidden="true"><circle class="m-disc" cx="16" cy="16" r="16"/><path class="m-arc" d="M7.2 20.5A9.5 9.5 0 0 1 24.8 20.5"/><path class="m-needle" d="M16 20.5 21.2 13.2"/><circle class="m-hub" cx="16" cy="20.5" r="2.3"/></svg>
       <span class="wordmark">Jarvis</span>
-    </div>
+    </a>
     <div class="sys" id="sys" aria-label="Data status"></div>
     <div class="actions">
       <button class="btn" id="install" type="button" hidden>Install app</button>
@@ -30,36 +31,77 @@
       <button class="btn" id="open-settings" type="button" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h9M17 18h3"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg><span>Settings</span></button>
     </div>
   </div>
+  <div class="tape" aria-label="Latest prices"><div class="tape-track" id="tape"></div></div>
 </header>
 
 <main class="wrap">
-  <div class="page-head rise">
+  <section class="masthead rise">
     <div>
+      <p class="eyebrow" id="today"></p>
       <h1 id="greeting">Hello</h1>
-      <p class="sub"><span id="today"></span><span class="next" id="next"></span></p>
+      <p class="sub" id="next"></p>
     </div>
     <div class="sessions" id="clocks" aria-label="Market hours"></div>
-  </div>
+  </section>
+
+  <section class="ask rise" style="--i:1">
+    <form class="ask-bar" id="ask-form" autocomplete="off">
+      <svg class="ask-ico" viewBox="0 0 32 32" aria-hidden="true"><path class="a-arc" d="M7.2 20.5A9.5 9.5 0 0 1 24.8 20.5"/><path class="a-needle" d="M16 20.5 21.2 13.2"/><circle class="a-hub" cx="16" cy="20.5" r="2.3"/></svg>
+      <input id="ask-input" placeholder="Ask Jarvis about the markets" spellcheck="false" aria-label="Ask Jarvis a question">
+      <button class="mic" id="mic" type="button" aria-label="Ask by voice" title="Ask by voice" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+        <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      </button>
+      <button class="btn primary" type="submit">Ask</button>
+    </form>
+    <div class="chips" id="ask-chips">
+      <button type="button" data-q="How's the market today?">How's the market?</button>
+      <button type="button" data-q="Anything I should know?">Anything I should know?</button>
+      <button type="button" data-q="Read me the brief">Read me the brief</button>
+      <button type="button" data-q="How is the fear gauge?">Fear gauge</button>
+      <button type="button" data-q="What's Bitcoin at?">What's Bitcoin at?</button>
+      <button type="button" data-q="When does New York open?">When does New York open?</button>
+    </div>
+    <div class="answer" id="answer" hidden aria-live="polite">
+      <div class="ans-head">
+        <span class="ans-q" id="ans-q"></span>
+        <span class="ans-tools">
+          <button class="icon-btn" id="ans-speak" type="button" title="Read aloud" aria-label="Read aloud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
+          <button class="icon-btn" id="ans-close" type="button" title="Close" aria-label="Close answer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        </span>
+      </div>
+      <div class="ans-body" id="ans-body"></div>
+    </div>
+  </section>
 
   <div class="grid">
-    <section class="card brief-card span-8 rise" style="--i:1">
+    <section class="card brief-card span-7 rise" style="--i:2">
       <div class="card-head"><h2>Today's brief</h2><span class="badge" id="brief-src"></span></div>
       <div class="brief" id="brief"><p class="muted">Loading…</p></div>
       <p class="card-foot" id="built"></p>
     </section>
 
-    <section class="card summary span-4 rise" style="--i:2">
-      <div class="card-head"><h2>Market summary</h2><span class="badge" id="mood-tag">Latest session</span></div>
-      <div class="sum-hero">
-        <span class="hero-num" id="mood-avg">–</span>
-        <span class="badge" id="mood-word">Waiting</span>
+    <section class="card mood span-5 rise" style="--i:3">
+      <div class="card-head"><h2>Market mood</h2><span class="badge" id="mood-tag">Latest session</span></div>
+      <div class="gauge-wrap">
+        <svg class="gauge" id="gauge" viewBox="0 0 280 158" role="img" aria-labelledby="mood-word">
+          <g class="g-ticks" id="g-ticks"></g>
+          <path class="g-zone down" id="g-zone-d"/>
+          <path class="g-zone up" id="g-zone-u"/>
+          <path class="g-val" id="g-val"/>
+          <g id="g-marks"></g>
+          <g class="g-lbls" id="g-lbls"></g>
+          <g class="needle" id="needle"><path d="M140 40 143.2 138 136.8 138Z"/></g>
+          <circle class="hub" cx="140" cy="138" r="8"/><circle class="hub-dot" cx="140" cy="138" r="2.6"/>
+        </svg>
+        <div class="g-read"><span class="hero-num" id="mood-avg">–</span><span class="badge" id="mood-word">Waiting</span></div>
       </div>
       <p class="caption" id="mood-line">Waiting for prices.</p>
       <div class="breadth" id="breadth"></div>
       <div class="stats" id="readouts"></div>
     </section>
 
-    <section class="card attention span-12 rise" style="--i:3">
+    <section class="card attention span-12 rise" style="--i:4">
       <div class="card-head">
         <h2>Needs your attention <span class="count" id="alert-count" hidden></span></h2>
         <p class="hint">Big moves, fresh signals and your watchlist. Nothing here means a quiet day.</p>
@@ -68,7 +110,7 @@
     </section>
   </div>
 
-  <section class="block rise" style="--i:4">
+  <section class="block rise" style="--i:5">
     <div class="section-head">
       <h2>Markets</h2>
       <p class="legend"><span><i class="dot live"></i>Live</span><span><i class="dot delayed"></i>About 15 minutes delayed</span></p>
@@ -77,12 +119,12 @@
   </section>
 
   <div class="grid">
-    <section class="card span-6 rise" style="--i:5">
+    <section class="card span-6 rise" style="--i:6">
       <div class="card-head"><h2>Worth a look</h2><span class="badge"><i class="dot up"></i>US insiders buying</span></div>
       <p class="hint">Several bosses at the same company bought their own shares recently. A reason to research the stock, not to buy it: on its own, this hasn't beaten the market after costs. Select a row to add it to your watchlist.</p>
       <div class="rows" id="insider"></div>
     </section>
-    <section class="card span-6 rise" style="--i:6">
+    <section class="card span-6 rise" style="--i:7">
       <div class="card-head"><h2>Steer clear</h2><span class="badge"><i class="dot down"></i>UK short sellers piling in</span></div>
       <p class="hint">Funds betting against these UK shares increased their bets this month. Historically these stocks lagged the market, so avoid buying them for now.</p>
       <div class="rows" id="avoid"></div>
@@ -90,7 +132,7 @@
       <ol class="rank" id="shorted-top"></ol>
     </section>
 
-    <section class="card span-6 rise" style="--i:7">
+    <section class="card span-6 rise" style="--i:8">
       <div class="card-head"><h2>Watchlist</h2><span class="badge" id="us-status">Delayed</span></div>
       <form class="add" id="cmd" autocomplete="off">
         <input id="cmd-input" placeholder="Add a US stock, e.g. AAPL" spellcheck="false" aria-label="Add a ticker">
@@ -100,19 +142,19 @@
       <ul class="list" id="watch"></ul>
       <p class="hint small" id="watch-note"></p>
     </section>
-    <section class="card span-6 rise" style="--i:8">
+    <section class="card span-6 rise" style="--i:9">
       <div class="card-head"><h2>Crypto</h2><span class="badge" id="crypto-status">Connecting</span></div>
       <div class="list-head" aria-hidden="true"><span>Coin</span><span class="r">Last</span><span class="r">24h</span><span></span></div>
       <ul class="list" id="crypto"></ul>
     </section>
   </div>
 
-  <section class="card block rise" style="--i:9">
+  <section class="card block rise" style="--i:10">
     <div class="card-head"><h2>Analyst ratings</h2><select id="analyst-sym" aria-label="Stock"></select></div>
     <div id="analyst"></div>
   </section>
 
-  <section class="card more block rise" style="--i:10">
+  <section class="card more block rise" style="--i:11">
     <details>
       <summary>
         <span><h2>More detail</h2><span class="hint">All prices, UK short positions, director buys and the signal log</span></span>
@@ -141,14 +183,24 @@
 
   <footer class="foot">
     <p>For research, not financial advice. Paper trade first.</p>
-    <p>Live: Alpaca or Finnhub (US, with your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK and macro). Signals: SEC Form 4 filings and FCA short positions.</p>
+    <p>Live: Alpaca or Finnhub (US, with your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK and macro). Signals: SEC Form 4 filings and FCA short positions. Voice questions use your browser's own speech service.</p>
   </footer>
 </main>
 
 <dialog id="settings">
   <form method="dialog" class="settings">
     <div class="dlg-head"><h2>Settings</h2><p class="hint">Saved only on this device. Keys go only to the service they belong to and never reach the repository.</p></div>
+    <fieldset class="themes">
+      <legend>Colour scheme</legend>
+      <label class="sw"><input type="radio" name="theme" value="crimson"><span class="sw-chip" style="--a:#0d0b0a;--b:#d7263d;--c:#e3b341"></span><span><b>Crimson</b><small>Black, red and gold</small></span></label>
+      <label class="sw"><input type="radio" name="theme" value="swiss"><span class="sw-chip" style="--a:#ffffff;--b:#e10600;--c:#111111"></span><span><b>Swiss</b><small>White, red and black</small></span></label>
+      <label class="sw"><input type="radio" name="theme" value="navy"><span class="sw-chip" style="--a:#08111f;--b:#c9a24a;--c:#eef2f8"></span><span><b>Navy</b><small>Navy and gold</small></span></label>
+      <label class="sw"><input type="radio" name="theme" value="graphite"><span class="sw-chip" style="--a:#0c0c0c;--b:#ff5f1f;--c:#f2f2f2"></span><span><b>Graphite</b><small>Black, white and orange</small></span></label>
+    </fieldset>
     <label class="field"><span>Your first name <em>optional, for the greeting</em></span><input id="k-name" autocomplete="off" spellcheck="false" maxlength="30"></label>
+    <label class="field"><span>Read answers aloud</span>
+      <select id="k-speak"><option value="voice">When I ask by voice</option><option value="always">Always</option><option value="never">Never</option></select>
+    </label>
     <fieldset>
       <legend>Alpaca</legend>
       <p class="hint">Free plan: live US prices from IEX. Paper-trading keys work.</p>
