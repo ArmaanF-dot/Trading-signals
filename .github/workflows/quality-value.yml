@@ -1,9 +1,6 @@
 name: quality-value
 on:
   workflow_dispatch:
-  push:
-    branches: [claude/project-thread-0infid]  # temporary: run the study on the PR branch before merge
-    paths: [edge/quality_value.py, .github/workflows/quality-value.yml]
 permissions:
   contents: write
 jobs:
