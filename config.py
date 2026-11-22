@@ -72,6 +72,15 @@ MOMENTUM_SPLIT = "2013-01"  # first out-of-sample formation month; variants are 
 MOMENTUM_COSTS = [0.002, 0.02, 0.03]  # round trip: realistic for S&P 500 names, then the house 2% and 3%
 MOMENTUM_MAX_MONTHLY_RET = 2.0  # stock-month returns above +200% are treated as bad data (recycled tickers etc.)
 
+# --- quality and value study (SEC XBRL fundamentals on S&P 500 members; reuses the momentum engine and costs) ---
+SEC_COMPANYFACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
+QV_FIRST_FORMATION = "2010-06"  # XBRL filings start in 2009
+QV_SPLIT = "2018-07"  # first out-of-sample formation month
+QV_MAX_ANNUAL_AGE_DAYS = 480  # fiscal-year end to formation; a 10-K lands within ~90 days, the next one a year later
+QV_MAX_INSTANT_AGE_DAYS = 200  # balance sheet date to formation (quarterly filers)
+QV_MIN_MCAP, QV_MAX_MCAP = 1e8, 1e13  # outside this the share count or price is wrong
+QV_MIN_RANKED = 100  # skip a month if fewer members have the signal
+
 
 def ntfy_topic() -> str | None:
     """Read at call time so tests can change the environment."""

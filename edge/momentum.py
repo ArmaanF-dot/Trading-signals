@@ -133,9 +133,16 @@ def run_strategy(panel: pd.DataFrame, rets: pd.DataFrame, members: dict, top: fl
     """Monthly rows (labelled by the month the return is earned) with gross, net-per-cost,
     equal-weight universe benchmark, turnover and holdings count."""
     picks, sizes = cohorts(panel, rets, members, top, first)
+    return run_from_picks(picks, sizes, rets, members, hold, costs)
+
+
+def run_from_picks(picks: dict, sizes: dict, rets: pd.DataFrame, universe: dict, hold: int, costs) -> pd.DataFrame:
+    """Hold each formation's picks for `hold` months as overlapping cohorts. picks: {formation month:
+    weights}; sizes: {month: (eligible, members)}; universe: {month: tickers} for the cost-free
+    equal-weight benchmark, rebalanced monthly."""
     months = sorted(picks)
     rows, prev_w = [], pd.Series(dtype=float)
-    for i, m in enumerate(months):
+    for m in months:
         nxt = m + 1
         if nxt not in rets.index:
             break
@@ -148,8 +155,7 @@ def run_strategy(panel: pd.DataFrame, rets: pd.DataFrame, members: dict, top: fl
         w_eff = w[held] / w[held].sum()  # names with no next-month price (delisted, bad data) are dropped
         gross = float((w_eff * r[held]).sum())
         turnover = float(w.sub(prev_w, fill_value=0).abs().sum())
-        # benchmark: equal weight over all members at m with a next-month price (rebalanced monthly, cost-free)
-        uni = [t for t in members[m] if t in rets.columns]
+        uni = [t for t in universe[m] if t in rets.columns]
         ur = rets.loc[nxt, uni].dropna()
         bench = float(ur.mean()) if len(ur) else np.nan
         row = {"month": str(nxt), "formed": str(m), "gross": gross, "bench_ew": bench, "turnover": turnover,
