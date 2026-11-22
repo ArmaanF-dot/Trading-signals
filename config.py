@@ -61,7 +61,8 @@ COMBO_LOOKBACK_DAYS = 30  # director buys older than this are ignored
 # --- prices (return tracking) ---
 YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=10y&interval=1d"
 YAHOO_USER_AGENT = "Mozilla/5.0 (compatible; trading-signals-research)"
-YAHOO_MONTHLY_MAX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=max&interval=1mo"
+# period1/period2 rather than range=max: with range=max Yahoo coarsens long histories, leaving gaps in a monthly series
+YAHOO_MONTHLY_MAX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1=852076800&period2=4102444800&interval=1mo"
 
 # --- momentum study (12-1 month cross-sectional momentum on S&P 500 members) ---
 # Point-in-time S&P 500 membership since 1996 (community-maintained, from Clenow's list plus Wikipedia changes).

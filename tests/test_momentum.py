@@ -91,3 +91,19 @@ def test_report_and_verdict_from_fake_results():
     for c in costs:
         flat[f"net_{c:g}"] = flat["bench_ew"] - 0.001
     assert mo.verdict(flat, costs).startswith("NO EDGE")
+
+
+def test_fetch_panel_retries_empty_tickers_and_flags_gaps():
+    idx = pd.to_datetime(["2024-01-01", "2024-02-01", "2024-03-01"])
+    calls = []
+
+    def fetch(sym):
+        calls.append(sym)
+        if sym == "BRK-B" and calls.count(sym) == 1:
+            return pd.DataFrame(columns=["close", "volume"], dtype=float)  # rate limited first time
+        close = [1.0, np.nan, 3.0] if sym == "GAP" else [1.0, 2.0, 3.0]
+        return pd.DataFrame({"close": close, "volume": 1.0}, index=idx)
+
+    panel = mo.fetch_panel(["AAA", "BRK.B", "GAP"], fetch=fetch, retry_pause=0)
+    assert set(panel.columns) == {"AAA", "BRK.B", "GAP"} and calls.count("BRK-B") == 2
+    assert abs(mo.gap_share(panel) - 1 / 3) < 1e-12

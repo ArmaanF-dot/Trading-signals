@@ -21,6 +21,7 @@ Known biases, repeated in the report:
 """
 import io
 import math
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -65,17 +66,31 @@ def monthly_closes(bars: pd.DataFrame) -> pd.Series:
     return s[~s.index.duplicated(keep="last")]
 
 
-def fetch_panel(tickers, fetch=None, workers: int = 6) -> pd.DataFrame:
-    """Month x ticker panel of adjusted closes; tickers with no Yahoo data are absent."""
+def fetch_panel(tickers, fetch=None, workers: int = 3, retry_pause: float = 30.0) -> pd.DataFrame:
+    """Month x ticker panel of adjusted closes; tickers with no Yahoo data are absent.
+    Tickers that come back empty get one more try after a pause (Yahoo rate limits bursts)."""
     fetch = fetch or (lambda sym: prices.fetch_bars(sym, config.YAHOO_MONTHLY_MAX_URL))
-    tickers = sorted(set(tickers))
+    todo, series = sorted(set(tickers)), {}
 
     def one(t):
         return t, monthly_closes(fetch(prices.yahoo_symbol(t, "us")))
 
-    with ThreadPoolExecutor(workers) as ex:
-        series = {t: s for t, s in ex.map(one, tickers) if not s.empty}
+    for attempt in range(2):
+        with ThreadPoolExecutor(workers) as ex:
+            got = dict(ex.map(one, todo))
+        series.update({t: s for t, s in got.items() if not s.empty})
+        todo = [t for t in todo if t not in series]
+        print(f"momentum: pass {attempt + 1}: {len(series)} priced, {len(todo)} empty")
+        if not todo or attempt == 1:
+            break
+        time.sleep(retry_pause)
     return pd.DataFrame(series).sort_index()
+
+
+def gap_share(panel: pd.DataFrame) -> float:
+    """Share of priced tickers with a hole inside their monthly history (a sign of coarsened data)."""
+    holes = [s.loc[s.first_valid_index():s.last_valid_index()].isna().any() for _, s in panel.items() if s.notna().any()]
+    return float(np.mean(holes)) if holes else 0.0
 
 
 # ---------- backtest ----------
@@ -241,7 +256,8 @@ def main() -> None:
     tickers = set().union(*membership.tolist())
     print(f"momentum: {len(tickers)} tickers ever in the S&P 500; fetching monthly prices")
     panel = fetch_panel(tickers)
-    print(f"momentum: {panel.shape[1]} tickers priced, {panel.index.min()} to {panel.index.max()}")
+    print(f"momentum: {panel.shape[1]} tickers priced, {panel.index.min()} to {panel.index.max()}, "
+          f"{gap_share(panel):.0%} with gaps inside their history")
     rets, bad = clean_returns(panel)
     members = members_at_month_ends(membership, panel.index)
     results = {v: run_strategy(panel, rets, members, v[0], v[1], costs, first) for v in VARIANTS}
