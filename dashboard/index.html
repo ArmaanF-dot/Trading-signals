@@ -6,6 +6,12 @@
 <title>Jarvis</title>
 <meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals.">
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#07090d">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 <header class="top">
@@ -14,6 +20,7 @@
   <form class="cmd" id="cmd" autocomplete="off">
     <input id="cmd-input" placeholder="Add ticker (e.g. AAPL) or type 'help'   [ / ]" spellcheck="false">
   </form>
+  <button class="btn" id="install" type="button" hidden title="Install Jarvis as an app">Install</button>
   <button class="btn" id="open-settings" type="button" title="API keys and options">Keys</button>
 </header>
 
