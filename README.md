@@ -46,7 +46,7 @@ A dark, Bloomberg-style homescreen hosted on GitHub Pages: `https://armaanf-dot.
 | Analyst trends | Finnhub free recommendation trends | On demand |
 | Daily brief | Claude once a day on your Claude plan (`CLAUDE_CODE_OAUTH_TOKEN` secret), or the API (`ANTHROPIC_API_KEY`), otherwise rule-based | Each rebuild |
 
-**As an app:** on Windows, download and double-click [`app/install-app.bat`](app/install-app.bat). It adds a Jarvis shortcut to the Start Menu and desktop that opens in its own window (Edge app mode, no tabs or address bar), and can start Jarvis when you log in. Undo with `app/app-remove.bat`. On a phone or any other computer, open the page in Chrome or Edge and press **Install** (or "Add to Home Screen" in Safari); the page is a PWA with an offline shell.
+**As an app:** on Windows, press **Get Windows app** on the dashboard, unzip it and double-click `install-app.bat`. It adds a Jarvis shortcut to the Start Menu and desktop that opens in its own window (Edge app mode, no tabs or address bar), and can start Jarvis when you log in. Undo with `app/app-remove.bat`. On a phone or any other computer, open the page in Chrome or Edge and press **Install** (or "Add to Home Screen" in Safari); the page is a PWA with an offline shell.
 
 **Keys:** live-data keys are typed into the page (Keys button) and kept only in that browser's localStorage. They never go into the repo. Optional GitHub Secrets: `CLAUDE_CODE_OAUTH_TOKEN` (AI brief on your Claude plan: run `claude setup-token` locally and paste the token), `ANTHROPIC_API_KEY` (API fallback for the brief) and `FINNHUB_API_KEY` (pre-fills analyst trends). **First time:** Settings, Pages, Source "GitHub Actions".
 
