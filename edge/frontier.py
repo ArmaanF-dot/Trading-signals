@@ -118,7 +118,7 @@ def verdict(oos: pd.DataFrame, costs) -> str:
     return f"NO EDGE: out of sample the long-short earns {mean:+.1%} a year (t {t:.2f}) at {costs[0]:.1%} costs ({house})."
 
 
-def report(results: dict, chosen, costs, split: str, coverage: dict) -> str:
+def report(results: dict, chosen, costs, split: str, coverage: dict, missing: list) -> str:
     df = results[chosen]
     ins, oos = df[df["formed"] < split], df[df["formed"] >= split]
     lines = ["# Commodity-linked country ETFs: do they lag their commodity?", "",
@@ -148,7 +148,7 @@ def report(results: dict, chosen, costs, split: str, coverage: dict) -> str:
         lines.append(f"\nLong leg minus the equal-weight ETF universe: {part['long_excess'].mean() * 12:+.1%} a year gross (t {tstat(part['long_excess']):.2f}). "
                      f"Mean rank IC {part['ic'].mean():+.3f} (t {tstat(part['ic']):.2f}).")
     lines += ["", "## Data and biases", "",
-              "- ETFs priced: " + ", ".join(f"{k} (from {v})" for k, v in coverage.items()) + ".",
+              "- ETFs priced: " + ", ".join(f"{k} (from {v})" for k, v in coverage.items()) + (f"; no Yahoo history for {', '.join(missing)} (delisted)" if missing else "") + ".",
               "- Only ETFs that still trade are included (dead ones such as the Russia and Nigeria ETFs are missing): survivorship bias flatters long positions.",
               "- Only 10 ETFs and 3 per leg, so results are noisy; in-sample window is short (about 4.5 years).",
               "- Futures are Yahoo continuous front-month series; roll gaps add noise to commodity returns.",
@@ -158,18 +158,38 @@ def report(results: dict, chosen, costs, split: str, coverage: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def daily_to_monthly(bars: pd.DataFrame) -> pd.Series:
+    """Daily bars -> last close of each calendar month (daily data has no holes, unlike Yahoo's monthly futures bars)."""
+    if bars.empty:
+        return pd.Series(dtype=float)
+    s = bars["close"].copy()
+    s.index = s.index.to_period("M")
+    return s[~s.index.duplicated(keep="last")]
+
+
+def fetch_panel(symbols) -> pd.DataFrame:
+    from concurrent.futures import ThreadPoolExecutor
+    from edge import prices
+    with ThreadPoolExecutor(3) as ex:
+        got = dict(ex.map(lambda t: (t, daily_to_monthly(prices.fetch_bars(t, config.YAHOO_DAILY_MAX_URL))), sorted(symbols)))
+    missing = sorted(t for t, s in got.items() if s.empty)
+    print(f"frontier: no data for {missing}")
+    return pd.DataFrame({t: s for t, s in got.items() if not s.empty}).sort_index()
+
+
 def main() -> None:
     costs, split, first = config.FRONTIER_COSTS, config.FRONTIER_SPLIT, config.FRONTIER_FIRST_FORMATION
     symbols = set(PAIRS) | {f for f, _ in PAIRS.values()}
-    panel = momentum.fetch_panel(symbols)
+    panel = fetch_panel(symbols)
     print(f"frontier: {panel.shape[1]} of {len(symbols)} symbols priced")
     rets, bad = momentum.clean_returns(panel)
     results = {v: run_variant(rets, v[0], v[1], costs, first) for v in VARIANTS}
     results = {k: d for k, d in results.items() if not d.empty}
     chosen = pick(results, split, costs[0])
     coverage = {e: str(panel[e].first_valid_index()) for e in PAIRS if e in panel}
+    missing = [e for e in PAIRS if e not in panel]
     REPORT.parent.mkdir(exist_ok=True)
     results[chosen].to_csv(MONTHLY_CSV, index=False)
-    md = report(results, chosen, costs, split, coverage)
+    md = report(results, chosen, costs, split, coverage, missing)
     REPORT.write_text(md)
     print(md)
