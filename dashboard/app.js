@@ -13,15 +13,25 @@
   const fmt = (v, d = 2) => !num(v) ? "–" : Number(v).toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
   const px = (v) => !num(v) ? "–" : fmt(v, v >= 1 ? 2 : 4);
   const signed = (v, d = 1) => !num(v) ? "–" : `${v >= 0 ? "+" : "−"}${fmt(Math.abs(v), d)}%`;
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // Change chip. Small moves stay quiet; moves at or past `hot` get the bright treatment.
+  const cap = (s) => { s = String(s ?? ""); return s.charAt(0).toUpperCase() + s.slice(1); };
+  // Change figure: green or red text; moves at or past `hot` also get a tinted chip.
   // invert: for things where up is bad news (the fear gauge), colour a rise red.
   const chg = (v, { d = 2, invert = false, hot = 3 } = {}) => {
-    if (!num(v)) return '<span class="chg flat">–</span>';
-    const a = Math.abs(v), dir = a < 0.005 ? "flat" : (v > 0) !== invert ? "up" : "down";
-    const lvl = a >= hot ? "s3" : a >= 0.5 ? "s2" : "s1";
-    return `<span class="chg ${dir} ${lvl}">${v > 0 ? "▲" : v < 0 ? "▼" : ""} ${fmt(a, d)}%</span>`;
+    if (!num(v)) return '<span class="chg">–</span>';
+    const a = Math.abs(v), dir = a < 0.005 ? "" : (v > 0) !== invert ? " up" : " down";
+    return `<span class="chg${dir}${dir && a >= hot ? " strong" : ""}">${signed(v, d)}</span>`;
   };
+  // Small line icons (24px grid, drawn with strokes) for the attention list.
+  const ICONS = {
+    up: '<path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/>',
+    down: '<path d="M22 17 13.5 8.5 8.5 13.5 2 7"/><path d="M16 17h6v-6"/>',
+    warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
+    people: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.2a6.5 6.5 0 0 1 3 5.8"/>',
+    ban: '<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    scan: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  };
+  const icon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
   const shortDate = (iso) => { const d = new Date(iso + "T12:00:00Z"); return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }); };
   const pctTxt = (v, d = 1) => !num(v) ? "–" : `<span class="${v >= 0 ? "up" : "down"}">${v >= 0 ? "+" : "−"}${fmt(Math.abs(v), d)}%</span>`;
   const money = (v, cur = "$") => !num(v) ? "–" : v >= 1e9 ? `${cur}${fmt(v / 1e9, 1)}bn` : v >= 1e6 ? `${cur}${fmt(v / 1e6, 1)}m` : `${cur}${fmt(v / 1e3, 0)}k`;
@@ -79,29 +89,35 @@
     setText($("#greeting"), (h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + (name ? `, ${name}` : ""));
     setText($("#today"), new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }));
     const states = MARKETS.map((mk) => ({ mk, ...marketState(mk) }));
-    setHTML($("#clocks"), states.map((s) => `<span class="pill ${s.st}"><i></i>${s.mk.name} <b>${s.label}</b><span class="t">${s.time}</span></span>`).join(""));
+    setHTML($("#clocks"), states.map((s) => `<span class="sess ${s.st}"><span class="nm"><i class="dot"></i>${s.mk.name}</span>`
+      + `<span class="st"><b>${cap(s.label)}</b><span class="t">${s.time}</span></span></span>`).join(""));
     const soon = states.slice().sort((a, b) => a.next.mins - b.next.mins)[0];
-    setHTML($("#next"), soon ? `Next: <b>${soon.mk.name} ${soon.next.verb}</b> in ${dur(soon.next.mins)}` : "");
+    setHTML($("#next"), soon ? `<b>${soon.mk.name} ${soon.next.verb}</b> in ${dur(soon.next.mins)}` : "");
   }
+  const dotFor = (st) => st === "live" ? "live" : /error/i.test(st) ? "err" : "delayed";
   function renderSys() {
-    const dot = (st) => st === "live" ? "live" : st === "error" ? "err" : "wait";
     const b = new Date(DATA.generated_at);
     const when = isNaN(b) ? "" : b.toDateString() === new Date().toDateString()
       ? b.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
       : b.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
-    setHTML($("#sys"), `<span><i class="${dot(sys.crypto)}"></i>Crypto ${esc(sys.crypto)}</span><span><i class="${dot(sys.us)}"></i>US ${esc(sys.us)}</span>`
-      + (when ? `<span><i class="${Date.now() - b < 45 * 60000 ? "live" : "wait"}"></i>Data ${esc(when)}</span>` : ""));
-    $("#pulse").classList.toggle("on", sys.us === "live" || sys.crypto === "live");
+    const usSt = /error/i.test(sys.us) ? "error" : sys.us;
+    setHTML($("#sys"), `<span class="st"><i class="dot ${dotFor(sys.crypto)}"></i>Crypto ${esc(sys.crypto)}</span><span class="st"><i class="dot ${dotFor(usSt)}"></i>US ${esc(usSt)}</span>`
+      + (when ? `<span class="st data"><i class="dot ${Date.now() - b < 45 * 60000 ? "live" : "delayed"}"></i>Updated ${esc(when)}</span>` : ""));
+  }
+  // Status badge with a dot: "Live", "Delayed", "Connecting", or an error message.
+  function setBadge(el, text, live) {
+    el.title = text;
+    setHTML(el, `<i class="dot ${live ? "live" : dotFor(text)}"></i>${esc(cap(text))}`);
   }
 
   // ---------- sparklines ----------
-  function spark(values, up) {
+  // Grey by default; the tile turns it green, red or amber only when the move is big.
+  function spark(values) {
     const v = (values || []).filter(num);
     if (v.length < 2) return "";
     const lo = Math.min(...v), hi = Math.max(...v), span = hi - lo || 1;
-    const pts = v.map((y, i) => `${((i / (v.length - 1)) * 100).toFixed(2)},${(31 - ((y - lo) / span) * 27).toFixed(2)}`).join(" ");
-    const dir = up ? "up" : "down";
-    return `<svg class="spark ${dir}" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,34 ${pts} 100,34" fill="url(#sg-${dir})"/><polyline class="ln" points="${pts}"/></svg>`;
+    const pts = v.map((y, i) => `${((i / (v.length - 1)) * 100).toFixed(2)},${(30 - ((y - lo) / span) * 26).toFixed(2)}`).join(" ");
+    return `<svg class="spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true"><polygon class="ar" points="0,32 ${pts} 100,32"/><polyline class="ln" points="${pts}"/></svg>`;
   }
   function pushHist(key, p) {
     const h = hist[key] || (hist[key] = []);
@@ -166,8 +182,9 @@
       const el = document.createElement("div");
       el.className = "tile";
       el.hidden = !t.crypto;
-      el.innerHTML = `<div class="tt"><span class="name"><i class="src"></i>${esc(t.name)}</span><span class="flag"></span></div>`
-        + `<div class="val">…</div><div class="cbox"></div><div class="sbox"></div><div class="what">${esc(t.what)}</div>`;
+      el.innerHTML = `<div class="tile-top"><span class="name">${esc(t.name)}</span><i class="src"></i></div>`
+        + `<div class="val">…</div><div class="tile-chg"><span class="cbox"></span><span class="flag"></span></div>`
+        + `<div class="sbox"></div><div class="what">${esc(t.what)}</div>`;
       box.appendChild(el);
       tileEls[t.key] = el;
     }
@@ -177,44 +194,26 @@
       const el = tileEls[t.key], s = tileState(t);
       if (!t.crypto && !num(s.price)) { el.hidden = true; continue; }
       el.hidden = false;
-      const hot = isHot(t, s);
-      setClass(el, hot ? `tile hot ${t === VIX ? "is-warn" : s.change >= 0 ? "is-up" : "is-down"}` : "tile");
-      setText(el.querySelector(".flag"), hot ? (t === VIX ? "Elevated" : "Big move") : "");
-      setClass(el.querySelector(".src"), "src " + (s.live ? "live" : "delayed"));
+      const hot = isHot(t, s), tone = t === VIX ? "warn" : s.change >= 0 ? "up" : "down";
+      setClass(el, hot ? `tile hot is-${tone}` : "tile");
+      const flag = el.querySelector(".flag");
+      setText(flag, hot ? (t === VIX ? "Elevated" : "Large move") : "");
+      setClass(flag, "flag" + (hot ? " " + tone : ""));
+      const src = el.querySelector(".src");
+      setClass(src, "src " + (s.live ? "live" : "delayed"));
+      src.title = s.live ? "Live" : "About 15 minutes delayed";
       setPrice(el.querySelector(".val"), "t" + t.key, s.price, "", "…");
       setHTML(el.querySelector(".cbox"), chg(s.change, { invert: t.invert, hot: t.hot }) + (t.crypto ? '<span class="per">24h</span>' : ""));
-      setHTML(el.querySelector(".sbox"), spark(s.line, (num(s.change) ? s.change >= 0 : true) !== !!t.invert));
+      setHTML(el.querySelector(".sbox"), spark(s.line));
     }
   }
 
-  // ---------- market mood gauge ----------
-  function buildGauge() {
-    let s = "";
-    for (let i = 0; i <= 16; i++) {
-      const a = Math.PI * (1 - i / 16), maj = i % 4 === 0, r2 = maj ? 108 : 104;
-      s += `<line${maj ? ' class="maj"' : ""} x1="${(110 + 100 * Math.cos(a)).toFixed(1)}" y1="${(110 - 100 * Math.sin(a)).toFixed(1)}" x2="${(110 + r2 * Math.cos(a)).toFixed(1)}" y2="${(110 - r2 * Math.sin(a)).toFixed(1)}"/>`;
-    }
-    $("#g-ticks").innerHTML = s;
-  }
-  let needleNow = -90, needleTo = 0, needleRaf = 0;
-  function drawNeedle(deg) {
-    $("#needle").setAttribute("transform", `rotate(${deg.toFixed(2)} 110 110)`);
-    const r = ((90 - deg) * Math.PI) / 180, x = 110 + 90 * Math.cos(r), y = 110 - 90 * Math.sin(r);
-    $("#g-val").setAttribute("d", Math.abs(deg) < 0.4 ? "M110 20 L110 20" : `M110 20 A90 90 0 0 ${deg > 0 ? 1 : 0} ${x.toFixed(2)} ${y.toFixed(2)}`);
-  }
-  function setNeedle(deg) {
-    needleTo = deg;
-    if (reduceMotion) { needleNow = deg; drawNeedle(deg); return; }
-    if (needleRaf) return;
-    const step = () => {
-      const d = needleTo - needleNow;
-      needleNow = Math.abs(d) < 0.05 ? needleTo : needleNow + d * 0.08;
-      drawNeedle(needleNow);
-      needleRaf = needleNow === needleTo ? 0 : requestAnimationFrame(step);
-    };
-    needleRaf = requestAnimationFrame(step);
-  }
-  const vixBand = (v) => !num(v) ? null : v < 15 ? ["calm", "is-up"] : v < 20 ? ["normal", ""] : v < 30 ? ["a bit nervous", "is-warn"] : ["very nervous", "is-down"];
+  // ---------- market summary ----------
+  // A plain diverging bar chart of today's move in each main index around a zero line,
+  // with the average as the headline number. The scale snaps to a round number so
+  // small days look small and big days look big.
+  const vixBand = (v) => !num(v) ? null : v < 15 ? ["Calm", "up"] : v < 20 ? ["Normal", ""] : v < 30 ? ["A bit nervous", "warn"] : ["Very nervous", "down"];
+  const toneOf = (v) => !num(v) || Math.abs(v) < 0.005 ? "" : v > 0 ? "up" : "down";
   function renderMood() {
     const rows = TILES.filter((t) => t.mood).map((t) => ({ t, s: tileState(t) })).filter((r) => num(r.s.change));
     const n = rows.length, avg = n ? rows.reduce((a, r) => a + r.s.change, 0) / n : null;
@@ -222,26 +221,30 @@
     const big = rows.slice().sort((a, b) => Math.abs(b.s.change) - Math.abs(a.s.change))[0];
     const vix = tileState(VIX), band = vixBand(vix.price), live = rows.some((r) => r.s.live);
     const word = !num(avg) ? "Waiting" : avg <= -1.5 ? "Sell-off" : avg <= -0.4 ? "Down day" : avg < 0.4 ? "Mixed" : avg < 1.5 ? "Up day" : "Rally";
-    const mood = !num(avg) ? "flat" : avg >= 0.4 ? "up" : avg <= -0.4 ? "down" : "flat";
-    if (document.body.dataset.mood !== mood) document.body.dataset.mood = mood;
+    const tone = !num(avg) ? "" : avg >= 0.4 ? "up" : avg <= -0.4 ? "down" : "";
     setText($("#mood-word"), word);
-    setText($("#mood-avg"), num(avg) ? `${signed(avg, 2)} average across ${n} main indices` : "");
-    setText($("#mood-tag"), live ? "live" : "latest session");
-    setClass($("#mood-tag"), "tag" + (live ? " live" : ""));
-    setNeedle(num(avg) ? (Math.max(-2, Math.min(2, avg)) / 2) * 90 : 0);
+    setClass($("#mood-word"), "badge" + (tone ? " " + tone : ""));
+    setText($("#mood-avg"), num(avg) ? signed(avg, 2) : "–");
+    setClass($("#mood-avg"), "hero-num" + (toneOf(avg) ? " " + toneOf(avg) : ""));
+    setHTML($("#mood-tag"), live ? '<i class="dot live"></i>Live' : "Latest session");
     let line = "Waiting for prices.";
     if (n) {
-      line = ups === n ? "Every main index is up." : downs === n ? "Every main index is down."
-        : ups > downs ? `Most main indices are up (${ups} of ${n}).` : downs > ups ? `Most main indices are down (${downs} of ${n}).` : "The main indices are split.";
-      if (band) line += ` The fear gauge is ${fmt(vix.price, 1)}, which is ${band[0]}.`;
+      line = `Average move across ${n} main indices. ` + (ups === n ? "Every one is up." : downs === n ? "Every one is down."
+        : ups > downs ? `Most are up (${ups} of ${n}).` : downs > ups ? `Most are down (${downs} of ${n}).` : "They are split.");
     }
     setText($("#mood-line"), line);
-    const ro = (label, value, sub, cls = "") => `<div class="ro ${cls}"><small>${label}</small><b>${value}</b><span>${sub}</span></div>`;
+    const mx = n ? Math.max(...rows.map((r) => Math.abs(r.s.change))) : 0;
+    const scale = [1, 2, 3, 5, 8, 10, 15, 20, 30, 50].find((x) => x >= mx * 1.05) || Math.ceil(mx);
+    setHTML($("#breadth"), n ? rows.map(({ t, s }) => {
+      const d = toneOf(s.change), w = Math.min(50, (Math.abs(s.change) / scale) * 50);
+      return `<div class="br-row" title="${esc(t.name)}: ${signed(s.change, 2)}${s.live ? " (live)" : ""}"><span class="lb">${esc(t.name)}</span>`
+        + `<span class="br-track">${d ? `<i class="br-bar ${d}" style="width:${w.toFixed(2)}%"></i>` : ""}</span><span class="vl ${d}">${signed(s.change, 2)}</span></div>`;
+    }).join("") + `<div class="br-axis" aria-hidden="true"><span></span><span class="scale"><span>−${scale}%</span><span>0</span><span>+${scale}%</span></span><span></span></div>` : "");
+    const stat = (label, value, sub, cls = "") => `<div class="stat"><small>${label}</small><b class="${cls}">${value}</b><span>${sub}</span></div>`;
     setHTML($("#readouts"), [
-      ro("Fear gauge", num(vix.price) ? fmt(vix.price, 1) : "–", band ? band[0] : "no data", band ? band[1] : ""),
-      ro("Up / down", n ? `${ups} / ${downs}` : "–", "main indices"),
-      ro("Biggest move", big ? signed(big.s.change) : "–", big ? esc(big.t.name) : "no data",
-        big ? `${big.s.change >= 0 ? "is-up" : "is-down"}${Math.abs(big.s.change) >= big.t.hot ? " hot" : ""}` : ""),
+      stat("Fear gauge", num(vix.price) ? fmt(vix.price, 1) : "–", band ? `<i class="dot ${band[1]}"></i>${band[0]}` : "No data"),
+      stat("Rising / falling", n ? `${ups} / ${downs}` : "–", "Main indices"),
+      stat("Biggest move", big ? signed(big.s.change, 2) : "–", big ? esc(big.t.name) : "No data", big ? toneOf(big.s.change) : ""),
     ].join(""));
   }
 
@@ -251,34 +254,35 @@
   const CRYPTO = [["BTC", "Bitcoin"], ["ETH", "Ethereum"], ["SOL", "Solana"], ["XRP", "XRP"], ["DOGE", "Dogecoin"], ["ADA", "Cardano"], ["LINK", "Chainlink"]];
   function alertsList() {
     const out = [];
-    const add = (tone, ico, title, detail) => out.push({ tone, ico, title, detail });
+    const add = (tone, ico, cat, title, detail) => out.push({ tone, ico, cat, title, detail });
     const move = (v) => `${v > 0 ? "up" : "down"} ${fmt(Math.abs(v), 1)}%`;
+    const dirIco = (v) => v > 0 ? "up" : "down";
     const v = tileState(VIX);
-    if (num(v.price) && v.price >= 30) add("warn", "!", `Fear gauge at ${fmt(v.price, 1)}`, "Investors are very nervous. Expect big swings.");
-    else if (num(v.change) && v.change >= VIX.hot) add("warn", "!", `Fear gauge up ${fmt(v.change, 0)}%`, "Nerves are rising fast today.");
+    if (num(v.price) && v.price >= 30) add("warn", "warn", "Fear gauge", `Fear gauge at ${fmt(v.price, 1)}`, "Investors are very nervous. Expect big swings.");
+    else if (num(v.change) && v.change >= VIX.hot) add("warn", "warn", "Fear gauge", `Fear gauge up ${fmt(v.change, 0)}%`, "Nerves are rising fast today.");
     // Big moves in two or more main indices the same way are one story, so they share
     // one alert and leave room for signals.
     const hot = TILES.filter((t) => t !== VIX && !t.crypto).map((t) => ({ t, s: tileState(t) })).filter((x) => isHot(x.t, x.s));
     const singles = hot.filter((x) => !x.t.mood);
     for (const dir of [-1, 1]) {
       const g = hot.filter((x) => x.t.mood && Math.sign(x.s.change) === dir).sort((a, b) => Math.abs(b.s.change) - Math.abs(a.s.change));
-      if (g.length >= 2) add(dir > 0 ? "up" : "down", dir > 0 ? "▲" : "▼", `Big ${dir > 0 ? "rises" : "falls"} in ${g.length} main indices`, g.map((x) => `${x.t.name} ${signed(x.s.change)}`).join(", ") + ".");
+      if (g.length >= 2) add(dir > 0 ? "up" : "down", dirIco(dir), "Markets", `Big ${dir > 0 ? "rises" : "falls"} in ${g.length} main indices`, g.map((x) => `${x.t.name} ${signed(x.s.change)}`).join(", ") + ".");
       else singles.unshift(...g);
     }
-    for (const { t, s } of singles) add(s.change > 0 ? "up" : "down", s.change > 0 ? "▲" : "▼", `${t.name} ${move(s.change)}`, `An unusually ${s.change > 0 ? "strong" : "weak"} day for ${t.who}.`);
+    for (const { t, s } of singles) add(s.change > 0 ? "up" : "down", dirIco(s.change), "Markets", `${t.name} ${move(s.change)}`, `An unusually ${s.change > 0 ? "strong" : "weak"} day for ${t.who}.`);
     for (const r of (DATA.signals.watchlist || []).filter((r) => ageDays(r.signal_date) <= 7).slice(0, 2))
-      add("info", "◆", `Insiders buying ${r.ticker || r.issuer}`, `${r.n_insiders ?? "Several"} insiders spent ${money(r.total_value)}, ${daysAgo(r.signal_date)}. Worth researching.`);
+      add("info", "people", "Insiders", `Insiders buying ${r.ticker || titleCase(r.issuer)}`, `${r.n_insiders ?? "Several"} insiders spent ${money(r.total_value)}, ${daysAgo(r.signal_date)}. Worth researching.`);
     for (const [c, name] of CRYPTO) {
       const q = crypto[c] || {}, ch = num(q.price) && q.open ? (q.price / q.open - 1) * 100 : null;
-      if (num(ch) && Math.abs(ch) >= cryptoHot(c)) add(ch > 0 ? "up" : "down", ch > 0 ? "▲" : "▼", `${name} ${move(ch)} in 24h`, "A big swing, even for crypto.");
+      if (num(ch) && Math.abs(ch) >= cryptoHot(c)) add(ch > 0 ? "up" : "down", dirIco(ch), "Crypto", `${name} ${move(ch)} in 24h`, "A big swing, even for crypto.");
     }
     for (const s of watch) {
       if (INDEX_FUNDS.includes(s)) continue;
       const q = us[s] || {}, ch = num(q.price) && q.prev ? (q.price / q.prev - 1) * 100 : null;
-      if (num(ch) && Math.abs(ch) >= 3) add(ch > 0 ? "up" : "down", ch > 0 ? "▲" : "▼", `${s} ${move(ch)}`, "A big move for a stock on your watchlist.");
+      if (num(ch) && Math.abs(ch) >= 3) add(ch > 0 ? "up" : "down", dirIco(ch), "Watchlist", `${s} ${move(ch)}`, "A big move for a stock on your watchlist.");
     }
     const a = (DATA.signals.avoid || [])[0];
-    if (a) add("down", "✕", `Steer clear of ${titleCase(a.issuer)}`, `Short bets up ${fmt(a.delta_pp, 1)} points this month, to ${fmt(a.new_pct, 1)}%.`);
+    if (a) add("down", "ban", "Avoid", `Steer clear of ${titleCase(a.issuer)}`, `Short bets up ${fmt(a.delta_pp, 1)} points this month, to ${fmt(a.new_pct, 1)}%.`);
     return out.slice(0, 6);
   }
   function renderAlerts() {
@@ -286,11 +290,12 @@
     const cnt = $("#alert-count");
     cnt.hidden = !list.length;
     setText(cnt, String(list.length));
-    const calm = (t, d) => `<div class="alert calm"><span class="ico">◇</span><span class="tx"><b>${t}</b><span class="d">${d}</span></span></div>`;
+    const row = (cls, ico, title, detail, cat = "") => `<div class="alert ${cls}"><span class="ic">${icon(ico)}</span>`
+      + `<div><p class="tt">${title}</p><p class="dd">${detail}</p></div>${cat ? `<span class="cat">${cat}</span>` : ""}</div>`;
     setHTML($("#alerts"), list.length
-      ? list.map((a) => `<div class="alert is-${a.tone}"><span class="ico">${a.ico}</span><span class="tx"><b>${esc(a.title)}</b><span class="d">${esc(a.detail)}</span></span></div>`).join("")
-      : loaded ? calm("All quiet. Nothing stands out right now.", "Big moves, fresh insider buying and big swings on your watchlist will show up here.")
-        : calm("Scanning…", "Checking markets and signals."));
+      ? list.map((a) => row(`is-${a.tone}`, a.ico, esc(a.title), esc(a.detail), esc(a.cat))).join("")
+      : loaded ? row("calm is-up", "check", "All quiet. Nothing stands out right now.", "Big moves, fresh insider buying and big swings on your watchlist will show up here.")
+        : row("calm", "scan", "Scanning…", "Checking markets and signals."));
   }
 
   // ---------- live lists ----------
@@ -317,10 +322,9 @@
     watch.forEach((s, i) => {
       const li = lis[i], q = us[s] || {};
       const c = num(q.price) && q.prev ? (q.price / q.prev - 1) * 100 : null;
-      setClass(li, num(c) && Math.abs(c) >= 3 && !INDEX_FUNDS.includes(s) ? `hot ${c >= 0 ? "is-up" : "is-down"}` : "");
       setHTML(li.children[0], `${esc(s)}${q.src ? `<small>${esc(SRC_LABEL[q.src] || q.src)}</small>` : ""}`);
       setPrice(li.children[1], "w" + s, q.price, "$");
-      setHTML(li.children[2], chg(c));
+      setHTML(li.children[2], chg(c, { hot: INDEX_FUNDS.includes(s) ? 1.5 : 3 }));
     });
   }
   function renderCrypto() {
@@ -328,7 +332,6 @@
     CRYPTO.forEach(([c], i) => {
       const li = lis[i], q = crypto[c] || {};
       const ch = num(q.price) && q.open ? (q.price / q.open - 1) * 100 : null;
-      setClass(li, num(ch) && Math.abs(ch) >= cryptoHot(c) ? `hot ${ch >= 0 ? "is-up" : "is-down"}` : "");
       setPrice(li.children[1], "c" + c, q.price, "$");
       setHTML(li.children[2], chg(ch, { hot: cryptoHot(c) }));
     });
@@ -359,20 +362,23 @@
       const who = [`${r.n_insiders ?? "Several"} insiders bought`, rolesOf(r.insiders)].filter(Boolean).join(", ");
       const since = num(r.ret_20d) ? ` · ${pctTxt(r.ret_20d * 100)} in the 20 days after` : num(r.ret_5d) ? ` · ${pctTxt(r.ret_5d * 100)} in the 5 days after` : "";
       const fresh = ageDays(r.signal_date) <= 7 ? '<span class="new">New</span>' : "";
-      return `<div class="sig good ${r.ticker ? "click" : ""}" data-sym="${esc(r.ticker || "")}" title="${esc(r.insiders)}">
-        <span class="t">${fresh}${esc(r.ticker || r.issuer)}<small>${esc(r.ticker ? r.issuer : "")}</small></span><span class="big">${money(r.total_value)}</span>
-        <span class="line">${esc(who)}.</span>
-        <span class="when">${esc(daysAgo(r.signal_date))}${num(r.market_cap) ? ` · company worth ${money(r.market_cap)}` : ""}${since}</span></div>`;
-    }).join("") : '<div class="empty">No insider buying clusters in the last 30 days.</div>');
+      const click = r.ticker ? ' click" role="button" tabindex="0' : "";
+      return `<div class="sig${click}" data-sym="${esc(r.ticker || "")}" title="${esc(r.insiders)}">`
+        + `<div class="hd"><span class="sym">${esc(r.ticker || titleCase(r.issuer))}</span><span class="co">${esc(r.ticker ? titleCase(r.issuer) : "")}</span>${fresh}</div>`
+        + `<span class="amt">${money(r.total_value)}</span><p class="ln">${esc(who)}.</p>`
+        + `<p class="mt">${esc(cap(daysAgo(r.signal_date)))}${num(r.market_cap) ? ` · company worth ${money(r.market_cap)}` : ""}${since}</p></div>`;
+    }).join("") : '<p class="empty">No insider buying clusters in the last 30 days.</p>');
 
-    setHTML($("#avoid"), S.avoid.length ? S.avoid.slice(0, 6).map((r) => `<div class="sig bad" title="${esc(r.isin)}">
-        <span class="t">${esc(titleCase(r.issuer))}${r.ticker ? `<small>${esc(r.ticker)}</small>` : ""}</span><span class="big">${fmt(r.new_pct, 1)}% shorted</span>
-        <span class="line">Short bets up ${fmt(r.delta_pp, 1)} points since ${esc(shortDate(r.since))}.</span></div>`).join("")
-      : '<div class="empty">No UK shares saw a big jump in short bets this month.</div>');
+    setHTML($("#avoid"), S.avoid.length ? S.avoid.slice(0, 6).map((r) => `<div class="sig" title="${esc(r.isin)}">`
+        + `<div class="hd"><span class="sym">${esc(titleCase(r.issuer))}</span><span class="co">${esc(r.ticker || "")}</span></div>`
+        + `<span class="amt">${fmt(r.new_pct, 1)}%<small>shorted</small></span>`
+        + `<p class="ln">Short bets up ${fmt(r.delta_pp, 1)} points since ${esc(shortDate(r.since))}.</p></div>`).join("")
+      : '<p class="empty">No UK shares saw a big jump in short bets this month.</p>');
 
     const top = (S.most_shorted || []).slice(0, 5), mx = Math.max(1, ...top.map((r) => +r.net_short_pct || 0));
-    setHTML($("#shorted-top"), top.map((r) => `<li><span class="nm">${esc(titleCase(r.issuer))}</span><span class="v">${fmt(r.net_short_pct, 1)}%</span>`
-      + `<span class="bar2"><i style="width:${Math.round(((+r.net_short_pct || 0) / mx) * 100)}%"></i></span></li>`).join("") || '<li class="muted">No data yet.</li>');
+    setHTML($("#shorted-top"), top.map((r, i) => `<li><span class="rk">${i + 1}</span><span class="nm">${esc(titleCase(r.issuer))}</span>`
+      + `<span class="meter"><i style="width:${Math.round(((+r.net_short_pct || 0) / mx) * 100)}%"></i></span><span class="v">${fmt(r.net_short_pct, 1)}%</span></li>`).join("")
+      || '<li class="muted">No data yet.</li>');
   }
   // Make the numbers in the brief easy to spot: signed moves in green or red (a rising
   // fear gauge counts as bad news), other percentages and money amounts in bright white.
@@ -391,8 +397,8 @@
     setHTML($("#brief"), text.split(/\n\s*\n/).map((p) => `<p>${highlight(esc(p.trim()))}</p>`).join(""));
     $("#brief").classList.toggle("short", text.length < 360);
     const ai = DATA.brief?.source === "ai";
-    setText($("#brief-src"), ai ? "written by Claude" : "automatic summary");
-    setClass($("#brief-src"), "tag" + (ai ? " ai" : ""));
+    setText($("#brief-src"), ai ? "Written by Claude" : "Automatic summary");
+    setClass($("#brief-src"), "badge" + (ai ? " ai" : ""));
     const built = new Date(DATA.generated_at);
     setText($("#built"), isNaN(built) ? "" : "Updated " + built.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" }) + ". Prices marked delayed were captured then.");
   }
@@ -451,26 +457,28 @@
       } catch { rows = null; }
     }
     if (!rows || !rows.length) {
-      box.innerHTML = k ? `<p class="hint">No analyst ratings for ${esc(sym)} on Finnhub's free plan.</p>` : '<p class="hint">Add a free Finnhub key (Keys button) to see how many analysts rate each stock a buy, hold or sell.</p>';
+      box.innerHTML = k ? `<p class="hint">No analyst ratings for ${esc(sym)} on Finnhub's free plan.</p>` : '<p class="hint">Add a free Finnhub key (Settings button) to see how many analysts rate each stock a buy, hold or sell.</p>';
       return;
     }
     const m = rows[0];
     const buys = (m.strongBuy || 0) + (m.buy || 0), holds = m.hold || 0, sells = (m.sell || 0) + (m.strongSell || 0), tot = buys + holds + sells || 1;
-    const [word, cls] = buys >= holds && buys >= sells ? ["Buy", "up"] : sells > holds ? ["Sell", "down"] : ["Hold", "flat"];
+    const [word, cls] = buys >= holds && buys >= sells ? ["Buy", "up"] : sells > holds ? ["Sell", "down"] : ["Hold", ""];
     let trend = "";
     const old = rows[3] || rows[rows.length - 1];
     if (old && old !== m) {
       const ob = ((old.strongBuy || 0) + (old.buy || 0)) / (((old.strongBuy || 0) + (old.buy || 0) + (old.hold || 0) + (old.sell || 0) + (old.strongSell || 0)) || 1);
       const diff = buys / tot - ob;
-      trend = Math.abs(diff) < 0.03 ? " Views are about the same as a few months ago." : diff > 0 ? " Analysts have grown more positive recently." : " Analysts have grown more cautious recently.";
+      trend = Math.abs(diff) < 0.03 ? "Views are about the same as a few months ago." : diff > 0 ? "Analysts have grown more positive recently." : "Analysts have grown more cautious recently.";
     }
-    const segs = [["strongBuy", "c-sb"], ["buy", "c-b"], ["hold", "c-h"], ["sell", "c-s"], ["strongSell", "c-ss"]];
-    box.innerHTML = `<p class="verdict">Most analysts say <b class="${cls}">${word}</b> for ${esc(sym)}: ${buys} buy, ${holds} hold, ${sells} sell.${trend}</p>` +
-      rows.slice(0, 4).map((mm) => {
+    const segs = [["strongBuy", "c-sb", "Strong buy"], ["buy", "c-b", "Buy"], ["hold", "c-h", "Hold"], ["sell", "c-s", "Sell"], ["strongSell", "c-ss", "Strong sell"]];
+    box.innerHTML = `<p class="verdict"><span>Consensus for <b>${esc(sym)}</b></span><span class="badge ${cls}">${word}</span><span>${buys} buy · ${holds} hold · ${sells} sell</span></p>`
+      + (trend ? `<p class="hint trend">${trend}</p>` : "")
+      + `<div class="recs">` + rows.slice(0, 4).map((mm) => {
         const t = segs.reduce((a, [k2]) => a + (mm[k2] || 0), 0) || 1;
         const month = new Date((mm.period || "") + "T12:00:00Z");
-        return `<div class="rec"><span>${isNaN(month) ? esc(mm.period) : month.toLocaleDateString("en-GB", { month: "short", year: "2-digit" })}</span><span class="bar">${segs.map(([k2, c]) => mm[k2] ? `<i class="${c}" style="width:${(mm[k2] / t) * 100}%" title="${k2}: ${mm[k2]}"></i>` : "").join("")}</span><span class="r">${t}</span></div>`;
-      }).join("") + `<div class="legend"><span><i class="c-sb"></i>Strong buy</span><span><i class="c-b"></i>Buy</span><span><i class="c-h"></i>Hold</span><span><i class="c-s"></i>Sell</span><span><i class="c-ss"></i>Strong sell</span></div>`;
+        return `<div class="rec"><span>${isNaN(month) ? esc(mm.period) : month.toLocaleDateString("en-GB", { month: "short", year: "2-digit" })}</span>`
+          + `<span class="bar">${segs.map(([k2, c, lb]) => mm[k2] ? `<i class="${c}" style="flex:${mm[k2]}" title="${lb}: ${mm[k2]}"></i>` : "").join("")}</span><span class="r">${t}</span></div>`;
+      }).join("") + `</div><div class="legend">${segs.map(([, c, lb]) => `<span><i class="${c}"></i>${lb}</span>`).join("")}</div>`;
   }
   $("#analyst-sym").addEventListener("change", (e) => loadAnalyst(e.target.value));
 
@@ -497,9 +505,7 @@
   }
   function onTrade(s, p) { us[s] = { ...(us[s] || {}), price: p, src: "live" }; pushHist(s, p); mark(); }
   function setUsStatus(text, live) {
-    const b = $("#us-status");
-    b.textContent = text; b.title = text;
-    b.className = "tag" + (live ? " live" : /connect/.test(text) ? " wait" : text === "delayed" ? " delayed" : "");
+    setBadge($("#us-status"), text, live);
     sys.us = live ? "live" : /error/i.test(text) ? "error" : text;
     renderSys();
   }
@@ -527,7 +533,7 @@
       usWs.onmessage = (ev) => { let m; try { m = JSON.parse(ev.data); } catch { return; } if (m.type === "trade") for (const t of m.data || []) onTrade(t.s, t.p); };
     } else {
       setUsStatus("delayed", false);
-      $("#watch-note").textContent = "For live US prices, add a free Alpaca or Finnhub key with the Keys button.";
+      $("#watch-note").textContent = "For live US prices, add a free Alpaca or Finnhub key in Settings.";
       return;
     }
     $("#watch-note").textContent = "Prices update with each trade while the US market is open (2:30pm to 9pm UK time).";
@@ -539,7 +545,7 @@
   function connectCrypto() {
     if (cWs) { cWs.onclose = null; try { cWs.close(); } catch { /* */ } }
     const src = keys().crypto;
-    const status = (t, live) => { const b = $("#crypto-status"); b.textContent = t; b.className = "tag" + (live ? " live" : " wait"); sys.crypto = t; renderSys(); };
+    const status = (t, live) => { setBadge($("#crypto-status"), t, live); sys.crypto = t; renderSys(); };
     const coins = CRYPTO.map(([c]) => c);
     const onTick = (c, price, open) => { crypto[c] = { price, open }; pushHist(c, price); mark(); };
     if (src === "binance") {
@@ -575,6 +581,10 @@
     const rm = e.target.closest("[data-rm]"); if (rm) { e.stopPropagation(); rmSym(rm.dataset.rm); return; }
     const card = e.target.closest(".sig[data-sym]"); if (card && card.dataset.sym) addSym(card.dataset.sym);
   });
+  document.addEventListener("keydown", (e) => {
+    const card = e.target.closest?.(".sig.click[data-sym]");
+    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); addSym(card.dataset.sym); }
+  });
 
   // ---------- settings ----------
   function openSettings() {
@@ -602,7 +612,7 @@
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   // ---------- boot ----------
-  buildGauge(); buildTiles();
+  buildTiles();
   renderHeader(); setInterval(renderHeader, 30000);
   renderSys(); render();
   fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : Promise.reject(r.status))
