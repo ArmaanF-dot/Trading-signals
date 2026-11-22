@@ -134,3 +134,18 @@ FEED_EVIDENCE = {
     "uk_combo": "Untested: no free history of director dealings. Treat as an idea to inspect by hand.",
 }
 MIN_TRACK_N = 30  # do not read anything into a track record smaller than this
+
+# --- post-earnings announcement drift study ---
+SEC_TICKERS_EXCHANGE_URL = "https://www.sec.gov/files/company_tickers_exchange.json"
+SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
+SEC_SUBMISSIONS_FILE_URL = "https://data.sec.gov/submissions/{name}"
+PEAD_START = "2017-01-01"  # Yahoo's 10-year range starts late 2016
+PEAD_OOS_START = "2022-01-01"  # in sample 2017-21, out of sample 2022 onward
+PEAD_BENCHMARK = "SPY"
+PEAD_HORIZONS = (20, 40, 60)  # trading days held after entry
+PEAD_ENTRY_LAG = 1  # enter this many closes after the first close following the 8-K
+PEAD_MIN_GAP_DAYS = 45  # at most one earnings 8-K per company per this many days
+PEAD_MIN_ADV = 20_000_000  # liquid: 20-day average dollar volume before the announcement
+PEAD_MIN_PRICE = 5.0
+PEAD_BREAKPOINT_DAYS = 91  # quintile breakpoints from the previous quarter's announcements
+PEAD_MIN_BREAKPOINT_EVENTS = 100
