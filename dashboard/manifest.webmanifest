@@ -1,6 +1,6 @@
 {
-  "name": "Jarvis",
-  "short_name": "Jarvis",
+  "name": "Hugo",
+  "short_name": "Hugo",
   "description": "Market homescreen: live US and crypto prices, delayed UK quotes, insider and short-interest signals, daily brief.",
   "id": "./",
   "start_url": "./",

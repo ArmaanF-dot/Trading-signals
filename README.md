@@ -31,7 +31,7 @@ Thresholds live in `config.py`.
 
 `python run.py feed` writes `signals/feed.json` and `signals/feed.md` (current signals with stance avoid, watch or info, and the backtest evidence for each) plus `signals/track_record.md` (what the live signals actually did, versus a benchmark, once enough have a 20-day return). `feed.yml` runs it daily after the FCA update. Every record says plainly that the backtests found no standalone edge: use it as an input, not an instruction.
 
-## Jarvis dashboard
+## Hugo dashboard
 
 A lively, professional market homescreen with a voice assistant, hosted on GitHub Pages: `https://armaanf-dot.github.io/Trading-signals/`. The `dashboard` workflow rebuilds it every 30 minutes on weekdays (07:00-21:30 UTC), after each `form4`/`fca` run, and on pushes. `python run.py dashboard` builds it locally into `_site/` (serve with `python -m http.server -d _site`).
 
@@ -46,10 +46,10 @@ A lively, professional market homescreen with a voice assistant, hosted on GitHu
 | Analyst trends | Finnhub free recommendation trends | On demand |
 | Market mood | Animated gauge: needle at the average move of the S&P 500, Nasdaq 100, Russell 2000, FTSE 100 and FTSE 250, a marker per index, a bar per index around zero, plus the VIX | Live where those prices are live |
 | Needs your attention | Moves past each market's "big move" threshold, insider clusters from the last 7 days, big crypto and watchlist swings, the top avoid name | Live |
-| Ask Jarvis | Typed or spoken questions (browser speech recognition), answered in the page from the data above and read aloud | Live |
+| Ask Hugo | Typed or spoken questions (browser speech recognition), answered in the page from the data above and read aloud | Live |
 | Daily brief | Claude once a day on your Claude plan (`CLAUDE_CODE_OAUTH_TOKEN` secret), or the API (`ANTHROPIC_API_KEY`), otherwise rule-based | Each rebuild |
 
-**As an app:** on Windows, press **Get Windows app** on the dashboard, unzip it and double-click `install-app.bat`. It adds a Jarvis shortcut to the Start Menu and desktop that opens in its own window (Edge app mode, no tabs or address bar), and can start Jarvis when you log in. Undo with `app/app-remove.bat`. On a phone or any other computer, open the page in Chrome or Edge and press **Install** (or "Add to Home Screen" in Safari); the page is a PWA with an offline shell.
+**As an app:** on Windows, press **Get Windows app** on the dashboard, unzip it and double-click `install-app.bat`. It adds a Hugo shortcut to the Start Menu and desktop that opens in its own window (Edge app mode, no tabs or address bar), and can start Hugo when you log in. Undo with `app/app-remove.bat`. On a phone or any other computer, open the page in Chrome or Edge and press **Install** (or "Add to Home Screen" in Safari); the page is a PWA with an offline shell.
 
 **Keys:** live-data keys are typed into the page (Settings button) and kept only in that browser's localStorage. They never go into the repo. The optional first name for the greeting is stored the same way. Optional GitHub Secrets: `CLAUDE_CODE_OAUTH_TOKEN` (AI brief on your Claude plan: run `claude setup-token` locally and paste the token), `ANTHROPIC_API_KEY` (API fallback for the brief) and `FINNHUB_API_KEY` (pre-fills analyst trends). **First time:** Settings, Pages, Source "GitHub Actions".
 

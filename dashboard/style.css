@@ -1,4 +1,4 @@
-/* Jarvis: a lively but professional market homescreen.
+/* Hugo: a lively but professional market homescreen.
    Type: Newsreader (editorial serif) for headlines, the brief and big numbers; IBM Plex
    Sans for everything else. Colour comes from a theme (Crimson, Swiss, Navy, Graphite);
    inside a theme, green and red only ever mean up and down. Motion is driven by data:
@@ -233,7 +233,7 @@ input:focus, select:focus { outline: none; border-color: rgba(var(--accent-rgb),
 .tk .tp { color: var(--text-2); font-variant-numeric: tabular-nums; }
 .tk .chg { font-size: 12.5px; }
 
-/* ---------- page head and Ask Jarvis ---------- */
+/* ---------- page head and Ask Hugo ---------- */
 .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px 40px; }
 .masthead { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px 32px; margin-bottom: 20px; }
 h1 { margin-top: 6px; font: 500 40px/1.1 var(--display); letter-spacing: -.02em; }
