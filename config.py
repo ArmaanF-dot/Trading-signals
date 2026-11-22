@@ -150,3 +150,10 @@ PEAD_MIN_ADV = 20_000_000  # liquid: 20-day average dollar volume before the ann
 PEAD_MIN_PRICE = 5.0
 PEAD_BREAKPOINT_DAYS = 91  # quintile breakpoints from the previous quarter's announcements
 PEAD_MIN_BREAKPOINT_EVENTS = 100
+
+# --- ML ranking study (gradient boosting on weak price/volume features, S&P 500 members) ---
+YAHOO_DAILY_MAX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1=883612800&period2=4102444800&interval=1d"
+ML_FIRST_FORMATION = "2000-01"  # features need a year of daily history (prices from 1998)
+ML_FIRST_PREDICTION = "2005-01"  # first walk-forward model is trained on 2000-01 .. 2004-11 formations
+ML_SPLIT = "2013-01"  # variant chosen on 2005-2012 walk-forward predictions; 2013 onward is the held-out test
+ML_COSTS = MOMENTUM_COSTS

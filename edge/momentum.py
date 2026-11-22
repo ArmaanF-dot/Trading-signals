@@ -133,6 +133,12 @@ def run_strategy(panel: pd.DataFrame, rets: pd.DataFrame, members: dict, top: fl
     """Monthly rows (labelled by the month the return is earned) with gross, net-per-cost,
     equal-weight universe benchmark, turnover and holdings count."""
     picks, sizes = cohorts(panel, rets, members, top, first)
+    return run_picks(picks, sizes, rets, members, hold, costs)
+
+
+def run_picks(picks: dict, sizes: dict, rets: pd.DataFrame, members: dict, hold: int, costs) -> pd.DataFrame:
+    """Hold each formation month's weights for `hold` months (overlapping cohorts) and score them.
+    Shared by the momentum and ML ranking studies."""
     months = sorted(picks)
     rows, prev_w = [], pd.Series(dtype=float)
     for i, m in enumerate(months):
