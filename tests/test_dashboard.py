@@ -113,3 +113,23 @@ def test_feed_reads_json_and_sorts_avoid_first(tmp_path):
     assert [r["symbol"] for r in f["rows"]] == ["B", "C", "A"]
     assert f["track_record"] is None and f["as_of"] == "2026-11-21"
     assert d.feed(tmp_path / "nope.json") is None
+
+
+class Done:
+    def __init__(self, out, code=0):
+        self.stdout, self.returncode = out, code
+
+
+def test_cli_brief_uses_oauth_token(monkeypatch):
+    monkeypatch.setattr(d.shutil, "which", lambda name: "/usr/bin/claude")
+    seen = {}
+
+    def run(cmd, **kw):
+        seen.update(kw)
+        return Done("Markets rose.\n")
+
+    data = {"markets": {"uk_delayed": [], "us_reference": []}, "signals": {"watchlist": [], "avoid": []}}
+    assert d.cli_brief(data, "tok", run=run) == "Markets rose."
+    assert seen["env"]["CLAUDE_CODE_OAUTH_TOKEN"] == "tok" and "British spelling" in seen["input"]
+    assert d.cli_brief(data, None, run=run) is None
+    assert d.cli_brief(data, "tok", run=lambda *a, **k: Done("", 1)) is None

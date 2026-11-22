@@ -21,15 +21,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
         with: {ref: main}
       - uses: actions/setup-python@v5
         with: {python-version: "3.11", cache: pip}
       - run: pip install -r requirements.txt anthropic
+      # The AI brief runs on your Claude plan through the Claude Code CLI when the
+      # CLAUDE_CODE_OAUTH_TOKEN secret is set (once a day; later builds reuse it).
+      - name: Install Claude Code CLI
+        if: env.HAS_OAUTH == 'true'
+        run: npm install -g @anthropic-ai/claude-code
       - run: python run.py dashboard
         env:
-          # Optional. Without them the page uses a rule-based brief and the browser fetches analyst data.
+          # All optional. Without them the page uses a rule-based brief and the browser fetches analyst data.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           PREVIOUS_DATA_URL: https://armaanf-dot.github.io/Trading-signals/data.json

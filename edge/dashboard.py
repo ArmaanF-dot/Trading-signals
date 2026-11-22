@@ -5,12 +5,16 @@ Live data (Alpaca IEX, crypto, Finnhub) is fetched by the browser with keys the 
 into the page, so nothing secret ever reaches the repo or the built site.
 
 Optional build-time secrets (environment variables, never committed):
-  ANTHROPIC_API_KEY  - writes an AI daily brief; without it a rule-based brief is used.
+  CLAUDE_CODE_OAUTH_TOKEN - writes the AI daily brief on the user's Claude plan via the
+                       Claude Code CLI (token from `claude setup-token`).
+  ANTHROPIC_API_KEY  - fallback for the AI brief (pay-per-use API); without either a
+                       rule-based brief is used.
   FINNHUB_API_KEY    - pre-fills analyst recommendation trends for watchlist names.
 """
 import json
 import os
 import shutil
+import subprocess
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -275,15 +279,9 @@ def rule_brief(data: dict) -> str:
     return " ".join(lines)
 
 
-def ai_brief(data: dict, key: str | None) -> str | None:
-    if not key:
-        return None
-    try:
-        import anthropic
-    except ImportError:
-        return None
+def brief_prompt(data: dict) -> str:
     compact = {"markets": data["markets"], "signals": {k: v[:10] for k, v in data["signals"].items() if isinstance(v, list)}}
-    prompt = (
+    return (
         "You write a short morning brief for a retail investor's dashboard (a UK student; British spelling). "
         "Use only the JSON below. 120 to 180 words, plain prose, no headings, no bullet lists. "
         "Cover: what markets did at the last close, the notable US insider cluster buys (framed as a watchlist "
@@ -292,6 +290,36 @@ def ai_brief(data: dict, key: str | None) -> str | None:
         "or numbers that are not in the data, and do not give personalised financial advice.\n\n"
         + json.dumps(compact, default=str)[:60000]
     )
+
+
+def cli_brief(data: dict, token: str | None, run=subprocess.run) -> str | None:
+    """Brief via the Claude Code CLI on the user's Claude plan (CLAUDE_CODE_OAUTH_TOKEN from
+    `claude setup-token`). The prompt goes on stdin; no tools are allowed."""
+    if not token or not shutil.which("claude"):
+        return None
+    try:
+        res = run(["claude", "-p", "--output-format", "text", "--disallowedTools", "Bash,Edit,Write,WebFetch,WebSearch"],
+                  input=brief_prompt(data), capture_output=True, text=True, timeout=300,
+                  env={**os.environ, "CLAUDE_CODE_OAUTH_TOKEN": token})
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"Claude CLI brief failed: {type(exc).__name__}")
+        return None
+    text = (res.stdout or "").strip()
+    if res.returncode != 0 or not text:
+        print(f"Claude CLI brief failed: exit {res.returncode}")
+        return None
+    return text
+
+
+def ai_brief(data: dict, key: str | None) -> str | None:
+    """Fallback: brief via the API with ANTHROPIC_API_KEY (billed per token)."""
+    if not key:
+        return None
+    try:
+        import anthropic
+    except ImportError:
+        return None
+    prompt = brief_prompt(data)
     try:
         client = anthropic.Anthropic(api_key=key)
         resp = client.messages.create(
@@ -334,7 +362,8 @@ def build_data(today: date | None = None, get=requests.get, env=os.environ) -> d
         "analyst": analyst_trends([r["ticker"] for r in w if r.get("ticker")], env.get("FINNHUB_API_KEY"), get),
     }
     prev = previous_brief(env.get("PREVIOUS_DATA_URL"), today, get)
-    ai = prev or ai_brief(data, env.get("ANTHROPIC_API_KEY"))
+    ai = (prev or cli_brief(data, env.get("CLAUDE_CODE_OAUTH_TOKEN"))
+          or ai_brief(data, env.get("ANTHROPIC_API_KEY")))
     data["brief"] = {"text": ai or rule_brief(data), "source": "ai" if ai else "rules", "date": today.isoformat()}
     return data
 
