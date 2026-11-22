@@ -71,6 +71,11 @@ MOMENTUM_FIRST_FORMATION = "2000-01"
 MOMENTUM_SPLIT = "2013-01"  # first out-of-sample formation month; variants are chosen on earlier months only
 MOMENTUM_COSTS = [0.002, 0.02, 0.03]  # round trip: realistic for S&P 500 names, then the house 2% and 3%
 MOMENTUM_MAX_MONTHLY_RET = 2.0  # stock-month returns above +200% are treated as bad data (recycled tickers etc.)
+YAHOO_DAILY_MAX_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1=852076800&period2=4102444800&interval=1d"
+REVERSAL_FIRST_DAY = "2000-01-03"
+REVERSAL_SPLIT = "2013-01-01"  # first out-of-sample day; variants are chosen on earlier days only
+REVERSAL_COSTS = [0.002, 0.02, 0.03]  # round trip: realistic for S&P 500 names, then the house 2% and 3%
+REVERSAL_MAX_DAILY_RET = 1.0  # open-to-open moves above +100% are treated as bad data (recycled tickers etc.)
 
 # --- quality and value study (SEC XBRL fundamentals on S&P 500 members; reuses the momentum engine and costs) ---
 SEC_COMPANYFACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
