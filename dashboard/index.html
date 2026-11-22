@@ -7,105 +7,117 @@
 <meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals.">
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#07090d">
+<meta name="theme-color" content="#0b0e14">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
-<header class="top">
-  <div class="brand"><span class="dot" id="pulse"></span>JARVIS</div>
-  <div class="clocks" id="clocks"></div>
-  <form class="cmd" id="cmd" autocomplete="off">
-    <input id="cmd-input" placeholder="Add ticker (e.g. AAPL) or type 'help'   [ / ]" spellcheck="false">
-  </form>
-  <button class="btn" id="install" type="button" hidden title="Install Jarvis as an app">Install</button>
-  <a class="btn" id="win-app" href="app/jarvis-app.zip" download hidden title="Windows app: Start Menu and desktop shortcut, own window">Get Windows app</a>
-  <button class="btn" id="open-settings" type="button" title="API keys and options">Keys</button>
-</header>
+<div class="wrap">
+  <header class="top">
+    <div class="hello">
+      <div class="logo"><span class="dot" id="pulse"></span>Jarvis</div>
+      <h1 id="greeting">Hello</h1>
+      <p class="sub" id="today"></p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="install" type="button" hidden>Install app</button>
+      <a class="btn" id="win-app" href="app/jarvis-app.zip" download hidden>Get Windows app</a>
+      <button class="btn" id="open-settings" type="button">Keys</button>
+    </div>
+  </header>
 
-<div class="tape" id="tape" aria-label="Ticker tape"></div>
+  <div class="markets-open" id="clocks" aria-label="Market hours"></div>
 
-<main class="grid">
-  <section class="panel span2" id="p-brief">
-    <h2>Daily brief <span class="badge" id="brief-src"></span><span class="meta" id="built"></span></h2>
-    <p class="brief" id="brief">Loading…</p>
+  <section class="card brief-card">
+    <div class="card-head"><h2>Today's brief</h2><span class="tag" id="brief-src"></span></div>
+    <div class="brief" id="brief"><p>Loading…</p></div>
+    <p class="fine" id="built"></p>
   </section>
 
-  <section class="panel" id="p-watch">
-    <h2>My watchlist <span class="badge" id="us-status">US: no live feed</span></h2>
-    <table class="tbl" id="watch"><thead><tr><th>Ticker</th><th class="r">Last</th><th class="r">Chg</th><th></th></tr></thead><tbody></tbody></table>
-    <p class="note" id="watch-note"></p>
+  <section>
+    <div class="section-head"><h2>Markets</h2><p class="hint">Green is up, red is down. <span class="live-dot"></span> live &nbsp;<span class="delayed-dot"></span> about 15 minutes delayed</p></div>
+    <div class="tiles" id="tiles"></div>
   </section>
 
-  <section class="panel" id="p-crypto">
-    <h2>Crypto <span class="badge live" id="crypto-status">connecting</span></h2>
-    <table class="tbl" id="crypto"><thead><tr><th>Pair</th><th class="r">Last</th><th class="r">24h</th></tr></thead><tbody></tbody></table>
-  </section>
+  <div class="two">
+    <section class="card">
+      <div class="card-head"><h2>Worth a look</h2><span class="tag good">US insiders buying</span></div>
+      <p class="hint">Several bosses at the same company recently bought their own shares. Treat it as a reason to research the stock, not to buy it: on its own, this hasn't beaten the market after costs. Tap a card to add it to your watchlist.</p>
+      <div class="cards" id="insider"></div>
+    </section>
+    <section class="card">
+      <div class="card-head"><h2>Steer clear</h2><span class="tag bad">UK short sellers piling in</span></div>
+      <p class="hint">Funds betting against these UK shares increased their bets this month. Historically, these stocks lagged the market, so avoid buying them for now.</p>
+      <div class="cards" id="avoid"></div>
+      <h3 class="mini">Most bet-against UK shares right now</h3>
+      <ol class="rank" id="shorted-top"></ol>
+    </section>
+  </div>
 
-  <section class="panel span2" id="p-insider">
-    <h2>US insider clusters <span class="badge">watchlist input</span></h2>
-    <p class="note">Two or more insiders (at least one officer or director) buying $100k+ within 10 days, market cap up to $2bn. The 2023-25 backtest found <b>no edge after costs</b>, so these are names to research, not buys. Click a row to add it to your watchlist and load analyst trends.</p>
-    <div class="scroll"><table class="tbl" id="insider"><thead><tr><th>Date</th><th>Ticker</th><th>Company</th><th class="r">Insiders</th><th class="r">Value</th><th class="r">Mkt cap</th><th class="r">5d</th><th class="r">20d</th></tr></thead><tbody></tbody></table></div>
-  </section>
+  <div class="two">
+    <section class="card">
+      <div class="card-head"><h2>My watchlist</h2><span class="tag" id="us-status">delayed</span></div>
+      <form class="add" id="cmd" autocomplete="off">
+        <input id="cmd-input" placeholder="Add a US stock, e.g. AAPL" spellcheck="false" aria-label="Add a ticker">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+      <ul class="list" id="watch"></ul>
+      <p class="hint small" id="watch-note"></p>
+    </section>
+    <section class="card">
+      <div class="card-head"><h2>Crypto</h2><span class="tag" id="crypto-status">connecting</span></div>
+      <p class="hint">Live prices. The change shown is over the last 24 hours.</p>
+      <ul class="list" id="crypto"></ul>
+    </section>
+  </div>
 
-  <section class="panel" id="p-analyst">
-    <h2>Analyst trends <span class="badge">Finnhub</span></h2>
-    <div class="analyst-pick"><select id="analyst-sym"></select></div>
+  <section class="card">
+    <div class="card-head"><h2>What analysts say</h2><select id="analyst-sym" aria-label="Stock"></select></div>
     <div id="analyst"></div>
   </section>
 
-  <section class="panel" id="p-avoid">
-    <h2>Avoid: rising UK shorts <span class="badge warn">filter</span></h2>
-    <p class="note">FCA aggregate net short up 0.5pp or more in 30 days. Historically about 1.4% behind the market over 60 days: skip new longs.</p>
-    <table class="tbl" id="avoid"><thead><tr><th>Company</th><th class="r">Short</th><th class="r">Rise</th></tr></thead><tbody></tbody></table>
+  <section class="card more">
+    <details>
+      <summary><h2>More detail</h2><span class="hint">All prices, UK short positions, director buys and the signal log</span></summary>
+      <div class="two inner">
+        <div>
+          <h3 class="mini">All markets <span class="tag delayed">delayed</span></h3>
+          <table class="tbl" id="ref"><thead><tr><th>Name</th><th class="r">Price</th><th class="r">Today</th><th class="r">5 days</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div>
+          <h3 class="mini">Most shorted UK shares</h3>
+          <div class="scroll"><table class="tbl" id="shorted"><thead><tr><th>Company</th><th class="r">Bet against</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </div>
+      <h3 class="mini">UK director buys in heavily shorted shares</h3>
+      <table class="tbl" id="combo"><thead><tr><th>Date</th><th>Company</th><th class="r">Shorted</th><th class="r">Directors bought</th></tr></thead><tbody></tbody></table>
+      <div id="p-feed" hidden>
+        <h3 class="mini">Signal log <span class="fine" id="feed-asof"></span></h3>
+        <p class="hint" id="feed-note"></p>
+        <div class="scroll"><table class="tbl" id="feed"><thead></thead><tbody></tbody></table></div>
+        <details class="track" id="track" hidden><summary>How past signals did</summary><pre id="track-text"></pre></details>
+      </div>
+    </details>
   </section>
 
-  <section class="panel" id="p-uk">
-    <h2>UK markets <span class="badge delayed">delayed</span></h2>
-    <table class="tbl" id="uk"><thead><tr><th>Name</th><th class="r">Last</th><th class="r">Chg</th></tr></thead><tbody></tbody></table>
-    <p class="note" id="uk-note">No free live UK feed exists. Prices are Yahoo quotes (about 15 minutes delayed) captured when the page was last rebuilt.</p>
-  </section>
-
-  <section class="panel" id="p-ref">
-    <h2>US and macro <span class="badge" id="ref-badge">delayed</span></h2>
-    <table class="tbl" id="ref"><thead><tr><th>Name</th><th class="r">Last</th><th class="r">Chg</th><th class="r">5d</th></tr></thead><tbody></tbody></table>
-  </section>
-
-  <section class="panel" id="p-shorted">
-    <h2>Most shorted UK <span class="badge">FCA aggregate</span></h2>
-    <table class="tbl" id="shorted"><thead><tr><th>Company</th><th class="r">Net short</th></tr></thead><tbody></tbody></table>
-  </section>
-
-  <section class="panel" id="p-combo">
-    <h2>UK combo <span class="badge">director buy + shorted</span></h2>
-    <table class="tbl" id="combo"><thead><tr><th>Date</th><th>Company</th><th class="r">Short</th><th class="r">Dir. £</th></tr></thead><tbody></tbody></table>
-  </section>
-
-  <section class="panel span2" id="p-feed" hidden>
-    <h2>Signal feed <span class="badge">forward returns</span><span class="meta" id="feed-asof"></span></h2>
-    <p class="note" id="feed-note"></p>
-    <div class="scroll"><table class="tbl" id="feed"><thead></thead><tbody></tbody></table></div>
-    <details class="track" id="track" hidden><summary>Track record</summary><pre id="track-text"></pre></details>
-  </section>
-</main>
-
-<footer class="foot">Not financial advice. Paper trade first. Live: Alpaca IEX or Finnhub (US, your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK, macro). Signals: SEC Form 4, FCA.</footer>
+  <footer class="foot">For research, not financial advice. Paper trade first.<br>Live: Alpaca or Finnhub (US, with your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK and macro). Signals: SEC Form 4 filings and FCA short positions.</footer>
+</div>
 
 <dialog id="settings">
   <form method="dialog" class="settings">
     <h2>Keys and options</h2>
-    <p class="note">Keys are saved only in this browser (localStorage). They are never sent anywhere except the provider they belong to, and never reach the repository.</p>
+    <p class="hint">Keys are saved only on this device. They are sent only to the service they belong to and never reach the repository.</p>
     <label>Alpaca key ID <input id="k-alpaca-id" autocomplete="off" spellcheck="false"></label>
     <label>Alpaca secret <input id="k-alpaca-secret" type="password" autocomplete="off"></label>
-    <p class="note">Free plan: IEX real-time stream, one connection at a time. Paper-account keys work.</p>
+    <p class="hint">Free plan: live US prices from IEX. Paper-trading keys work.</p>
     <label>Finnhub API key <input id="k-finnhub" type="password" autocomplete="off"></label>
-    <p class="note">Free plan: analyst recommendation trends, previous close, and a US trade stream used when no Alpaca keys are set.</p>
+    <p class="hint">Free plan: analyst views, yesterday's closing prices, and live US prices if you don't use Alpaca.</p>
     <label>Crypto source
       <select id="k-crypto"><option value="coinbase">Coinbase</option><option value="binance">Binance</option></select>
     </label>
-    <div class="row"><button class="btn" value="cancel">Cancel</button><button class="btn primary" id="save-settings" value="save">Save</button></div>
+    <div class="row"><button class="btn" value="cancel">Cancel</button><button class="btn primary" value="save">Save</button></div>
   </form>
 </dialog>
 
