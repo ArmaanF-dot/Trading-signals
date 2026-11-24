@@ -1,22 +1,52 @@
 {
-  "as_of": "2026-11-21",
+  "as_of": "2026-11-24",
   "lookback_days": 30,
   "disclaimer": "Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first.",
   "signals": [
     {
-      "id": "form4:0001647639:2026-11-19",
-      "symbol": "UPST",
+      "id": "fca:JE00BN574F90:2026-11-24",
+      "symbol": "WIZZ.L",
+      "isin": "JE00BN574F90",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-24",
+      "summary": "Wizz Air Holdings PLC: aggregate net short up 0.68pp over 30 days, now 9.43%",
+      "metrics": {
+        "net_change_pp": 0.68,
+        "aggregate_net_short_pct": 9.43
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "form4:0001562151:2026-11-20",
+      "symbol": "CWGL",
       "market": "US",
       "signal": "form4_cluster",
       "stance": "watch",
       "date": "2026-11-20",
-      "summary": "2 insiders bought $1,811,053 (window from 2026-11-19): Gu Paul (Chief Executive Officer, Director); Girouard Dave (Director, 10% owner)",
+      "summary": "2 insiders bought $375,000 (window from 2026-11-20): STEINBERG JOSEPH S (Director, 10% owner); Cumming John D. (Director, 10% owner)",
       "metrics": {
         "n_insiders": 2,
-        "total_value": 1811053.0,
-        "market_cap": 1567682448.0
+        "total_value": 375000.0,
+        "market_cap": 77197601.0
       },
       "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    },
+    {
+      "id": "fca:GB00BD3VFW73:2026-11-24",
+      "symbol": "CTEC.L",
+      "isin": "GB00BD3VFW73",
+      "market": "UK",
+      "signal": "fca_short_fall",
+      "stance": "info",
+      "date": "2026-11-24",
+      "summary": "CONVATEC GROUP PLC: aggregate net short down 0.57pp over 30 days, now 2.81%",
+      "metrics": {
+        "net_change_pp": -0.57,
+        "aggregate_net_short_pct": 2.81
+      },
+      "evidence": "Short covering: no measurable edge in backtests."
     }
   ]
 }

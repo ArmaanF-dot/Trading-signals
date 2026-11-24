@@ -6,7 +6,7 @@
    "signal": "Form 4 clusters",
    "side": "long",
    "cost": 0.025,
-   "logged": 1,
+   "logged": 2,
    "priced": 0,
    "ready": false,
    "sizing": {
@@ -18,12 +18,12 @@
    "signal": "FCA short rises, shorted",
    "side": "short",
    "cost": 0.017,
-   "logged": 0,
+   "logged": 52,
    "priced": 0,
    "ready": false,
    "sizing": {
     "leverage": 0.0,
-    "text": "None: no signals logged yet."
+    "text": "None: 0 priced signals, too few to judge (need 30)."
    }
   },
   {

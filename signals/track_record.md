@@ -4,12 +4,13 @@ Live signals only, measured from the first close after they became public. Costs
 
 ### Form 4 clusters
 
-Signals logged: 1. With a 20-day return: 0.
+Signals logged: 2. With a 20-day return: 0.
 Too few to read anything into (need 30).
 
 ### FCA short changes
 
-No signals logged yet.
+Signals logged: 81. With a 20-day return: 0.
+Too few to read anything into (need 30).
 
 ### UK combo
 
@@ -20,6 +21,6 @@ No signals logged yet.
 Monthly cohorts of 20-day trades after the assumed cost; FCA rises taken as shorts. Edge is the excess over the benchmark (IWM for US, the UK index ETF for UK). Leverage is suggested only when the out-of-sample edge Sharpe, net of costs, is at least 1.0 over 36+ months; it then targets 10% volatility, capped by half-Kelly and 2x. Not financial advice.
 
 - **Form 4 clusters**: None: 0 priced signals, too few to judge (need 30).
-- **FCA short rises, shorted**: None: no signals logged yet.
+- **FCA short rises, shorted**: None: 0 priced signals, too few to judge (need 30).
 - **UK combo**: None: no signals logged yet.
 
