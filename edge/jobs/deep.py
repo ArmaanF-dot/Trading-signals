@@ -249,8 +249,8 @@ def report(ev: pd.DataFrame, cov: pd.DataFrame, ics: pd.DataFrame) -> str:
     L += ["", "## How big a sample would settle it", "",
           f"With {n} events the smallest rank correlation this test can reliably detect is about {mde(n):.2f} "
           "(5% significance, 80% power, treating events as independent; overlapping events make it worse). "
-          "Published work on job-postings data and the vendors' own studies report correlations with "
-          "surprises of roughly 0.02 to 0.05 for broad universes. Detecting 0.05 needs about "
+          "Signals that quant funds trade, job postings included, typically have rank correlations of "
+          "roughly 0.02 to 0.05 with later returns or surprises (a rule of thumb, not a measured figure for this data). Detecting 0.05 needs about "
           f"{events_needed(0.05):,} events; 0.03 needs about {events_needed(0.03):,}. "
           f"The earnings-day move has a standard deviation of {sd:.1%} here, so a long-short tercile gap of 1% per "
           f"report would need about {int(np.ceil(2 * (2.8 * sd / 0.01) ** 2 * 1.5)):,} events in total." if np.isfinite(sd) else "",
