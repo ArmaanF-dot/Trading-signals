@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep | text-study | products | combine"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep | text-study | products | combine | jets-watchlist | jets-history START END [SHARD N] | jets-study | jets"
 
 
 def study_runner(what: str, argv: list[str]):
@@ -83,6 +83,13 @@ def main(argv: list[str]) -> int:
         from edge.products import collect as pcollect
         pcollect.run()
         return 0
+    if what == "jets-watchlist":
+        from edge.jets import registry
+        registry.run()
+        return 0
+    if what == "jets-history":
+        from edge.jets import history
+        return history.main(argv[2:])
     if what == "ufc":
         from edge import ufc
         return ufc.main(argv)
