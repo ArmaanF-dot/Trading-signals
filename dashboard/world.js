@@ -289,6 +289,7 @@
     if (visible("#cal-earn")) renderCalendar();
     if (visible("#ufc-title") && !document.activeElement?.matches?.("[data-odds]")) renderUfc();
   });
+  B.world = { busNext, tubeNext, nextUp, ufcEvents, ufcIsSample, hm, inMins, dayLabel, walk };
   B.onData.push(() => { renderNews(); renderSoon(); renderCalendar(); renderUfc(); renderTravel(); });
   setInterval(() => { renderSoon(); }, 60000);
   renderUfc(); renderCalendar(); renderSoon();
