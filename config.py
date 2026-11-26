@@ -225,3 +225,7 @@ TREND_SPLIT = "2017-01"  # first out-of-sample formation month
 TREND_FIRST_FORMATION = "2008-01"
 TREND_VOL_TARGET = 0.10
 TREND_LEVERAGE_CAP = 3.0
+
+# --- Leveraged ETF structural arbitrage study (3x bull/bear pairs) ---
+LETF_SPLIT = "2018-01-01"  # reset interval chosen before this date; later data is out of sample
+LETF_HOURLY_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=730d&interval=60m"
