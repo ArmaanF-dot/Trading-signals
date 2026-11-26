@@ -1,0 +1,627 @@
+{
+ "schema": 1,
+ "public": true,
+ "source": "ufcmodel (ArmaanF-dot/MMA-betting)",
+ "generated_at": "2026-11-26T02:36:55+00:00",
+ "model_as_of": "2026-11-26T02:35",
+ "events": [
+  {
+   "name": "UFC SAUDI ARABIA",
+   "dates": [
+    "2026-12-05"
+   ],
+   "days_to_go": 9,
+   "n_fights": 14,
+   "last_data": "2026-11-21",
+   "fights": [
+    {
+     "a": "Israel Adesanya",
+     "b": "Shara Magomedov",
+     "weight_class": "Middleweight",
+     "rounds": 5,
+     "p_a": 0.5069,
+     "p_elo_a": 0.5415,
+     "p_distance": 0.4298,
+     "pick": "Israel Adesanya",
+     "pick_side": "A",
+     "confidence": 0.5069,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "strength of schedule",
+       10.4
+      ],
+      [
+       "best win (opponent rating)",
+       4.7
+      ],
+      [
+       "fights vs top opponents",
+       -4.7
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    },
+    {
+     "a": "Ian Machado Garry",
+     "b": "Yaroslav Amosov",
+     "weight_class": "Welterweight",
+     "rounds": 3,
+     "p_a": 0.6578,
+     "p_elo_a": 0.7127,
+     "p_distance": 0.5045,
+     "pick": "Ian Machado Garry",
+     "pick_side": "A",
+     "confidence": 0.6578,
+     "confidence_label": "Moderate",
+     "tier": null,
+     "drivers": [
+      [
+       "adjusted takedowns per 15 min",
+       -6.5
+      ],
+      [
+       "average fight length",
+       4.6
+      ],
+      [
+       "decision win rate",
+       -3.9
+      ]
+     ],
+     "flags": [
+      "Yaroslav Amosov: only 2 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Mario Pinto",
+     "b": "Serghei Spivac",
+     "weight_class": "Heavyweight",
+     "rounds": 3,
+     "p_a": 0.7101,
+     "p_elo_a": 0.555,
+     "p_distance": 0.53,
+     "pick": "Mario Pinto",
+     "pick_side": "A",
+     "confidence": 0.7101,
+     "confidence_label": "Good",
+     "tier": "70-80",
+     "drivers": [
+      [
+       "striking accuracy (opponent-adjusted)",
+       5.2
+      ],
+      [
+       "takedown defence (opponent-adjusted)",
+       4.4
+      ],
+      [
+       "strength of schedule",
+       -3.2
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    },
+    {
+     "a": "Islam Dulatov",
+     "b": "Levan Chokheli",
+     "weight_class": "Welterweight",
+     "rounds": 3,
+     "p_a": 0.5565,
+     "p_elo_a": 0.5013,
+     "p_distance": 0.4338,
+     "pick": "Islam Dulatov",
+     "pick_side": "A",
+     "confidence": 0.5565,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "reach",
+       1.8
+      ],
+      [
+       "takedown defence (opponent-adjusted)",
+       1.6
+      ],
+      [
+       "head damage taken",
+       -1.3
+      ]
+     ],
+     "flags": [
+      "Islam Dulatov: only 1 bout(s) in the data",
+      "Levan Chokheli: only 1 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Akbar Abdullaev",
+     "b": "Mairon Santos",
+     "weight_class": "Featherweight",
+     "rounds": 3,
+     "p_a": 0.2622,
+     "p_elo_a": 0.3232,
+     "p_distance": 0.535,
+     "pick": "Mairon Santos",
+     "pick_side": "B",
+     "confidence": 0.7378,
+     "confidence_label": "Good",
+     "tier": "70-80",
+     "drivers": [
+      [
+       "debut status",
+       -3.9
+      ],
+      [
+       "best win (opponent rating)",
+       -3.0
+      ],
+      [
+       "Elo2 rating",
+       -3.0
+      ]
+     ],
+     "flags": [
+      "Akbar Abdullaev: not in the data (treated as a debutant)",
+      "Akbar Abdullaev: age unknown"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Ion Cutelaba",
+     "b": "Magomed Tuchalov",
+     "weight_class": "Light Heavyweight",
+     "rounds": 3,
+     "p_a": 0.4677,
+     "p_elo_a": 0.4843,
+     "p_distance": 0.4178,
+     "pick": "Magomed Tuchalov",
+     "pick_side": "B",
+     "confidence": 0.5323,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "strength of schedule",
+       4.7
+      ],
+      [
+       "age x distance striking",
+       -3.1
+      ],
+      [
+       "best win (opponent rating)",
+       3.0
+      ]
+     ],
+     "flags": [
+      "Magomed Tuchalov: only 1 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Gabriel Santos",
+     "b": "Luke Riley",
+     "weight_class": "Featherweight",
+     "rounds": 3,
+     "p_a": 0.3681,
+     "p_elo_a": 0.3994,
+     "p_distance": 0.4532,
+     "pick": "Luke Riley",
+     "pick_side": "B",
+     "confidence": 0.6319,
+     "confidence_label": "Moderate",
+     "tier": null,
+     "drivers": [
+      [
+       "takedown defence (opponent-adjusted)",
+       4.8
+      ],
+      [
+       "long layoff",
+       -4.5
+      ],
+      [
+       "untested against top opposition",
+       2.8
+      ]
+     ],
+     "flags": [
+      "Gabriel Santos: layoff of 665 days (capped at 1500)"
+     ],
+     "thin_data": false
+    },
+    {
+     "a": "Bruno Silva",
+     "b": "Jafel Filho",
+     "weight_class": "Flyweight",
+     "rounds": 3,
+     "p_a": 0.5022,
+     "p_elo_a": 0.3914,
+     "p_distance": 0.5092,
+     "pick": "Bruno Silva",
+     "pick_side": "A",
+     "confidence": 0.5022,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "takedown accuracy",
+       6.2
+      ],
+      [
+       "takedown defence (opponent-adjusted)",
+       5.3
+      ],
+      [
+       "striking accuracy (opponent-adjusted)",
+       4.0
+      ]
+     ],
+     "flags": [
+      "Bruno Silva: age unknown"
+     ],
+     "thin_data": false
+    },
+    {
+     "a": "Junyong Park",
+     "b": "Marco Tulio",
+     "weight_class": "Middleweight",
+     "rounds": 3,
+     "p_a": 0.448,
+     "p_elo_a": 0.6607,
+     "p_distance": 0.4615,
+     "pick": "Marco Tulio",
+     "pick_side": "B",
+     "confidence": 0.552,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "decision win rate",
+       -3.6
+      ],
+      [
+       "Elo rating",
+       2.5
+      ],
+      [
+       "age x head damage taken",
+       -2.3
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    },
+    {
+     "a": "Mahammadali Osmanli",
+     "b": "Pavel Andrusca",
+     "weight_class": "Bantamweight",
+     "rounds": 3,
+     "p_a": 0.2678,
+     "p_elo_a": 0.3875,
+     "p_distance": 0.5513,
+     "pick": "Pavel Andrusca",
+     "pick_side": "B",
+     "confidence": 0.7322,
+     "confidence_label": "Good",
+     "tier": "70-80",
+     "drivers": [
+      [
+       "best win (opponent rating)",
+       -4.8
+      ],
+      [
+       "adjusted takedowns per 15 min",
+       -3.3
+      ],
+      [
+       "strength of schedule",
+       -3.3
+      ]
+     ],
+     "flags": [
+      "Mahammadali Osmanli: only 1 bout(s) in the data",
+      "Mahammadali Osmanli: age unknown",
+      "Pavel Andrusca: only 1 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Matthieu Duclos",
+     "b": "Modestino Rodrigues",
+     "weight_class": "Middleweight",
+     "rounds": 3,
+     "p_a": 0.6126,
+     "p_elo_a": 0.5501,
+     "p_distance": 0.457,
+     "pick": "Matthieu Duclos",
+     "pick_side": "A",
+     "confidence": 0.6126,
+     "confidence_label": "Moderate",
+     "tier": null,
+     "drivers": [
+      [
+       "debut status",
+       4.5
+      ],
+      [
+       "head damage taken",
+       -2.0
+      ],
+      [
+       "best win (opponent rating)",
+       1.8
+      ]
+     ],
+     "flags": [
+      "Matthieu Duclos: only 1 bout(s) in the data",
+      "Modestino Rodrigues: not in the data (treated as a debutant)",
+      "Modestino Rodrigues: age unknown"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Abdul Hussein",
+     "b": "Hecher Sosa",
+     "weight_class": "Bantamweight",
+     "rounds": 3,
+     "p_a": 0.5805,
+     "p_elo_a": 0.4928,
+     "p_distance": 0.4898,
+     "pick": "Abdul Hussein",
+     "pick_side": "A",
+     "confidence": 0.5805,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "submission attempts faced",
+       -4.3
+      ],
+      [
+       "striking accuracy (opponent-adjusted)",
+       4.1
+      ],
+      [
+       "sm_2_3",
+       2.8
+      ]
+     ],
+     "flags": [
+      "Abdul Hussein: only 1 bout(s) in the data",
+      "Hecher Sosa: only 1 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Ivan Gnizditskiy",
+     "b": "Uran Satybaldiev",
+     "weight_class": "Light Heavyweight",
+     "rounds": 3,
+     "p_a": 0.4597,
+     "p_elo_a": 0.4896,
+     "p_distance": 0.3733,
+     "pick": "Uran Satybaldiev",
+     "pick_side": "B",
+     "confidence": 0.5403,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "debut status",
+       -4.6
+      ],
+      [
+       "striking accuracy (opponent-adjusted)",
+       4.0
+      ],
+      [
+       "head damage taken",
+       2.5
+      ]
+     ],
+     "flags": [
+      "Ivan Gnizditskiy: not in the data (treated as a debutant)",
+      "Ivan Gnizditskiy: age unknown",
+      "Uran Satybaldiev: only 2 bout(s) in the data"
+     ],
+     "thin_data": true
+    },
+    {
+     "a": "Elves Brener",
+     "b": "Mateusz Rebecki",
+     "weight_class": "Lightweight",
+     "rounds": 3,
+     "p_a": 0.5511,
+     "p_elo_a": 0.4836,
+     "p_distance": 0.435,
+     "pick": "Elves Brener",
+     "pick_side": "A",
+     "confidence": 0.5511,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "takedown accuracy",
+       4.5
+      ],
+      [
+       "reach",
+       3.5
+      ],
+      [
+       "adjusted takedowns per 15 min",
+       -3.1
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    }
+   ]
+  },
+  {
+   "name": "UFC 335",
+   "dates": [
+    "2026-12-13"
+   ],
+   "days_to_go": 17,
+   "n_fights": 2,
+   "last_data": "2026-11-21",
+   "fights": [
+    {
+     "a": "Alex Pereira",
+     "b": "Sergei Pavlovich",
+     "weight_class": "Heavyweight",
+     "rounds": 5,
+     "p_a": 0.4662,
+     "p_elo_a": 0.5544,
+     "p_distance": 0.344,
+     "pick": "Sergei Pavlovich",
+     "pick_side": "B",
+     "confidence": 0.5338,
+     "confidence_label": "Toss-up",
+     "tier": null,
+     "drivers": [
+      [
+       "striking accuracy (opponent-adjusted)",
+       5.8
+      ],
+      [
+       "strength of schedule",
+       5.0
+      ],
+      [
+       "average fight length",
+       3.7
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    },
+    {
+     "a": "Charles Oliveira",
+     "b": "Diego Lopes",
+     "weight_class": "Lightweight",
+     "rounds": 3,
+     "p_a": 0.3981,
+     "p_elo_a": 0.7017,
+     "p_distance": 0.4783,
+     "pick": "Diego Lopes",
+     "pick_side": "B",
+     "confidence": 0.6019,
+     "confidence_label": "Moderate",
+     "tier": null,
+     "drivers": [
+      [
+       "striking accuracy (opponent-adjusted)",
+       4.5
+      ],
+      [
+       "UFC experience",
+       -3.5
+      ],
+      [
+       "takedown defence (opponent-adjusted)",
+       -3.4
+      ]
+     ],
+     "flags": [],
+     "thin_data": false
+    }
+   ]
+  }
+ ],
+ "forward": {
+  "logged": 0,
+  "graded": 0,
+  "needed": 150
+ },
+ "evidence": [
+  {
+   "label": "Model's pick in every fight, typical price",
+   "v": -5.4,
+   "lo": -12.7,
+   "hi": 2.3,
+   "n": "1,150 bets, 2023-25",
+   "kind": "test"
+  },
+  {
+   "label": "Model's pick, best price at any book",
+   "v": 0.4,
+   "lo": -7.6,
+   "hi": 8.2,
+   "n": "1,150 bets, 2023-25",
+   "kind": "test"
+  },
+  {
+   "label": "Market favourite in every fight, typical price",
+   "v": -1.3,
+   "lo": -5.2,
+   "hi": 2.6,
+   "n": "1,150 bets, 2023-25",
+   "kind": "test"
+  },
+  {
+   "label": "Value bets only (edge above 5%), typical price",
+   "v": -11.3,
+   "lo": -20.9,
+   "hi": -2.1,
+   "n": "835 bets, 2023-25",
+   "kind": "test"
+  },
+  {
+   "label": "This staking rule, 50 per card, best price",
+   "v": 3.7,
+   "lo": -10,
+   "hi": 17,
+   "n": "102 cards, 2023-25",
+   "kind": "test"
+  },
+  {
+   "label": "Picks at 70%+ confidence, typical price",
+   "v": 6.6,
+   "lo": 0,
+   "hi": 13,
+   "n": "254 bets, found after the fact",
+   "kind": "lead"
+  },
+  {
+   "label": "Picks at 80%+ confidence, typical price",
+   "v": 8.4,
+   "lo": -4,
+   "hi": 20,
+   "n": "52 bets, found after the fact",
+   "kind": "lead"
+  },
+  {
+   "label": "Opening-line rule at the very first price",
+   "v": 5.1,
+   "lo": -2.4,
+   "hi": 12.9,
+   "n": "1,045 bets, 2022-25",
+   "kind": "untradable"
+  },
+  {
+   "label": "Same rule at a mid-week price",
+   "v": -1.3,
+   "lo": -9.1,
+   "hi": 6.5,
+   "n": "1,044 bets, 2022-25",
+   "kind": "untradable"
+  }
+ ],
+ "gap": {
+  "model_ll": 0.6421,
+  "market_ll": 0.6118,
+  "diff": 0.0303,
+  "lo": 0.0224,
+  "hi": 0.038,
+  "n": 4923
+ }
+}
