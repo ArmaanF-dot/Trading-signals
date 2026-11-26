@@ -176,3 +176,20 @@ ML_COSTS = MOMENTUM_COSTS
 FRONTIER_COSTS = [0.003, 0.02, 0.03]  # round trip: liquid country ETF, then the house 2% and 3%
 FRONTIER_SPLIT = "2016-01"  # first out-of-sample formation month
 FRONTIER_FIRST_FORMATION = "2011-06"
+
+# ---- Baco travel widget (a public bus stop and a tube station; no address) ----
+TRAVEL = {
+    "bus": {
+        "label": "Wheatsheaf, Leamington Spa to University of Warwick",
+        "walk_min": 12,
+        "destination_keyword": "University",
+        # The Wheatsheaf stop on Tachbrook Road (4200F036401) is the south-bound side: its buses run to
+        # Warwick Gates, away from the University. The University-bound U1 and U1A call at the stop on the
+        # opposite side, which the national stop list names Cashmore Avenue (about 130 m away).
+        "stops": [
+            {"atco": "4200F206801", "name": "Wheatsheaf, University-bound side (Cashmore Avenue stop)"},
+            {"atco": "4200F036401", "name": "Wheatsheaf, Tachbrook Road"},
+        ],
+    },
+    "tube": {"label": "Northwood station (Metropolitan line)", "naptan": "940GZZLUNOW", "walk_min": 11},
+}
