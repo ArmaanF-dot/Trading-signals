@@ -1,7 +1,7 @@
 /* Baco service worker: keeps the app shell available offline and shows the last
    data.json when the network is down. Live websockets are never touched. */
-const CACHE = "baco-v1";
-const SHELL = ["./", "index.html", "style.css", "app.js", "book.js", "world.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
+const CACHE = "baco-v2";
+const SHELL = ["./", "index.html", "style.css", "app.js", "book.js", "world.js", "home.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

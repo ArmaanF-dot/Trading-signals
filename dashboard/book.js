@@ -277,5 +277,6 @@
     if (sig !== lastSig) { lastSig = sig; if (!visible("#pf-summary") && holdings.length) renderPortfolio(); }
   });
   B.onData.push(() => { renderPortfolio(); calcs(); });
+  B.book = { holdings: () => holdings, pf: () => { const st = pfState(); return { ...st, totalGBP: toGBP(st.total), n: holdings.length }; }, bets: () => B.betStats(), gbp, tone };
   calcs();
 })();

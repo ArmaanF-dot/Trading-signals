@@ -135,3 +135,14 @@ def test_build_data_survives_failing_optional_sources(monkeypatch):
     monkeypatch.setattr(d.travel, "build", lambda **kw: (_ for _ in ()).throw(RuntimeError("boom")))
     assert d.safe(lambda: d.events.news(None), []) == []
     assert d.safe(lambda: d.travel.build(), None) is None
+
+
+def test_ufc_current_prefers_newest_and_ignores_bad_remote(tmp_path, monkeypatch):
+    old = {**ufc.normalise(RAW), "generated_at": "2026-11-01T00:00:00+00:00"}
+    new = {**ufc.normalise(RAW), "generated_at": "2026-11-20T00:00:00+00:00", "events": []}
+    p = tmp_path / "u.json"
+    p.write_text(json.dumps(old))
+    monkeypatch.setattr(ufc, "UFC_JSON", p)
+    assert ufc.current(lambda url, **kw: Resp(new))["generated_at"] == "2026-11-20T00:00:00+00:00"
+    assert ufc.current(lambda url, **kw: Resp({"schema": 9, "events": []}))["generated_at"] == "2026-11-01T00:00:00+00:00"
+    assert ufc.current(lambda url, **kw: Resp(None, status=404))["generated_at"] == "2026-11-01T00:00:00+00:00"
