@@ -207,6 +207,18 @@ JOBS_BREAKPOINT_DAYS = 365
 JOBS_MIN_BREAKPOINT_EVENTS = 30
 JOBS_WORKDAY_INTERVAL = 3.0  # Workday rate-limits harder than the other boards
 
+# Crypto carry study (edge/carry.py): Binance public data dump (reachable from the cloud; the live API is geo-blocked)
+CARRY_DATA_URL = "https://data.binance.vision/data/{market}/monthly/{kind}/{symbol}{sub}/{symbol}-{name}-{ym}.zip"
+CARRY_COINS = ["BTC", "ETH", "BNB", "XRP", "LTC", "ADA", "DOGE", "LINK", "SOL", "AVAX"]  # large coins of today (survivorship bias, said in the report)
+CARRY_START = "2019-09"
+CARRY_CACHE = DATA_DIR / "carry_cache"  # raw monthly zips, git-ignored
+CARRY_PANEL = REPORTS_DIR / "carry_panel.csv.gz"  # compact daily panel the study reads (rebuilt by `python run.py carry --refresh`)
+CARRY_SPLIT = "2023-01-01"  # parameters chosen before this date; 2023 onward is out of sample
+CARRY_MARGIN = 0.25  # extra capital held as perp margin, per 1.0 of notional (about 4x leverage on the short leg)
+CARRY_SPOT_FEE, CARRY_PERP_FEE = 0.0010, 0.0005  # Binance taker, no BNB discount, per side
+CARRY_SLIPPAGE = {"BTC": 0.0002, "ETH": 0.0002}  # per leg per side; everything else uses the default
+CARRY_SLIPPAGE_DEFAULT = 0.0008
+CARRY_FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTB3"
 # Cross-asset trend following (edge/trend.py)
 TREND_COSTS = [0.001, 0.0025, 0.025]  # round trip: realistic liquid ETF, a wide-spread case, then the house 2.5%
 TREND_SPLIT = "2017-01"  # first out-of-sample formation month

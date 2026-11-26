@@ -1,11 +1,14 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
 
 
 def study_runner(what: str, argv: list[str]):
     """The backtest studies; each writes to reports/, after which the risk summary is rebuilt."""
+    if what == "carry":
+        from edge import carry
+        return lambda: carry.main("--refresh" in argv)
     if what == "oil-tanks":
         from edge import oil_tanks
         return oil_tanks.main
