@@ -19,6 +19,7 @@ FCA_SNAPSHOT_DIR = DATA_DIR / "fca_shorts"
 FCA_EVENTS_CSV = SIGNALS_DIR / "fca_events.csv"
 RNS_CSV = DATA_DIR / "rns_director_buys.csv"
 COMBO_CSV = SIGNALS_DIR / "combo.csv"
+JOBS_DIR = DATA_DIR / "jobs"  # daily job-board snapshots (edge/jobs)
 ISIN_TICKER_CSV = DATA_DIR / "isin_ticker.csv"  # optional: isin,ticker (for FCA returns)
 
 # --- notifications ---
@@ -193,3 +194,14 @@ TRAVEL = {
     },
     "tube": {"label": "Northwood station (Metropolitan line)", "naptan": "940GZZLUNOW", "walk_min": 11},
 }
+
+# Job postings (edge/jobs)
+JOBS_USER_AGENT = "trading-signals-research/1.0 (github.com/ArmaanF-dot/trading-signals)"
+JOBS_MIN_INTERVAL = 1.5  # seconds between job-board requests (Lever asks for 1 s)
+JOBS_WAYBACK_INTERVAL = 1.0  # seconds between Internet Archive requests per worker
+JOBS_STUDY_START = "2017-01-01"
+JOBS_RECENT_MAX_DAYS = 45  # latest snapshot must be at most this old at the earnings date
+JOBS_LOOKBACK_DAYS = 80  # compare with a snapshot at least this much older (about a quarter)
+JOBS_LOOKBACK_MAX_DAYS = 150
+JOBS_BREAKPOINT_DAYS = 365
+JOBS_MIN_BREAKPOINT_EVENTS = 30
