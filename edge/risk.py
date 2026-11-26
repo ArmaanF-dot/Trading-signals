@@ -93,7 +93,8 @@ REPORT_FILES = {"12-1 momentum (S&P 500)": "momentum_backtest.md", "Short-term r
                 "ML rank, gradient boosting (S&P 500)": "ml_rank_backtest.md", "Quality and value tilts (S&P 500)": "quality_value_backtest.md",
                 "Frontier country ETFs": "frontier_etf_backtest.md", "Form 4 cluster buys (US)": "form4_backtest.md",
                 "Form 4 opportunistic insiders (US)": "form4_opportunistic.md", "FCA short rises, shorted (UK)": "fca_shorts_study.md",
-                "Post-earnings drift, top quintile (US)": "pead_study.md"}
+                "Post-earnings drift, top quintile (US)": "pead_study.md",
+                "Cross-asset trend following (ETFs)": "trend_following.md"}
 SECTION_START, SECTION_END = "<!-- risk-sizing:start -->", "<!-- risk-sizing:end -->"
 
 
@@ -138,6 +139,8 @@ def studies(reports=None) -> list[dict]:
         _monthly_study("Quality and value tilts (S&P 500)", R / "quality_value_monthly.csv", config.QV_SPLIT, config.MOMENTUM_COSTS[0]),
         _monthly_study("Frontier country ETFs", R / "frontier_etf_monthly.csv", config.FRONTIER_SPLIT, config.FRONTIER_COSTS[0],
                        "Edge is the long-only excess over the equal-weight ETF basket, net of costs."),
+        _monthly_study("Cross-asset trend following (ETFs)", R / "trend_following_monthly.csv", config.TREND_SPLIT, config.TREND_COSTS[0],
+                       "Edge is the trend book minus the always-long book with identical sizing, net of costs; no leverage financing."),
     ]
     p = R / "form4_backtest_clusters.csv"
     if p.exists():
