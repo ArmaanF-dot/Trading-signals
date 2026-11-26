@@ -24,6 +24,8 @@ from pathlib import Path
 import config
 
 UFC_JSON = config.DATA_DIR / "ufc_predictions.json"
+# The model repo's weekly `picks` workflow publishes the model's own picks (no prices) here.
+REMOTE_URL = "https://raw.githubusercontent.com/ArmaanF-dot/MMA-betting/main/public/picks.json"
 SCHEMA = 1
 
 
@@ -78,13 +80,31 @@ def normalise(raw: dict, public: bool = True, now: datetime | None = None) -> di
     return out
 
 
-def load(path: Path = UFC_JSON) -> dict | None:
+def load(path: Path | None = None) -> dict | None:
     """The committed public predictions, or None if there are none yet."""
     try:
-        d = json.loads(path.read_text(encoding="utf-8"))
+        d = json.loads((path or UFC_JSON).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
     return d if d.get("schema") == SCHEMA and d.get("events") is not None else None
+
+
+def fetch_remote(get=None, url: str = REMOTE_URL) -> dict | None:
+    """The picks published by the model repo's weekly workflow, or None if unavailable or not in schema 1."""
+    import requests
+    get = get or requests.get
+    try:
+        r = get(url, timeout=20)
+        d = r.json() if r.status_code == 200 else None
+    except (requests.RequestException, ValueError):
+        return None
+    return d if isinstance(d, dict) and d.get("schema") == SCHEMA and isinstance(d.get("events"), list) else None
+
+
+def current(get=None) -> dict | None:
+    """Newest of the remote and committed picks (by generated_at), so the page never shows an older card than exists."""
+    cands = [c for c in (fetch_remote(get), load()) if c]
+    return max(cands, key=lambda c: c.get("generated_at") or "") if cands else None
 
 
 def main(argv: list[str]) -> int:

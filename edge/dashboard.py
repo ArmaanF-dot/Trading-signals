@@ -401,7 +401,7 @@ def build_data(today: date | None = None, get=requests.get, env=os.environ) -> d
         "analyst": analyst_trends([r["ticker"] for r in w if r.get("ticker")], env.get("FINNHUB_API_KEY"), get),
         "calendar": calendar_block(today, [r["ticker"] for r in w if r.get("ticker")], get),
         "news": safe(lambda: events.news(get), []),
-        "ufc": ufc.load(),
+        "ufc": safe(lambda: ufc.current(get), None),
         "travel": safe(lambda: travel.build(get=get), None),
     }
     prev = previous_brief(env.get("PREVIOUS_DATA_URL"), today, get)
