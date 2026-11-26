@@ -205,3 +205,4 @@ JOBS_LOOKBACK_DAYS = 80  # compare with a snapshot at least this much older (abo
 JOBS_LOOKBACK_MAX_DAYS = 150
 JOBS_BREAKPOINT_DAYS = 365
 JOBS_MIN_BREAKPOINT_EVENTS = 30
+JOBS_WORKDAY_INTERVAL = 3.0  # Workday rate-limits harder than the other boards

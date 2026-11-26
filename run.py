@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
 
 
 def study_runner(what: str, argv: list[str]):
@@ -9,6 +9,9 @@ def study_runner(what: str, argv: list[str]):
     if what == "oil-tanks":
         from edge import oil_tanks
         return oil_tanks.main
+    if what == "jobs-deep":
+        from edge.jobs import deep
+        return deep.main
     if what == "jobs-study":
         from edge.jobs import study
         return study.main
