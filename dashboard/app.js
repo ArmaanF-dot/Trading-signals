@@ -1,4 +1,4 @@
-/* Hugo: market homescreen. Live data comes straight from the providers' public
+/* Baco: market homescreen. Live data comes straight from the providers' public
    websockets using keys kept in this browser's localStorage; the rest comes from
    data.json, rebuilt by GitHub Actions. */
 (() => {
@@ -33,6 +33,9 @@
     ban: '<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',
     check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
     scan: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    cal: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    bus: '<rect x="4" y="3.5" width="16" height="14" rx="2.5"/><path d="M4 11h16M8 21v-3.5M16 21v-3.5"/><circle cx="8" cy="14.2" r=".6"/><circle cx="16" cy="14.2" r=".6"/>',
+    fight: '<path d="M7 11V6.5a1.7 1.7 0 0 1 3.4 0V10M10.4 9.5V5a1.7 1.7 0 0 1 3.4 0v5M13.8 9.5V6a1.7 1.7 0 0 1 3.4 0v6.5l1.1-1.2a1.7 1.7 0 0 1 2.5 2.3L17 19a4 4 0 0 1-3 1.5H11a4 4 0 0 1-4-4v-3a1.7 1.7 0 0 1 0-2"/>',
   };
   const icon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[k]}</svg>`;
 
@@ -441,7 +444,8 @@
     }
     const a = (DATA.signals.avoid || [])[0];
     if (a) add("down", "ban", "Avoid", `Steer clear of ${titleCase(a.issuer)}`, `Short bets up ${fmt(a.delta_pp, 1)} points this month, to ${fmt(a.new_pct, 1)}%.`);
-    return out.slice(0, 6);
+    for (const h of Baco.alertHooks) { try { for (const a of h() || []) add(a.tone, a.ico, a.cat, a.title, a.detail); } catch (e) { console.error(e); } }
+    return out.slice(0, 7);
   }
   function renderAlerts() {
     const list = loaded ? alertsList() : [];
@@ -498,6 +502,7 @@
     if (!dirty) return;
     dirty = false;
     renderTiles(); renderWatch(); renderCrypto(); renderMood(); renderAlerts(); renderTape();
+    for (const f of Baco.onRender) { try { f(); } catch (e) { console.error(e); } }
   }
   setInterval(render, 600);
 
@@ -608,6 +613,7 @@
     renderBrief(); renderSignals(); renderDetail(); renderRisk(); renderSys();
     for (const q of DATA.markets.us_reference) if (!us[q.symbol] && /^[A-Z]+$/.test(q.symbol)) us[q.symbol] = { price: q.price, prev: q.prev_close, src: "delayed" };
     fillAnalystPicker(); mark();
+    for (const f of Baco.onData) { try { f(); } catch (e) { console.error(e); } }
   }
 
   // ---------- analysts ----------
@@ -686,7 +692,7 @@
   function connectUS() {
     if (usWs) { usWs.onclose = null; try { usWs.close(); } catch { /* */ } usWs = null; }
     const { aid, asec, fh } = keys();
-    const syms = [...new Set([...watch, "SPY", "QQQ", "IWM"])].filter((s) => /^[A-Z.\-]{1,10}$/.test(s));
+    const syms = [...new Set([...watch, ...Baco.extraSyms(), "SPY", "QQQ", "IWM"])].filter((s) => /^[A-Z.\-]{1,10}$/.test(s));
     prevCloses(syms);
     if (aid && asec) {
       setUsStatus("connecting", false);
@@ -769,7 +775,7 @@
     if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); addSym(card.dataset.sym); }
   });
 
-  // ---------- Ask Hugo ----------
+  // ---------- Ask Baco ----------
   // Questions are answered here in the browser from the data already on the page, so
   // nothing leaves the device except, for voice, the audio your browser sends to its own
   // speech service. Answers can be read aloud with a British voice where one exists.
@@ -869,16 +875,19 @@
     for (const w of q.toUpperCase().match(/\b[A-Z][A-Z.\-]{0,5}\b/g) || []) if ((watch.includes(w) || us[w]) && !found.includes(w)) found.push(w);
     return found;
   }
+  // Baco is said "bay-coe". Speech recognition often hears it as something else, so accept the usual mishearings.
+  const WAKE = /^(?:(?:hey|hi|ok|okay|yo) )?(?:baco|bacco|bako|bayco|bay[- ]?co+|bay[- ]?ko+|bacon|beco|becko|baker|hugo|jarvis)\b[,!.]?\s*/;
   function answer(raw) {
-    const q = raw.toLowerCase().replace(/[’`]/g, "'").replace(/^(?:hey |ok |okay )?(?:hugo|jarvis)[,!.]?\s*/, "").replace(/[?!.]+$/, "").replace(/\s+/g, " ").trim();
+    const q = raw.toLowerCase().replace(/[’`]/g, "'").replace(WAKE, "").replace(/[?!.]+$/, "").replace(/\s+/g, " ").trim();
     let m = q.match(/^(?:please |can you |could you )?(?:add|watch|follow)\s+([a-z][a-z .\-]{0,20}?)(?:\s+to\b.*|\s+please)?$/);
     if (m) return addSym(m[1]) ? `Done. ${toTicker(m[1])} is on your watchlist.` : `"${m[1]}" doesn't look like a US ticker. Try a symbol such as TSLA.`;
     m = q.match(/^(?:please |can you |could you )?(?:remove|drop|unfollow|delete)\s+([a-z][a-z .\-]{0,20}?)(?:\s+from\b.*|\s+please)?$/);
     if (m) { const s = toTicker(m[1]); if (watch.includes(s)) { rmSym(s); return `Done. ${s} is off your watchlist.`; } return `${s} isn't on your watchlist.`; }
+    for (const h of Baco.answerHooks) { let r = null; try { r = h(q); } catch (e) { console.error(e); } if (r) return r; }
     if (/^(?:thanks|thank you|cheers|ta)\b/.test(q)) return "Any time.";
     if (/^(?:hi|hello|hey|morning|good (?:morning|afternoon|evening))\b/.test(q) && q.split(" ").length <= 4) return `${$("#greeting").textContent}. Ask me how the market's doing, what needs your attention, or the price of anything on the board.`;
-    if (/who are you|what are you/.test(q)) return "I'm Hugo, your market assistant. I keep an eye on prices, signals and your watchlist, and I'll flag what matters.";
-    if (/\bhelp\b|what can you|what do you (?:do|know)/.test(q)) return "Ask me how the market's doing, what needs your attention, about the fear gauge, any index, crypto, the pound or gold, a stock on your watchlist, insider buying, shares to avoid, or market hours. I can also add or remove watchlist stocks: try \"add Tesla\". Or say \"read me the brief\".";
+    if (/who are you|what are you/.test(q)) return "I'm Baco, say it bay-coe. I keep an eye on prices, signals, your portfolio, your calendar, the fights and your commute, and I'll flag what matters.";
+    if (/\bhelp\b|what can you|what do you (?:do|know)/.test(q)) return "Ask me how the market's doing, what needs your attention, about the fear gauge, any index, crypto, the pound or gold, a stock on your watchlist, insider buying, shares to avoid, market hours, your portfolio, earnings, the UFC picks, your bets, or when your next bus or tube is. I can also add or remove watchlist stocks: try \"add Tesla\". Or say \"read me the brief\".";
     if (/\bwhat time\b|\bthe time\b/.test(q)) return `It's ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}.`;
     if (/\bbrief\b|summar|recap|catch me up|what happened|\bnews\b/.test(q)) return DATA.brief?.text ? plain(DATA.brief.text) : "There's no brief yet today.";
     if (/attention|should i know|i should know|need to know|anything (?:important|new|interesting|to know|happening)|\balerts?\b|stand(?:s|ing)? out|what'?s up\b/.test(q)) return attentionText();
@@ -905,7 +914,7 @@
   }
   if (synth) { pickVoice(); synth.addEventListener?.("voiceschanged", pickVoice); }
   const busy = (on) => { $("#mark").classList.toggle("busy", on); $(".ask-ico").classList.toggle("busy", on); };
-  const spoken = (t) => t.replace(/−/g, "minus ").replace(/\+(?=\d)/g, "plus ").replace(/(\d)pp\b/g, "$1 points").replace(/\$(\d[\d,.]*)/g, "$1 dollars").replace(/\n/g, " ");
+  const spoken = (t) => t.replace(/\bBaco\b/g, "Bay-coe").replace(/−/g, "minus ").replace(/\+(?=\d)/g, "plus ").replace(/(\d)pp\b/g, "$1 points").replace(/\$(\d[\d,.]*)/g, "$1 dollars").replace(/\n/g, " ");
   function speak(text) {
     if (!synth || !text) return;
     synth.cancel();
@@ -946,7 +955,7 @@
   $("#ans-speak").addEventListener("click", () => { if (synth?.speaking) { synth.cancel(); busy(false); $("#ans-speak").classList.remove("on"); } else speak(lastAnswer); });
   if (!synth) $("#ans-speak").hidden = true;
 
-  // Voice input: press the microphone, ask, and Hugo answers out loud.
+  // Voice input: press the microphone, ask, and Baco answers out loud.
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   let rec = null;
   if (SR) {
@@ -975,7 +984,7 @@
       };
       rec.onend = () => {
         mic.classList.remove("on"); busy(false); rec = null;
-        inp.placeholder = "Ask Hugo about the markets";
+        inp.placeholder = "Ask Baco about the markets";
         if (final.trim()) { inp.value = ""; ask(final.trim(), { byVoice: true }); }
       };
       try { rec.start(); } catch { rec.onend(); }
@@ -988,6 +997,9 @@
     $("#k-name").value = store.get("name", "");
     $("#k-alpaca-id").value = k.aid; $("#k-alpaca-secret").value = k.asec; $("#k-finnhub").value = k.fh; $("#k-crypto").value = k.crypto;
     $("#k-speak").value = store.get("speak", "voice");
+    $("#k-walk-bus").value = store.get("walkBus", DATA.travel?.bus?.walk_min ?? 12);
+    $("#k-walk-tube").value = store.get("walkTube", DATA.travel?.tube?.walk_min ?? 11);
+    $("#k-tube-dir").value = store.get("tubeDir", "in");
     const cur = document.documentElement.dataset.theme || "crimson";
     for (const r of document.querySelectorAll('input[name="theme"]')) r.checked = r.value === cur;
     $("#settings").showModal();
@@ -1002,6 +1014,8 @@
     store.set("name", $("#k-name").value.trim().slice(0, 30));
     store.set("alpacaId", $("#k-alpaca-id").value.trim()); store.set("alpacaSecret", $("#k-alpaca-secret").value.trim());
     store.set("finnhub", $("#k-finnhub").value.trim()); store.set("crypto", $("#k-crypto").value);
+    store.set("walkBus", Math.max(0, +$("#k-walk-bus").value || 0)); store.set("walkTube", Math.max(0, +$("#k-walk-tube").value || 0)); store.set("tubeDir", $("#k-tube-dir").value);
+    mark();
     renderHeader(); connectUS(); connectCrypto(); fillAnalystPicker();
   });
 
@@ -1014,7 +1028,31 @@
   if (/Windows/.test(navigator.userAgent) && !standalone) $("#win-app").hidden = false;
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
+  // ---------- sections ----------
+  const VIEWS = ["overview", "portfolio", "calendar", "fight", "signals", "tools"];
+  function showView(v, { scroll = true } = {}) {
+    if (!VIEWS.includes(v)) v = "overview";
+    for (const el of document.querySelectorAll(".view")) el.hidden = el.dataset.view !== v;
+    for (const b of document.querySelectorAll("#tabs [data-go]")) { const on = b.dataset.go === v; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); }
+    store.set("view", v);
+    if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
+    if (scroll) window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    mark();
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) showView(b.dataset.go); });
+  window.addEventListener("hashchange", () => showView(location.hash.slice(1), { scroll: false }));
+
+  // Shared helpers and hooks for book.js and world.js (the portfolio, calendar, fights and travel panels).
+  const Baco = window.Baco = {
+    $, store, esc, num, fmt, px, signed, chg, pctTxt, money, cap, shortDate, daysAgo, ageDays, setHTML, setText, setClass, titleCase, countTo, toTicker,
+    get data() { return DATA; }, us, crypto, CRYPTO, get watch() { return watch; }, quoteFor, keys, mark, showView,
+    onRender: [], onData: [], answerHooks: [], alertHooks: [], extraSyms: () => [], reconnectUS: () => connectUS(),
+    gbpusd: () => { const q = quoteFor("GBPUSD=X"); return q && num(q.price) ? q.price : null; },
+    priceOf(sym) { const c = CRYPTO.find((x) => x[0] === sym); if (c) { const q = crypto[sym] || {}; return { price: q.price, prev: q.open }; } const q = us[sym] || {}; return { price: q.price, prev: q.prev }; },
+  };
+
   // ---------- boot ----------
+  showView(location.hash.slice(1) || store.get("view", "overview"), { scroll: false });
   buildGauge(); buildTiles();
   renderHeader(); setInterval(renderHeader, 30000);
   renderSys(); render();

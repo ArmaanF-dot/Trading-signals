@@ -1,4 +1,4 @@
-"""Build the Hugo dashboard: copies the static page in dashboard/ to _site/ and writes
+"""Build the Baco dashboard: copies the static page in dashboard/ to _site/ and writes
 _site/data.json from the repo's signal files plus a few free delayed quotes.
 
 Live data (Alpaca IEX, crypto, Finnhub) is fetched by the browser with keys the user types
@@ -22,6 +22,7 @@ import pandas as pd
 import requests
 
 import config
+from edge import events, travel, ufc
 from edge.store import read_csv
 
 SOURCE_DIR = config.ROOT / "dashboard"
@@ -362,6 +363,20 @@ def ai_brief(data: dict, key: str | None) -> str | None:
 
 # ---------- build ----------
 
+def safe(fn, default):
+    """Run one optional data source; a failure there must never stop the rest of the build."""
+    try:
+        return fn()
+    except Exception as exc:
+        print(f"dashboard: {getattr(fn, '__name__', 'source')} failed: {type(exc).__name__}")
+        return default
+
+
+def calendar_block(today: date, watch_tickers: list[str], get=requests.get) -> dict:
+    return {"earnings": safe(lambda: events.earnings(today, get, extra=set(watch_tickers)), []),
+            "macro": safe(lambda: events.macro(get), [])}
+
+
 def build_data(today: date | None = None, get=requests.get, env=os.environ) -> dict:
     today = today or datetime.now(timezone.utc).date()
     snaps = load_snapshots()
@@ -384,6 +399,10 @@ def build_data(today: date | None = None, get=requests.get, env=os.environ) -> d
         "risk": risk_record(),
         "uk_names": uk_name_quotes(a, c, get),
         "analyst": analyst_trends([r["ticker"] for r in w if r.get("ticker")], env.get("FINNHUB_API_KEY"), get),
+        "calendar": calendar_block(today, [r["ticker"] for r in w if r.get("ticker")], get),
+        "news": safe(lambda: events.news(get), []),
+        "ufc": ufc.load(),
+        "travel": safe(lambda: travel.build(get=get), None),
     }
     prev = previous_brief(env.get("PREVIOUS_DATA_URL"), today, get)
     ai = (prev or cli_brief(data, env.get("CLAUDE_CODE_OAUTH_TOKEN"))
@@ -416,12 +435,12 @@ def package_windows_app(out_dir: Path, app_dir: Path = APP_DIR) -> Path | None:
         return None
     import zipfile
     (out_dir / "app").mkdir(parents=True, exist_ok=True)
-    zpath = out_dir / "app" / "hugo-app.zip"
+    zpath = out_dir / "app" / "baco-app.zip"
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for f in files:
-            z.write(f, f"Hugo/{f.name}")
-        z.writestr("Hugo/README.txt", "Unzip this folder, then double-click install-app.bat.\r\n"
-                   "It adds Hugo to the Start Menu and desktop and opens it in its own window.\r\n"
+            z.write(f, f"Baco/{f.name}")
+        z.writestr("Baco/README.txt", "Unzip this folder, then double-click install-app.bat.\r\n"
+                   "It adds Baco to the Start Menu and desktop and opens it in its own window.\r\n"
                    "If Windows SmartScreen warns you, click More info, then Run anyway.\r\n"
                    "Undo with app-remove.bat.\r\n")
     return zpath

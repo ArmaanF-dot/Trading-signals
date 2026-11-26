@@ -2,7 +2,7 @@
 that is free of survivorship bias). Returns are gross; the benchmark return covers the same dates.
 
 Each source also gets a risk-adjusted record (Sharpe, volatility, max drawdown and a leverage-sizing line, see
-edge/risk.py), written to signals/track_record.json for Hugo as well as to the markdown."""
+edge/risk.py), written to signals/track_record.json for Baco as well as to the markdown."""
 import json
 
 import pandas as pd

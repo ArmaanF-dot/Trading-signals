@@ -2,7 +2,7 @@ name: dashboard
 on:
   push:
     branches: [main]
-    paths: ["dashboard/**", "app/**", "edge/dashboard.py", "signals/**", "reports/risk_summary.json", "data/fca_shorts/**", ".github/workflows/pages.yml"]
+    paths: ["dashboard/**", "app/**", "edge/dashboard.py", "edge/events.py", "edge/travel.py", "edge/ufc.py", "config.py", "data/ufc_predictions.json", "signals/**", "reports/risk_summary.json", "data/fca_shorts/**", ".github/workflows/pages.yml"]
   workflow_run:
     workflows: [form4, fca, feed]
     types: [completed]

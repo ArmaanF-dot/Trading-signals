@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Hugo</title>
-<meta name="description" content="Personal market homescreen: live US and crypto prices, delayed UK prices, insider and short-interest signals, and a voice assistant.">
+<title>Baco</title>
+<meta name="description" content="Baco: a personal dashboard for markets, portfolio, earnings and events, UFC model picks and bets, commute times and a voice assistant.">
 <script>try { var t = JSON.parse(localStorage.getItem("jarvis.theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,21 +20,32 @@
 <body>
 <header class="topbar">
   <div class="topbar-in">
-    <a class="brand" href="./" aria-label="Hugo">
+    <a class="brand" href="./" aria-label="Baco">
       <svg class="mark" id="mark" viewBox="0 0 32 32" aria-hidden="true"><circle class="m-disc" cx="16" cy="16" r="16"/><path class="m-arc" d="M7.2 20.5A9.5 9.5 0 0 1 24.8 20.5"/><path class="m-needle" d="M16 20.5 21.2 13.2"/><circle class="m-hub" cx="16" cy="20.5" r="2.3"/></svg>
-      <span class="wordmark">Hugo</span>
+      <span class="wordmark">Baco</span>
     </a>
     <div class="sys" id="sys" aria-label="Data status"></div>
     <div class="actions">
       <button class="btn" id="install" type="button" hidden>Install app</button>
-      <a class="btn" id="win-app" href="app/hugo-app.zip" download hidden>Get Windows app</a>
+      <a class="btn" id="win-app" href="app/baco-app.zip" download hidden>Get Windows app</a>
       <button class="btn" id="open-settings" type="button" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h9M17 18h3"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg><span>Settings</span></button>
     </div>
   </div>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <div class="tabs-in" role="tablist">
+      <button type="button" role="tab" data-go="overview">Overview</button>
+      <button type="button" role="tab" data-go="portfolio">Portfolio</button>
+      <button type="button" role="tab" data-go="calendar">Calendar</button>
+      <button type="button" role="tab" data-go="fight">Fight night</button>
+      <button type="button" role="tab" data-go="signals">Signals</button>
+      <button type="button" role="tab" data-go="tools">Tools</button>
+    </div>
+  </nav>
   <div class="tape" aria-label="Latest prices"><div class="tape-track" id="tape"></div></div>
 </header>
 
 <main class="wrap">
+<div class="view" id="v-overview" data-view="overview">
   <section class="masthead rise">
     <div>
       <p class="eyebrow" id="today"></p>
@@ -47,7 +58,7 @@
   <section class="ask rise" style="--i:1">
     <form class="ask-bar" id="ask-form" autocomplete="off">
       <svg class="ask-ico" viewBox="0 0 32 32" aria-hidden="true"><path class="a-arc" d="M7.2 20.5A9.5 9.5 0 0 1 24.8 20.5"/><path class="a-needle" d="M16 20.5 21.2 13.2"/><circle class="a-hub" cx="16" cy="20.5" r="2.3"/></svg>
-      <input id="ask-input" placeholder="Ask Hugo about the markets" spellcheck="false" aria-label="Ask Hugo a question">
+      <input id="ask-input" placeholder="Ask Baco about the markets" spellcheck="false" aria-label="Ask Baco a question">
       <button class="mic" id="mic" type="button" aria-label="Ask by voice" title="Ask by voice" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
         <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
@@ -61,6 +72,11 @@
       <button type="button" data-q="How is the fear gauge?">Fear gauge</button>
       <button type="button" data-q="What's Bitcoin at?">What's Bitcoin at?</button>
       <button type="button" data-q="When does New York open?">When does New York open?</button>
+      <button type="button" data-q="When is my next bus?">My next bus</button>
+      <button type="button" data-q="When is my next train?">My next tube</button>
+      <button type="button" data-q="Who reports earnings next?">Next earnings</button>
+      <button type="button" data-q="What are the UFC picks?">UFC picks</button>
+      <button type="button" data-q="How is my portfolio?">My portfolio</button>
     </div>
     <div class="answer" id="answer" hidden aria-live="polite">
       <div class="ans-head">
@@ -110,7 +126,27 @@
     </section>
   </div>
 
-  <section class="block rise" style="--i:5">
+  <div class="grid">
+    <section class="card travel span-6 rise" style="--i:5" id="travel-card">
+      <div class="card-head"><h2>Getting around</h2><span class="badge" id="travel-badge"></span></div>
+      <div id="travel"><p class="hint">Loading times…</p></div>
+    </section>
+    <section class="card span-6 rise" style="--i:6">
+      <div class="card-head"><h2>Coming up</h2><button class="btn" type="button" data-go="calendar">Full calendar</button></div>
+      <div id="soon"></div>
+    </section>
+    <section class="card span-7 rise" style="--i:7">
+      <div class="card-head"><h2>Headlines</h2><span class="badge" id="news-src"></span></div>
+      <ul class="news" id="news"></ul>
+    </section>
+    <section class="card span-5 rise" style="--i:8">
+      <div class="card-head"><h2>Your book</h2><button class="btn" type="button" data-go="portfolio">Open</button></div>
+      <div class="stats book-stats" id="book-glance"></div>
+      <p class="hint small" id="book-glance-note"></p>
+    </section>
+  </div>
+
+  <section class="block rise" style="--i:9">
     <div class="section-head">
       <h2>Markets</h2>
       <p class="legend"><span><i class="dot live"></i>Live</span><span><i class="dot delayed"></i>About 15 minutes delayed</span></p>
@@ -119,19 +155,6 @@
   </section>
 
   <div class="grid">
-    <section class="card span-6 rise" style="--i:6">
-      <div class="card-head"><h2>Worth a look</h2><span class="badge"><i class="dot up"></i>US insiders buying</span></div>
-      <p class="hint">Several bosses at the same company bought their own shares recently. A reason to research the stock, not to buy it: on its own, this hasn't beaten the market after costs. Select a row to add it to your watchlist.</p>
-      <div class="rows" id="insider"></div>
-    </section>
-    <section class="card span-6 rise" style="--i:7">
-      <div class="card-head"><h2>Steer clear</h2><span class="badge"><i class="dot down"></i>UK short sellers piling in</span></div>
-      <p class="hint">Funds betting against these UK shares increased their bets this month. Historically these stocks lagged the market, so avoid buying them for now.</p>
-      <div class="rows" id="avoid"></div>
-      <h3 class="sub-head">Most bet-against UK shares</h3>
-      <ol class="rank" id="shorted-top"></ol>
-    </section>
-
     <section class="card span-6 rise" style="--i:8">
       <div class="card-head"><h2>Watchlist</h2><span class="badge" id="us-status">Delayed</span></div>
       <form class="add" id="cmd" autocomplete="off">
@@ -146,6 +169,24 @@
       <div class="card-head"><h2>Crypto</h2><span class="badge" id="crypto-status">Connecting</span></div>
       <div class="list-head" aria-hidden="true"><span>Coin</span><span class="r">Last</span><span class="r">24h</span><span></span></div>
       <ul class="list" id="crypto"></ul>
+    </section>
+  </div>
+
+</div>
+
+<div class="view" id="v-signals" data-view="signals" hidden>
+  <div class="grid">
+    <section class="card span-6 rise" style="--i:6">
+      <div class="card-head"><h2>Worth a look</h2><span class="badge"><i class="dot up"></i>US insiders buying</span></div>
+      <p class="hint">Several bosses at the same company bought their own shares recently. A reason to research the stock, not to buy it: on its own, this hasn't beaten the market after costs. Select a row to add it to your watchlist.</p>
+      <div class="rows" id="insider"></div>
+    </section>
+    <section class="card span-6 rise" style="--i:7">
+      <div class="card-head"><h2>Steer clear</h2><span class="badge"><i class="dot down"></i>UK short sellers piling in</span></div>
+      <p class="hint">Funds betting against these UK shares increased their bets this month. Historically these stocks lagged the market, so avoid buying them for now.</p>
+      <div class="rows" id="avoid"></div>
+      <h3 class="sub-head">Most bet-against UK shares</h3>
+      <ol class="rank" id="shorted-top"></ol>
     </section>
   </div>
 
@@ -187,10 +228,158 @@
       </div>
     </details>
   </section>
+</div>
+
+<div class="view" id="v-portfolio" data-view="portfolio" hidden>
+  <section class="page-head rise">
+    <p class="eyebrow">Portfolio</p>
+    <h1>Your investments</h1>
+    <p class="sub">Positions you hold, real or paper, valued at live prices where you have a key. Everything here is stored only in this browser.</p>
+  </section>
+  <div class="grid">
+    <section class="card span-12 rise" style="--i:1">
+      <div class="stats big" id="pf-summary"></div>
+      <p class="hint small" id="pf-note"></p>
+    </section>
+    <section class="card span-7 rise" style="--i:2">
+      <div class="card-head"><h2>Value over time</h2><span class="badge" id="pf-curve-badge"></span></div>
+      <div id="pf-curve" class="curve"></div>
+      <p class="hint small">A point is saved each day you open Baco with prices available. Dotted line: the S&amp;P 500 ETF rebased to the same start.</p>
+    </section>
+    <section class="card span-5 rise" style="--i:3">
+      <div class="card-head"><h2>Allocation</h2><span class="badge" id="pf-risk-badge"></span></div>
+      <div id="pf-alloc"></div>
+    </section>
+    <section class="card span-12 rise" style="--i:4">
+      <div class="card-head"><h2>Holdings</h2></div>
+      <form class="add pf-add" id="pf-form" autocomplete="off">
+        <input id="pf-sym" placeholder="Symbol, e.g. AAPL or BTC" spellcheck="false" aria-label="Symbol">
+        <input id="pf-qty" type="number" step="any" min="0" placeholder="Shares" aria-label="Number of shares">
+        <input id="pf-cost" type="number" step="any" min="0" placeholder="Average cost, US$" aria-label="Average cost in US dollars">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+      <div class="scroll tall"><table class="tbl" id="pf-table"><thead><tr><th>Symbol</th><th class="r">Shares</th><th class="r">Cost</th><th class="r">Last</th><th class="r">Today</th><th class="r">Value</th><th class="r">Weight</th><th class="r">Gain / loss</th><th></th></tr></thead><tbody></tbody></table></div>
+      <div class="pf-cash"><label class="field inline"><span>Cash, US$ <em>uninvested money</em></span><input id="pf-cash" type="number" step="any" min="0" placeholder="0"></label></div>
+      <p class="hint small">Prices are US$. UK-listed shares are not priced here yet. To follow a US stock or a coin without owning it, use the watchlist on the Overview.</p>
+    </section>
+  </div>
+</div>
+
+<div class="view" id="v-calendar" data-view="calendar" hidden>
+  <section class="page-head rise">
+    <p class="eyebrow">Calendar</p>
+    <h1>What is coming up</h1>
+    <p class="sub">Company earnings, the economic releases that move markets, and your UFC card. Times are UK time.</p>
+  </section>
+  <div class="grid">
+    <section class="card span-7 rise" style="--i:1">
+      <div class="card-head"><h2>Earnings</h2><label class="toggle"><input type="checkbox" id="cal-mine"><span>Only my names</span></label></div>
+      <p class="hint">The biggest US companies reporting in the next two weeks, plus anything on your watchlist, portfolio or in the insider list. Dates move: confirm with the company before you rely on one.</p>
+      <div id="cal-earn"></div>
+    </section>
+    <section class="card span-5 rise" style="--i:2">
+      <div class="card-head"><h2>Economy</h2><span class="badge">High and medium impact</span></div>
+      <p class="hint">US, UK and euro-area releases this week and next.</p>
+      <div id="cal-macro"></div>
+      <h3 class="sub-head">Fight cards</h3>
+      <div id="cal-ufc"></div>
+    </section>
+  </div>
+</div>
+
+<div class="view" id="v-fight" data-view="fight" hidden>
+  <section class="page-head rise">
+    <p class="eyebrow">Fight night</p>
+    <h1>UFC model and bets</h1>
+    <p class="sub">What your UFC model thinks of the next card, the picks it is most sure about, and a bet tracker. The model has not proved an edge over bookmaker prices, so treat this as paper trading.</p>
+  </section>
+  <div class="grid">
+    <section class="card span-12 rise" style="--i:1">
+      <div class="card-head"><h2 id="ufc-title">Next card</h2><span class="ufc-tools"><select id="ufc-event" aria-label="Event"></select>
+        <button class="btn" type="button" id="ufc-import">Load model file</button><button class="btn" type="button" id="ufc-sample">Show sample</button><input type="file" id="ufc-file" accept=".json,application/json" hidden></span></div>
+      <p class="hint" id="ufc-note"></p>
+      <div id="ufc-empty" hidden></div>
+      <div id="ufc-picks"></div>
+    </section>
+    <section class="card span-12 rise" style="--i:2" id="ufc-card" hidden>
+      <div class="card-head"><h2>Every fight</h2><span class="badge" id="ufc-count"></span></div>
+      <div class="fights" id="ufc-fights"></div>
+    </section>
+    <section class="card span-5 rise" style="--i:3">
+      <div class="card-head"><h2>How good is the model?</h2></div>
+      <div id="ufc-evidence"></div>
+    </section>
+    <section class="card span-7 rise" style="--i:4">
+      <div class="card-head"><h2>Bet tracker</h2><span class="badge" id="bt-badge"></span></div>
+      <div class="stats" id="bt-stats"></div>
+      <div id="bt-curve" class="curve short"></div>
+      <form class="bet-form" id="bt-form" autocomplete="off">
+        <input id="bt-sel" placeholder="Selection, e.g. Fighter to win" aria-label="Selection">
+        <input id="bt-odds" type="number" step="0.01" min="1.01" placeholder="Odds" aria-label="Decimal odds">
+        <input id="bt-stake" type="number" step="0.01" min="0" placeholder="Stake £" aria-label="Stake in pounds">
+        <input id="bt-p" type="number" step="1" min="1" max="99" placeholder="Chance %" aria-label="Your estimated chance in percent">
+        <button class="btn primary" type="submit">Log bet</button>
+      </form>
+      <p class="hint small" id="bt-hint"></p>
+      <div class="scroll"><table class="tbl" id="bt-table"><thead><tr><th>Date</th><th>Selection</th><th class="r">Odds</th><th class="r">Stake</th><th class="r">Chance</th><th>Result</th><th class="r">Profit</th></tr></thead><tbody></tbody></table></div>
+      <label class="field inline"><span>Starting bankroll, £ <em>money set aside for bets</em></span><input id="bt-bank" type="number" step="1" min="0" placeholder="500"></label>
+    </section>
+  </div>
+</div>
+
+<div class="view" id="v-tools" data-view="tools" hidden>
+  <section class="page-head rise">
+    <p class="eyebrow">Tools</p>
+    <h1>Sizing and housekeeping</h1>
+    <p class="sub">Small calculators for deciding how much to risk, plus a notebook and a backup of everything Baco stores on this device.</p>
+  </section>
+  <div class="grid">
+    <section class="card span-6 rise" style="--i:1">
+      <div class="card-head"><h2>Share position size</h2></div>
+      <p class="hint">How many shares to buy so that being stopped out costs a set slice of your account.</p>
+      <div class="calc" id="calc-pos">
+        <label class="field"><span>Account, £ or $</span><input data-k="acct" type="number" step="any" placeholder="10000"></label>
+        <label class="field"><span>Risk per trade, %</span><input data-k="risk" type="number" step="any" placeholder="1"></label>
+        <label class="field"><span>Entry price</span><input data-k="entry" type="number" step="any" placeholder="100"></label>
+        <label class="field"><span>Stop price</span><input data-k="stop" type="number" step="any" placeholder="92"></label>
+      </div>
+      <div class="result" id="calc-pos-out"></div>
+    </section>
+    <section class="card span-6 rise" style="--i:2">
+      <div class="card-head"><h2>Bet value and stake</h2></div>
+      <p class="hint">Does a price beat your estimate of the chance, and what would a cautious stake be (Kelly, then a quarter of it, capped at 5% of the bankroll).</p>
+      <div class="calc" id="calc-bet">
+        <label class="field"><span>Odds</span><input data-k="odds" placeholder="2.10 or 11/10 or +110"></label>
+        <label class="field"><span>Your chance, %</span><input data-k="p" type="number" step="any" placeholder="55"></label>
+        <label class="field"><span>Bankroll, £</span><input data-k="bank" type="number" step="any" placeholder="500"></label>
+      </div>
+      <div class="result" id="calc-bet-out"></div>
+    </section>
+    <section class="card span-6 rise" style="--i:3">
+      <div class="card-head"><h2>Costs and currency</h2></div>
+      <div class="calc" id="calc-fx">
+        <label class="field"><span>Amount</span><input data-k="amt" type="number" step="any" placeholder="1000"></label>
+        <label class="field"><span>Round-trip cost, %</span><input data-k="cost" type="number" step="any" placeholder="2"></label>
+        <label class="field"><span>Gain you need, % (to cover it)</span><input data-k="need" type="number" step="any" placeholder="" disabled></label>
+      </div>
+      <div class="result" id="calc-fx-out"></div>
+    </section>
+    <section class="card span-6 rise" style="--i:4">
+      <div class="card-head"><h2>Notebook</h2><span class="badge" id="note-saved"></span></div>
+      <textarea id="notes" rows="7" placeholder="Ideas, reasons for a trade, things to check…" aria-label="Notes"></textarea>
+    </section>
+    <section class="card span-12 rise" style="--i:5">
+      <div class="card-head"><h2>Backup</h2></div>
+      <p class="hint">Your holdings, bets, watchlist, notes and settings live only in this browser (including any API keys, which are never included in a backup). Save a file now and then, and load it to move to another device.</p>
+      <div class="row-btns"><button class="btn" type="button" id="bk-save">Save backup</button><button class="btn" type="button" id="bk-load">Load backup</button><input type="file" id="bk-file" accept=".json,application/json" hidden><span class="hint small" id="bk-msg"></span></div>
+    </section>
+  </div>
+</div>
+
 
   <footer class="foot">
     <p>For research, not financial advice. Paper trade first.</p>
-    <p>Live: Alpaca or Finnhub (US, with your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK and macro). Signals: SEC Form 4 filings and FCA short positions. Voice questions use your browser's own speech service.</p>
+    <p>Live: Alpaca or Finnhub (US, with your keys), Coinbase or Binance (crypto). Delayed: Yahoo (UK and macro). Signals: SEC Form 4 filings and FCA short positions. Earnings: Nasdaq. Economy: Forex Factory. Headlines: BBC News and Yahoo Finance. Buses: bustimes.org. Tube: TfL open data. Voice questions use your browser's own speech service.</p>
   </footer>
 </main>
 
@@ -205,6 +394,13 @@
       <label class="sw"><input type="radio" name="theme" value="graphite"><span class="sw-chip" style="--a:#0c0c0c;--b:#ff5f1f;--c:#f2f2f2"></span><span><b>Graphite</b><small>Black, white and orange</small></span></label>
     </fieldset>
     <label class="field"><span>Your first name <em>optional, for the greeting</em></span><input id="k-name" autocomplete="off" spellcheck="false" maxlength="30"></label>
+    <fieldset>
+      <legend>Travel</legend>
+      <p class="hint">Walking minutes from home to each stop, used for the "leave by" times.</p>
+      <label class="field"><span>Walk to the bus stop, minutes</span><input id="k-walk-bus" type="number" min="0" max="60"></label>
+      <label class="field"><span>Walk to the tube station, minutes</span><input id="k-walk-tube" type="number" min="0" max="60"></label>
+      <label class="field"><span>Tube direction</span><select id="k-tube-dir"><option value="in">Towards London</option><option value="out">Away from London</option><option value="all">Both</option></select></label>
+    </fieldset>
     <label class="field"><span>Read answers aloud</span>
       <select id="k-speak"><option value="voice">When I ask by voice</option><option value="always">Always</option><option value="never">Never</option></select>
     </label>
@@ -227,5 +423,7 @@
 </dialog>
 
 <script src="app.js"></script>
+<script src="book.js"></script>
+<script src="world.js"></script>
 </body>
 </html>
