@@ -1,5 +1,7 @@
 issuer_cik,window_start,signal_date,ticker,issuer,n_insiders,total_value,insiders,last_price,market_cap,price_at_signal,ret_5d,ret_20d,bench_ret_5d,bench_ret_20d,public_date
 0001647639,2026-11-19,2026-11-20,UPST,"Upstart Holdings, Inc.",2,1811053.0,"Gu Paul (Chief Executive Officer, Director); Girouard Dave (Director, 10% owner)",15.8498,1567682448,16.98,,,,,
 0001562151,2026-11-20,2026-11-20,CWGL,"Crimson Wine Group, Ltd",2,375000.0,"STEINBERG JOSEPH S (Director, 10% owner); Cumming John D. (Director, 10% owner)",3.75,77197601,3.7,,,,,2026-11-23
-0002094433,2026-11-19,2026-11-19,RMIX,"Suncrete, Inc.",2,749055.52,"Edgar Randall W. (Chief Executive Officer, Director, 10% owner); Rees-Jones David (Director)",6.49,,,,,,,2026-11-24
+0002094433,2026-11-19,2026-11-19,RMIX,"Suncrete, Inc.",2,749055.52,"Edgar Randall W. (Chief Executive Officer, Director, 10% owner); Rees-Jones David (Director)",6.49,,6.97,,,,,2026-11-24
 0001175151,2026-11-20,2026-11-20,CTSO,Cytosorbents Corp,7,499983.96,"Sobel Alan D. (Director); MARIANI PETER J (Chief Financial Officer); Kim Jiny (Director); Jones Edward Raymond (Director); Chan Phillip P. (Chief Executive Officer, Director); Capponi Vincent (President and COO); BATOR MICHAEL G. (Director)",5.18,16331965,,,,,,2026-11-25
+0001436425,2026-11-20,2026-11-23,HBCP,"HOME BANCORP, INC.",2,345638.35,Hill Darren M (Chief Risk Officer); RADER CHRIS P (Director),61.25,476471222,,,,,,2026-11-26
+0001859392,2026-11-25,2026-11-25,GLXY,Galaxy Digital Inc.,2,1223971.52,"Novogratz Michael (Chief Executive Officer, Director, 10% owner); Paquette Anthony (Chief Financial Officer)",10.738,,,,,,,2026-11-26
