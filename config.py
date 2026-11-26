@@ -206,3 +206,10 @@ JOBS_LOOKBACK_MAX_DAYS = 150
 JOBS_BREAKPOINT_DAYS = 365
 JOBS_MIN_BREAKPOINT_EVENTS = 30
 JOBS_WORKDAY_INTERVAL = 3.0  # Workday rate-limits harder than the other boards
+
+# Cross-asset trend following (edge/trend.py)
+TREND_COSTS = [0.001, 0.0025, 0.025]  # round trip: realistic liquid ETF, a wide-spread case, then the house 2.5%
+TREND_SPLIT = "2017-01"  # first out-of-sample formation month
+TREND_FIRST_FORMATION = "2008-01"
+TREND_VOL_TARGET = 0.10
+TREND_LEVERAGE_CAP = 3.0

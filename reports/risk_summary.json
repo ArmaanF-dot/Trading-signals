@@ -132,6 +132,32 @@
    "note": "Edge is the long-only excess over the equal-weight ETF basket, net of costs."
   },
   {
+   "study": "Cross-asset trend following (ETFs)",
+   "period": "2017-02 to 2026-11",
+   "months": 118,
+   "net": {
+    "n": 118,
+    "ann": 0.0494,
+    "vol": 0.1046,
+    "sharpe": 0.5129,
+    "t": 1.6084,
+    "maxdd": -0.2174
+   },
+   "edge": {
+    "n": 118,
+    "ann": -0.0129,
+    "vol": 0.1654,
+    "sharpe": -0.0004,
+    "t": -0.0013,
+    "maxdd": -0.4572
+   },
+   "sizing": {
+    "leverage": 0.0,
+    "text": "None: out-of-sample edge Sharpe -0.00 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns."
+   },
+   "note": "Edge is the trend book minus the always-long book with identical sizing, net of costs; no leverage financing."
+  },
+  {
    "study": "Form 4 cluster buys (US)",
    "period": "2023-01 to 2026-01",
    "months": 37,

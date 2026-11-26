@@ -11,6 +11,7 @@ Out-of-sample periods where a study chose a variant (whole sample for event rule
 | ML rank, gradient boosting (S&P 500) | 2013-02 to 2026-10 | 0.74 | -31% | -0.10 | 4.0% | -13% | none |
 | Quality and value tilts (S&P 500) | 2018-08 to 2026-11 | 0.50 | -34% | -0.21 | 7.0% | -21% | none |
 | Frontier country ETFs | 2016-02 to 2026-11 | -0.07 | -31% | -0.22 | 8.0% | -30% | none |
+| Cross-asset trend following (ETFs) | 2017-02 to 2026-11 | 0.51 | -22% | -0.00 | 16.5% | -46% | none |
 | Form 4 cluster buys (US) | 2023-01 to 2026-01 | -1.11 | -57% | -2.77 | 13.3% | -71% | none |
 | Form 4 opportunistic insiders (US) | 2023-01 to 2026-01 | -0.10 | -30% | -3.54 | 5.3% | -44% | none |
 | FCA short rises, shorted (UK) | 2016-12 to 2026-07 | -1.46 | -96% | -1.64 | 12.2% | -87% | none |
@@ -23,6 +24,7 @@ Out-of-sample periods where a study chose a variant (whole sample for event rule
 - **ML rank, gradient boosting (S&P 500)**: None: out-of-sample edge Sharpe -0.10 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
 - **Quality and value tilts (S&P 500)**: None: out-of-sample edge Sharpe -0.21 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns.
 - **Frontier country ETFs**: None: out-of-sample edge Sharpe -0.22 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns. Edge is the long-only excess over the equal-weight ETF basket, net of costs.
+- **Cross-asset trend following (ETFs)**: None: out-of-sample edge Sharpe -0.00 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns. Edge is the trend book minus the always-long book with identical sizing, net of costs; no leverage financing.
 - **Form 4 cluster buys (US)**: None: out-of-sample edge Sharpe -2.77 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns. 20-day trades, 2.5% round trip, edge vs IWM. No fitted parameters.
 - **Form 4 opportunistic insiders (US)**: None: out-of-sample edge Sharpe -3.54 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns. 20-day trades, liquidity-tiered costs.
 - **FCA short rises, shorted (UK)**: None: out-of-sample edge Sharpe -1.64 net of costs is below 1.0. No edge to size up; leverage would only magnify costs and drawdowns. Short the stock for 20 days after a rise; borrow cost ignored, so this flatters it.
