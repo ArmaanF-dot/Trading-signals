@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep | text-study | products | combine"
 
 
 def study_runner(what: str, argv: list[str]):
@@ -15,6 +15,12 @@ def study_runner(what: str, argv: list[str]):
     if what == "oil-tanks":
         from edge import oil_tanks
         return oil_tanks.main
+    if what == "text-study":
+        from edge import textchg
+        return textchg.main
+    if what == "combine":
+        from edge import combine
+        return combine.main
     if what == "jobs-deep":
         from edge.jobs import deep
         return deep.main
@@ -72,6 +78,10 @@ def main(argv: list[str]) -> int:
     if what == "jobs":
         from edge.jobs import collect
         collect.run()
+        return 0
+    if what == "products":
+        from edge.products import collect as pcollect
+        pcollect.run()
         return 0
     if what == "ufc":
         from edge import ufc
