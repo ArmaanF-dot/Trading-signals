@@ -1,23 +1,8 @@
 {
-  "as_of": "2026-11-25",
+  "as_of": "2026-11-26",
   "lookback_days": 30,
   "disclaimer": "Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first.",
   "signals": [
-    {
-      "id": "fca:JE00BN574F90:2026-11-24",
-      "symbol": "WIZZ.L",
-      "isin": "JE00BN574F90",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-24",
-      "summary": "Wizz Air Holdings PLC: aggregate net short up 0.68pp over 30 days, now 9.43%",
-      "metrics": {
-        "net_change_pp": 0.68,
-        "aggregate_net_short_pct": 9.43
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
     {
       "id": "fca:CY0106002112:2026-11-25",
       "symbol": "",
@@ -41,10 +26,10 @@
       "signal": "fca_short_rise",
       "stance": "avoid",
       "date": "2026-11-25",
-      "summary": "Vistry Group PLC: aggregate net short up 0.61pp over 30 days, now 14.78%",
+      "summary": "Vistry Group PLC: aggregate net short up 0.61pp over 30 days, now 14.79%",
       "metrics": {
         "net_change_pp": 0.61,
-        "aggregate_net_short_pct": 14.78
+        "aggregate_net_short_pct": 14.79
       },
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
@@ -64,17 +49,107 @@
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
     {
-      "id": "fca:GB00BG5KQW09:2026-11-25",
+      "id": "fca:GB00B1722W11:2026-11-26",
+      "symbol": "JET2.L",
+      "isin": "GB00B1722W11",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "Jet2 Plc: aggregate net short up 0.60pp over 30 days, now 2.68%",
+      "metrics": {
+        "net_change_pp": 0.6,
+        "aggregate_net_short_pct": 2.68
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00B82YXW83:2026-11-26",
+      "symbol": "VSVS.L",
+      "isin": "GB00B82YXW83",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "VESUVIUS PLC: aggregate net short up 0.62pp over 30 days, now 1.43%",
+      "metrics": {
+        "net_change_pp": 0.62,
+        "aggregate_net_short_pct": 1.43
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00B8VZXT93:2026-11-26",
+      "symbol": "CRST.L",
+      "isin": "GB00B8VZXT93",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "CREST NICHOLSON HOLDINGS PLC: aggregate net short up 0.65pp over 30 days, now 12.65%",
+      "metrics": {
+        "net_change_pp": 0.65,
+        "aggregate_net_short_pct": 12.65
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00BG5KQW09:2026-11-26",
       "symbol": "CWR.L",
       "isin": "GB00BG5KQW09",
       "market": "UK",
       "signal": "fca_short_rise",
       "stance": "avoid",
-      "date": "2026-11-25",
-      "summary": "CERES POWER HOLDINGS PLC: aggregate net short up 0.99pp over 30 days, now 21.52%",
+      "date": "2026-11-26",
+      "summary": "CERES POWER HOLDINGS PLC: aggregate net short up 0.83pp over 30 days, now 21.36%",
       "metrics": {
-        "net_change_pp": 0.99,
-        "aggregate_net_short_pct": 21.52
+        "net_change_pp": 0.83,
+        "aggregate_net_short_pct": 21.36
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00BYN59130:2026-11-26",
+      "symbol": "DOM.L",
+      "isin": "GB00BYN59130",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "DOMINO'S PIZZA GROUP PLC: aggregate net short up 0.50pp over 30 days, now 9.18%",
+      "metrics": {
+        "net_change_pp": 0.5,
+        "aggregate_net_short_pct": 9.18
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:JE00BN574F90:2026-11-26",
+      "symbol": "WIZZ.L",
+      "isin": "JE00BN574F90",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "Wizz Air Holdings PLC: aggregate net short up 1.15pp over 30 days, now 9.90%",
+      "metrics": {
+        "net_change_pp": 1.15,
+        "aggregate_net_short_pct": 9.9
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:US25520W1071:2026-11-26",
+      "symbol": "",
+      "isin": "US25520W1071",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-26",
+      "summary": "Diversified Energy Company: aggregate net short up 0.68pp over 30 days, now 9.71%",
+      "metrics": {
+        "net_change_pp": 0.68,
+        "aggregate_net_short_pct": 9.71
       },
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
@@ -107,6 +182,66 @@
         "market_cap": 77197601.0
       },
       "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    },
+    {
+      "id": "form4:0001175151:2026-11-20",
+      "symbol": "CTSO",
+      "market": "US",
+      "signal": "form4_cluster",
+      "stance": "watch",
+      "date": "2026-11-20",
+      "summary": "7 insiders bought $499,984 (window from 2026-11-20): Sobel Alan D. (Director); MARIANI PETER J (Chief Financial Officer); Kim Jiny (Director); Jones Edward Raymond (Director); Chan Phillip P. (Chief Executive Officer, Director); Capponi Vincent (President and COO); BATOR MICHAEL G. (Director)",
+      "metrics": {
+        "n_insiders": 7,
+        "total_value": 499983.96,
+        "market_cap": 16331965.0
+      },
+      "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    },
+    {
+      "id": "form4:0001436425:2026-11-20",
+      "symbol": "HBCP",
+      "market": "US",
+      "signal": "form4_cluster",
+      "stance": "watch",
+      "date": "2026-11-23",
+      "summary": "2 insiders bought $345,638 (window from 2026-11-20): Hill Darren M (Chief Risk Officer); RADER CHRIS P (Director)",
+      "metrics": {
+        "n_insiders": 2,
+        "total_value": 345638.35,
+        "market_cap": 476471222.0
+      },
+      "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    },
+    {
+      "id": "form4:0001859392:2026-11-25",
+      "symbol": "GLXY",
+      "market": "US",
+      "signal": "form4_cluster",
+      "stance": "watch",
+      "date": "2026-11-25",
+      "summary": "2 insiders bought $1,223,972 (window from 2026-11-25): Novogratz Michael (Chief Executive Officer, Director, 10% owner); Paquette Anthony (Chief Financial Officer)",
+      "metrics": {
+        "n_insiders": 2,
+        "total_value": 1223971.52,
+        "market_cap": null
+      },
+      "evidence": "Backtest 2023-25: no net edge (about -1% to -2% excess vs IWM after costs). Watchlist input only."
+    },
+    {
+      "id": "fca:GB00BM8NFJ84:2026-11-26",
+      "symbol": "BREE.L",
+      "isin": "GB00BM8NFJ84",
+      "market": "UK",
+      "signal": "fca_short_fall",
+      "stance": "info",
+      "date": "2026-11-26",
+      "summary": "Breedon Group Plc: aggregate net short down 0.60pp over 30 days, now 11.46%",
+      "metrics": {
+        "net_change_pp": -0.6,
+        "aggregate_net_short_pct": 11.46
+      },
+      "evidence": "Short covering: no measurable edge in backtests."
     }
   ]
 }

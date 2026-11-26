@@ -4,12 +4,12 @@ Live signals only, measured from the first close after they became public. Costs
 
 ### Form 4 clusters
 
-Signals logged: 3. With a 20-day return: 0.
+Signals logged: 6. With a 20-day return: 0.
 Too few to read anything into (need 30).
 
 ### FCA short changes
 
-Signals logged: 159. With a 20-day return: 0.
+Signals logged: 244. With a 20-day return: 0.
 Too few to read anything into (need 30).
 
 ### UK combo
