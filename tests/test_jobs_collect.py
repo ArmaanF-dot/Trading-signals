@@ -49,3 +49,27 @@ def test_run_appends_daily_rows_keeps_state_on_error_and_skips_repeat_day(tmp_pa
     assert b["status"] == "error" and b["open"] == ""
     state = json.loads((tmp_path / "state.json").read_text())
     assert state["BBB"] == ["a-1", "a-2", "a-3"]  # failed fetch leaves yesterday's ids
+
+
+def test_workday_snapshot_counts_today_and_flags_cap():
+    pages = [{"total": 2000, "jobPostings": [{"title": "Software Engineer", "postedOn": "Posted Today"}] * 20},
+             {"jobPostings": [{"title": "Account Executive", "postedOn": "Posted Today"},
+                              {"title": "Nurse", "postedOn": "Posted Yesterday"}]}]
+    calls = []
+
+    def post(url, body):
+        calls.append((url, body["offset"]))
+        return pages[len(calls) - 1]
+
+    s = collect.workday_snapshot("acme.wd5/External", post)
+    assert calls[0][0] == "https://acme.wd5.myworkdayjobs.com/wday/cxs/acme/External/jobs"
+    assert [c[1] for c in calls] == [0, 20]  # stops once older postings appear
+    assert s == {"open": 2000, "added": 21, "status": "capped", "eng": 20, "sales": 1}
+
+
+def test_function_counts_in_daily_rows(tmp_path, monkeypatch):
+    monkeypatch.setattr(collect, "load_boards", lambda: [{"ticker": "AAA", "ats": "greenhouse", "token": "aaa"}])
+    feed = {"jobs": [{"id": 1, "title": "Backend Engineer"}, {"id": 2, "title": "Account Executive"}, {"id": 3, "title": "Chef"}]}
+    collect.run("2026-11-26", get=lambda url: feed, data_dir=tmp_path)
+    d = pd.read_csv(tmp_path / "daily.csv", dtype=str, keep_default_na=False).iloc[0]
+    assert (d["open"], d["eng"], d["sales"]) == ("3", "1", "1")
