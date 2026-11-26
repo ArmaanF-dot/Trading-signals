@@ -143,7 +143,7 @@ def quarterly_revenue(facts: pd.DataFrame) -> pd.Series:
     minus the three quarters inside it. Uses the most preferred revenue tag available per period."""
     f = facts[facts["concept"] == "revenue"].dropna(subset=["start", "end"]).copy()
     if f.empty:
-        return pd.Series(dtype=float)
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([]))
     f["days"] = (f["end"] - f["start"]).dt.days
     f = f.sort_values(["prio", "filed"]).drop_duplicates(["start", "end"], keep="first")
     q = f[f["days"].between(80, 100)].set_index("end")["val"]
@@ -158,6 +158,8 @@ def quarterly_revenue(facts: pd.DataFrame) -> pd.Series:
 def rev_accel_at(q: pd.Series, e) -> float:
     """Acceleration of year-on-year revenue growth for the latest quarter ending before date e."""
     e = pd.Timestamp(e)
+    if q.empty or not isinstance(q.index, pd.DatetimeIndex):
+        return np.nan  # no usable revenue history (e.g. no XBRL revenue tag)
     q = q[q > 0]
     done = q[(q.index < e) & (q.index >= e - pd.Timedelta(days=100))]
     if done.empty:

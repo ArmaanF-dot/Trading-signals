@@ -63,3 +63,9 @@ def test_quarterly_revenue_derives_q4_and_acceleration():
 def test_power_helpers():
     assert deep.events_needed(0.05) == 3136
     assert np.isclose(deep.mde(400), 0.14)
+
+
+def test_rev_accel_without_revenue_history_is_nan():
+    assert np.isnan(deep.rev_accel_at(pd.Series(dtype=float), "2024-02-05"))
+    empty = pd.DataFrame(columns=["concept", "prio", "start", "end", "val", "filed", "accn"])
+    assert np.isnan(deep.rev_accel_at(deep.quarterly_revenue(empty), "2024-02-05"))
