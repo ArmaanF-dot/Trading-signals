@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | reversal | ml-rank | quality-value | oil-tanks | carry [--refresh] | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep"
 
 
 def study_runner(what: str, argv: list[str]):
@@ -30,6 +30,9 @@ def study_runner(what: str, argv: list[str]):
     if what == "reversal":
         from edge import reversal
         return reversal.main
+    if what == "trend":
+        from edge import trend
+        return trend.main
     if what == "frontier":
         from edge import frontier
         return frontier.main

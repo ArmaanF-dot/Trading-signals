@@ -219,3 +219,9 @@ CARRY_SPOT_FEE, CARRY_PERP_FEE = 0.0010, 0.0005  # Binance taker, no BNB discoun
 CARRY_SLIPPAGE = {"BTC": 0.0002, "ETH": 0.0002}  # per leg per side; everything else uses the default
 CARRY_SLIPPAGE_DEFAULT = 0.0008
 CARRY_FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTB3"
+# Cross-asset trend following (edge/trend.py)
+TREND_COSTS = [0.001, 0.0025, 0.025]  # round trip: realistic liquid ETF, a wide-spread case, then the house 2.5%
+TREND_SPLIT = "2017-01"  # first out-of-sample formation month
+TREND_FIRST_FORMATION = "2008-01"
+TREND_VOL_TARGET = 0.10
+TREND_LEVERAGE_CAP = 3.0
