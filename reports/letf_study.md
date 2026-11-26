@@ -1,6 +1,6 @@
 # Leveraged ETF structural arbitrage (3x bull/bear pairs)
 
-**Verdict:** the volatility decay is real but almost all of it is paid away. Out of sample (2018 on), the best book (pair, reset every 1 days) earns 0.7% a year over cash at institutional costs (Sharpe 0.54, worst day -0.4%, max drawdown -1.1%), and -3.1% a year (Sharpe -2.60) on a UK CFD account. No close-of-day or mispricing effect survives costs either (sections 2 and 3). UK retail cannot short the US funds directly, and the UK-listed 3x ETPs are unborrowable. **No edge worth trading.**
+**Verdict:** the volatility decay is real but almost all of it is paid away. Out of sample (2018 on), the best book (pair, reset every 1 days) earns 0.7% a year over cash at institutional costs (Sharpe 0.54, worst day -0.4%, max drawdown -1.1%), and -3.1% a year (Sharpe -2.60) on a UK CFD account. Rerun on Interactive Brokers terms (section 1b): a GBP 3k account loses money in every hedged (1-day reset) cell; the best of 18 single-pair cells, 6.2% a year over cash on shares (needs professional status) or 7.1% on CFDs, is SOXL/SOXS reset monthly, not significant, and mostly unhedged chip exposure. Borrowing GBP 3k at about GBP 13 a month (5.2% a year) adds cost without adding usable size, since margin on 3x funds is about 90%. The conclusion does not change. No close-of-day or mispricing effect survives costs either (sections 2 and 3). UK retail cannot short the US funds directly, and the UK-listed 3x ETPs are unborrowable. **No edge worth trading.**
 
 ## What was tested
 
@@ -12,6 +12,9 @@ Cost scenarios (borrow fees are assumptions: no free borrow history exists; IBor
 - **inst_hard**: borrow 2.0% bull / 10.0% bear; same, but hard-to-borrow fees (2% bull, 10% bear)
 - **retail_broker**: borrow 1.0% bull / 4.0% bear; retail margin account (US-style): no rebate on proceeds, longs at cash + 1.5%
 - **uk_cfd**: borrow 1.0% bull / 4.0% bear; UK CFD/spread bet: cash +/- 2.5% admin fee, borrow passed on, 10bp extra per side
+- **ibkr_pro_100k**: borrow 1.0% bull / 4.0% bear; IBKR Pro shares, GBP 100k account, professional status: cash credit at BM - 0.5%, $1 minimum commissions
+- **ibkr_pro_3k**: borrow 1.0% bull / 4.0% bear; IBKR Pro shares, GBP 3k account, professional status: almost no cash credit (first $10k unpaid, scaled by NAV/100k)
+- **ibkr_cfd_3k**: borrow 1.0% bull / 4.0% bear; IBKR UK CFDs, GBP 3k account (the retail route): shorts earn BM - 1.5%, longs pay BM + 1.5%, borrow passed on
 
 ## 1. Volatility decay harvesting
 
@@ -24,16 +27,25 @@ Equal-weight basket of pairs, chosen reset interval, out of sample. 'gross' = pr
 | pair | 1 | inst_hard | -3.5% | 1.2% | -2.93 | -8.7 | -27.4% | -0.4% |
 | pair | 1 | retail_broker | -2.5% | 1.2% | -2.04 | -6.1 | -20.2% | -0.4% |
 | pair | 1 | uk_cfd | -3.1% | 1.2% | -2.60 | -7.7 | -24.5% | -0.4% |
+| pair | 1 | ibkr_pro_100k | -3.4% | 1.2% | -2.84 | -8.4 | -26.7% | -0.4% |
+| pair | 1 | ibkr_pro_3k | -12.4% | 1.2% | -11.30 | -33.7 | -69.3% | -0.6% |
+| pair | 1 | ibkr_cfd_3k | -11.4% | 1.2% | -10.47 | -31.2 | -65.9% | -0.6% |
 | bullh | 21 | gross | 5.6% | 4.7% | 1.17 | 3.5 | -5.9% | -5.5% |
 | bullh | 21 | institutional | 2.4% | 4.7% | 0.52 | 1.5 | -6.2% | -5.5% |
 | bullh | 21 | inst_hard | 1.6% | 4.7% | 0.36 | 1.1 | -6.7% | -5.5% |
 | bullh | 21 | retail_broker | -1.4% | 4.7% | -0.27 | -0.8 | -13.4% | -5.5% |
 | bullh | 21 | uk_cfd | -2.9% | 4.7% | -0.61 | -1.8 | -24.5% | -5.5% |
+| bullh | 21 | ibkr_pro_100k | 2.1% | 4.7% | 0.46 | 1.4 | -6.3% | -5.5% |
+| bullh | 21 | ibkr_pro_3k | 0.6% | 4.7% | 0.14 | 0.4 | -7.8% | -5.5% |
+| bullh | 21 | ibkr_cfd_3k | -5.0% | 4.7% | -1.06 | -3.2 | -37.5% | -5.5% |
 | bearh | 5 | gross | -1.9% | 3.4% | -0.55 | -1.6 | -27.4% | -2.5% |
 | bearh | 5 | institutional | 0.9% | 3.4% | 0.28 | 0.8 | -5.9% | -2.5% |
 | bearh | 5 | inst_hard | -2.5% | 3.4% | -0.74 | -2.2 | -23.5% | -2.5% |
 | bearh | 5 | retail_broker | -4.4% | 3.4% | -1.29 | -3.8 | -35.2% | -2.5% |
 | bearh | 5 | uk_cfd | -4.4% | 3.4% | -1.30 | -3.9 | -33.9% | -2.6% |
+| bearh | 5 | ibkr_pro_100k | -1.1% | 3.4% | -0.30 | -0.9 | -15.6% | -2.5% |
+| bearh | 5 | ibkr_pro_3k | -10.1% | 3.4% | -3.11 | -9.3 | -61.8% | -2.6% |
+| bearh | 5 | ibkr_cfd_3k | -8.0% | 3.4% | -2.46 | -7.3 | -53.3% | -2.6% |
 
 All reset intervals, institutional costs (in sample / out of sample Sharpe):
 
@@ -45,23 +57,63 @@ All reset intervals, institutional costs (in sample / out of sample Sharpe):
 
 Per pair, out of sample, best book (pair, H=1): gross vs net at institutional and UK CFD costs (annual, over cash):
 
-| pair | gross | institutional | inst_hard | retail_broker | uk_cfd | worst day (inst) |
-|---|---|---|---|---|---|---|
-| TQQQ/SQQQ | 0.2% | 0.7% | -3.5% | -2.5% | -3.1% | -0.5% |
-| UPRO/SPXU | -0.7% | -0.2% | -4.3% | -3.3% | -3.7% | -1.7% |
-| SPXL/SPXS | -0.8% | -0.2% | -4.3% | -3.3% | -3.7% | -0.4% |
-| SOXL/SOXS | 2.2% | 2.6% | -1.7% | -0.6% | -1.7% | -3.8% |
-| TNA/TZA | 0.3% | 0.9% | -3.3% | -2.3% | -2.9% | -2.2% |
-| FAS/FAZ | -0.1% | 0.3% | -3.9% | -2.8% | -3.3% | -1.3% |
-| TECL/TECS | 0.6% | 0.8% | -3.4% | -2.4% | -3.0% | -1.8% |
-| UDOW/SDOW | -0.5% | -0.1% | -4.3% | -3.3% | -3.6% | -1.1% |
-| LABU/LABD | 2.0% | 2.1% | -2.1% | -1.1% | -2.1% | -2.3% |
-| TMF/TMV | -0.9% | -0.4% | -4.5% | -3.5% | -3.8% | -1.5% |
-| YINN/YANG | 0.3% | 0.5% | -3.7% | -2.6% | -3.4% | -2.8% |
+| pair | gross | institutional | inst_hard | retail_broker | uk_cfd | ibkr_pro_100k | ibkr_pro_3k | ibkr_cfd_3k | worst day (inst) |
+|---|---|---|---|---|---|---|---|---|---|
+| TQQQ/SQQQ | 0.2% | 0.7% | -3.5% | -2.5% | -3.1% | -3.7% | -12.3% | -11.3% | -0.5% |
+| UPRO/SPXU | -0.7% | -0.2% | -4.3% | -3.3% | -3.7% | -4.4% | -11.3% | -10.3% | -1.7% |
+| SPXL/SPXS | -0.8% | -0.2% | -4.3% | -3.3% | -3.7% | -4.2% | -11.3% | -10.3% | -0.4% |
+| SOXL/SOXS | 2.2% | 2.6% | -1.7% | -0.6% | -1.7% | -1.7% | -14.9% | -13.9% | -3.8% |
+| TNA/TZA | 0.3% | 0.9% | -3.3% | -2.3% | -2.9% | -3.0% | -12.3% | -11.3% | -2.2% |
+| FAS/FAZ | -0.1% | 0.3% | -3.9% | -2.8% | -3.3% | -3.0% | -11.5% | -10.6% | -1.3% |
+| TECL/TECS | 0.6% | 0.8% | -3.4% | -2.4% | -3.0% | -3.3% | -13.1% | -12.1% | -1.8% |
+| UDOW/SDOW | -0.5% | -0.1% | -4.3% | -3.3% | -3.6% | -4.4% | -11.0% | -10.0% | -1.1% |
+| LABU/LABD | 2.0% | 2.1% | -2.1% | -1.1% | -2.1% | -2.3% | -14.4% | -13.4% | -2.3% |
+| TMF/TMV | -0.9% | -0.4% | -4.5% | -3.5% | -3.8% | -4.5% | -10.9% | -9.8% | -1.5% |
+| YINN/YANG | 0.3% | 0.5% | -3.7% | -2.6% | -3.4% | -3.5% | -13.8% | -12.8% | -2.8% |
 
 By year, pair at institutional costs: 2008 +6.1%, 2009 +8.2%, 2010 +1.0%, 2011 +1.9%, 2012 +0.6%, 2013 +0.4%, 2014 +0.2%, 2015 +0.4%, 2016 +0.3%, 2017 -0.1%, 2018 +0.1%, 2019 -0.5%, 2020 +5.3%, 2021 -0.0%, 2022 +1.2%, 2023 +0.4%, 2024 -0.3%, 2025 -0.1%, 2026 -0.1%.
 
 Why the gross number shrinks: the funds already charge ~0.9-1% a year and pay their own financing, so a short collects the decay plus fees but owes borrow; a retail short receives no interest on the proceeds while the bear fund it is short earns T-bills on 4x its assets, a drag of roughly the cash rate (4-5% a year in 2023-26). Results are also very sensitive to trading exactly at the close: Quantpedia's version of the TQQQ/SQQQ pair (Oct 2026) went from +2.1% a year to about -1% a year when rebalanced 10 minutes before the close, because the funds' own rebalancing moves prices into the close.
+
+## 1b. Interactive Brokers terms and the GBP 3,000 loan
+
+Reading of the person's figure: about GBP 13 a month to borrow GBP 3,000 is 5.2% a year, which is IBKR Pro's tier-I margin rate (GBP benchmark about 3.7% + 1.5%). So it is not a flat fee: it scales with the amount borrowed, and IBKR charges it only on a negative cash balance.
+
+Two things follow before any backtest:
+
+- **A short does not need a cash loan.** Selling short puts cash into the account, so the pair and bearh books never borrow cash at all; their IBKR cost is the stock borrow fee plus the interest IBKR keeps on the proceeds. Only the long index leg of bullh can create a margin loan, and at 1x it is fully funded by the short proceeds.
+- **Borrowing more to scale up is capped by margin rules.** US maintenance margin on a 3x ETF is 3 x the normal rate: about 90% of the value of a short 3x fund and 75% of a long one (FINRA Rule 4210). So a short 3x position of about GBP 3.3k is the most GBP 3k of equity can carry (3,000 / 0.9), and an extra GBP 3k loan would not buy meaningfully more short exposure; running near the cap means a forced close on the first bad day. (Rule quoted from memory of FINRA 4210, not checked against IBKR's own margin schedule.)
+
+On the loan itself: borrowed money must earn more than 5.2% a year today just to pay its interest. Because the rate is the benchmark + 1.5%, the borrowed slice of a book has to beat cash by 1.5% a year after borrow fees, spreads and commission (the cash rate averaged 2.7% from 2018; it is about 3.7-3.9% now).
+
+Single pair traded with the whole GBP 3k account, every reset interval, out of sample (annual return over cash, Sharpe in brackets). 'gross' is price P&L only; 'pro_3k' is IBKR shares with professional status; 'cfd_3k' is IBKR UK CFDs (the only route open to a UK retail client, and only if IBKR lists a CFD on that fund). The last column is the return on each extra GBP 1 of book financed with the loan at benchmark + 1.5% (bullh only; it is the shares result minus 1.5%).
+
+| pair | book | H | gross | pro_3k | cfd_3k | pro_100k | extra GBP 1 on the loan |
+|---|---|---|---|---|---|---|---|
+| TQQQ/SQQQ | pair | 1 | 0.2% | -10.7% (-9.73) | -9.6% (-8.86) | -1.1% | n/a (no loan) |
+| TQQQ/SQQQ | pair | 5 | 5.7% | -1.0% (-0.11) | 0.1% (0.04) | 4.8% | n/a (no loan) |
+| TQQQ/SQQQ | pair | 21 | 5.4% | -0.1% (0.08) | 1.0% (0.14) | 4.6% | n/a (no loan) |
+| TQQQ/SQQQ | bullh | 1 | 4.4% | -4.8% (-3.00) | -10.0% (-6.49) | 0.7% | -6.3% |
+| TQQQ/SQQQ | bullh | 5 | 6.0% | 1.0% (0.34) | -4.6% (-1.47) | 2.6% | -0.5% |
+| TQQQ/SQQQ | bullh | 21 | 5.2% | 1.5% (0.29) | -4.1% (-0.72) | 1.9% | -0.0% |
+| TQQQ/SQQQ | bearh | 1 | -4.1% | -14.9% (-9.71) | -12.9% (-8.47) | -3.2% | n/a (no loan) |
+| TQQQ/SQQQ | bearh | 5 | -0.2% | -6.9% (-1.42) | -4.7% (-0.96) | 1.2% | n/a (no loan) |
+| TQQQ/SQQQ | bearh | 21 | 0.2% | -5.0% (-0.36) | -2.9% (-0.18) | 1.8% | n/a (no loan) |
+| SOXL/SOXS | pair | 1 | 2.2% | -9.7% (-2.41) | -8.6% (-2.13) | 0.8% | n/a (no loan) |
+| SOXL/SOXS | pair | 5 | 11.6% | 5.1% (0.40) | 6.1% (0.46) | 10.7% | n/a (no loan) |
+| SOXL/SOXS | pair | 21 | 11.7% | 6.2% (0.33) | 7.1% (0.35) | 10.9% | n/a (no loan) |
+| SOXL/SOXS | bullh | 1 | 5.6% | -5.1% (-1.29) | -10.3% (-2.72) | 1.7% | -6.6% |
+| SOXL/SOXS | bullh | 5 | 8.1% | 3.0% (0.48) | -2.7% (-0.39) | 4.5% | 1.5% |
+| SOXL/SOXS | bullh | 21 | 7.8% | 4.0% (0.41) | -1.8% (-0.11) | 4.4% | 2.5% |
+| SOXL/SOXS | bearh | 1 | -3.2% | -15.5% (-6.79) | -13.5% (-5.91) | -2.3% | n/a (no loan) |
+| SOXL/SOXS | bearh | 5 | 3.8% | -2.6% (-0.20) | -0.6% (0.00) | 5.3% | n/a (no loan) |
+| SOXL/SOXS | bearh | 21 | 4.5% | -0.8% (0.09) | 1.4% (0.17) | 6.2% | n/a (no loan) |
+
+Best cell on IBKR shares with GBP 3k: SOXL pair H=21 at 6.2% a year over cash, but with 37.0% volatility, Sharpe 0.33 (t = 1.0), max drawdown -54.5% and worst day -25.3%. Best on IBKR CFDs: SOXL pair H=21 at 7.1% (Sharpe 0.35, t = 1.1, max drawdown -53.5%). These cells are the best of 18 picked after the fact, are not statistically different from zero, and come from a 21-day reset that lets the two legs drift apart, so most of the return is an unhedged bet on the semiconductor index, not decay. At the 1-day reset, where the book is actually hedged, every IBKR cell loses money.
+
+Why a small IBKR account does worse than the institutional case: IBKR pays nothing on the first USD 10k of cash and scales the rest by NAV/100k, so a GBP 3k account earns almost nothing on its short proceeds while the bear fund it is short earns T-bills; the USD 1 minimum commission is 3-30bp of each small rebalancing order (worst at a 1-day reset); and borrow is charged on top. The CFD route gets BM - 1.5% on shorts, which is better than nothing on proceeds, but pays BM + 1.5% on the bullh long leg.
+
+**UK access at IBKR:** IBKR says it is 'required to block direct trading of US ETFs for retail clients in the EEA and UK', and its short-selling FAQ says retail clients may not open purchases or sales (shorts included) in ETFs without a KID. The routes it offers are European-listed equivalents (none can be shorted cheaply: see below), CFDs on 'most large US ETFs', and elective professional status, which needs two of: a portfolio over EUR 500k, about 10 sizeable trades a quarter for the past year, or a year working in finance in a role that needs the knowledge. Options on US ETFs are generally open to UK retail at IBKR, but a synthetic short through options prices in the same borrow fee (put-call parity) plus option spreads.
 
 ## 2. Close-of-day rebalancing flows
 

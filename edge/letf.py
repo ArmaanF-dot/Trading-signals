@@ -75,8 +75,31 @@ SCENARIOS = {
     "uk_cfd": dict(borrow=(0.01, 0.04), rebate_haircut=0.025, long_spread=0.025, extra=0.0010,
                    note="UK CFD/spread bet: cash +/- 2.5% admin fee, borrow passed on, 10bp extra per side"),
 }
+# Interactive Brokers (IBKR Pro, fixed pricing) terms, checked 26 Nov 2026 on interactivebrokers.com:
+# - margin loans: benchmark + 1.5% up to USD 100k (GBP 80k), + 1.0% above. The person's own figure, about GBP 13 a month
+#   on GBP 3,000 borrowed, is 5.2% a year = GBP benchmark (~3.7%) + 1.5%, i.e. exactly tier I.
+# - cash credit (short sale proceeds are cash): benchmark - 0.5%, nothing on the first USD 10k, and scaled by NAV/100k
+#   when NAV is below USD 100k (IBKR's worked example: NAV 80k, cash 20k -> 1.352%).
+# - commissions: USD 0.005 a share, minimum USD 1 an order, maximum 1% of trade value.
+# - CFDs (the only route IBKR offers UK retail for US ETFs): financing benchmark +/- 1.5%, borrow passed on, same
+#   commission. US-listed 3x funds themselves are blocked for UK/EEA retail (no KID); only elective professional
+#   clients can short them as shares.
+GBPUSD = 1.27
+IBKR = dict(debit_spread=(0.015, 0.010), debit_tier=100_000, credit_haircut=0.005, credit_free=10_000,
+            credit_full_nav=100_000, per_share=0.005, min_order=1.0, max_pct=0.01, cfd_spread=0.015)
+IBKR_SCENARIOS = {
+    "ibkr_pro_100k": dict(borrow=(0.01, 0.04), nav_gbp=100_000, cfd=False,
+                          note="IBKR Pro shares, GBP 100k account, professional status: cash credit at BM - 0.5%, $1 minimum commissions"),
+    "ibkr_pro_3k": dict(borrow=(0.01, 0.04), nav_gbp=3_000, cfd=False,
+                        note="IBKR Pro shares, GBP 3k account, professional status: almost no cash credit (first $10k unpaid, scaled by NAV/100k)"),
+    "ibkr_cfd_3k": dict(borrow=(0.01, 0.04), nav_gbp=3_000, cfd=True,
+                        note="IBKR UK CFDs, GBP 3k account (the retail route): shorts earn BM - 1.5%, longs pay BM + 1.5%, borrow passed on"),
+}
+SCENARIOS.update({k: dict(v, ibkr=True) for k, v in IBKR_SCENARIOS.items()})
 BASE = "institutional"
 UK = "uk_cfd"
+# current share prices (USD), for the per-share commission; refreshed from the panel in main()
+PRICES: dict = {}
 
 
 # ---------- data ----------
@@ -205,8 +228,51 @@ def simulate(rets: pd.DataFrame, target: dict, horizon: int) -> tuple[pd.DataFra
     return pd.DataFrame(pos, index=idx, columns=cols), pd.DataFrame(trade, index=idx, columns=cols)
 
 
+def ibkr_costs(pos: pd.DataFrame, trade: pd.DataFrame, equity: pd.Series, rf: pd.Series, bull: str, bear: str,
+               sc: dict, nav_gbp: float, account_gbp: float | None = None) -> tuple[pd.Series, pd.Series]:
+    """Financing over cash and trading costs, in units of initial capital, on IBKR terms for an account of nav_gbp.
+    Shares: the account's net cash (capital + short proceeds - longs) earns IBKR's tiered credit rate if positive or
+    pays the margin rate if negative; the benchmark (capital in T-bills) is subtracted. CFDs: each short earns
+    BM - 1.5%, each long pays BM + 1.5%, and capital (held as cash at IBKR) earns the tiered credit rate.
+    nav_gbp is the capital in this book (sets order sizes); account_gbp the whole account (sets the credit tiers)."""
+    ib = IBKR
+    account_gbp = account_gbp or nav_gbp
+    bm = rf.reindex(pos.index).ffill().fillna(0)
+    eq = equity.fillna(0).clip(lower=0)
+    nav = account_gbp * GBPUSD * eq  # USD, whole account
+    short = (-pos).clip(lower=0)
+    long_ = pos.clip(lower=0)
+    borrow = sum(short[c] * (sc["borrow"][0] if c == bull else sc["borrow"][1] if c == bear else 0.003) for c in pos.columns)
+
+    def credit(cash_units):
+        cash = cash_units * account_gbp * GBPUSD
+        paid = ((cash - ib["credit_free"]).clip(lower=0) / cash.where(cash > 0)).fillna(0)
+        scale = (nav / ib["credit_full_nav"]).clip(upper=1.0)
+        return cash_units.clip(lower=0) * (bm - ib["credit_haircut"]).clip(lower=0) * paid * scale
+
+    if sc["cfd"]:
+        fin_rate = (short.sum(axis=1) * (bm - ib["cfd_spread"]) - long_.sum(axis=1) * (bm + ib["cfd_spread"])
+                    + credit(eq) - eq * bm)
+    else:
+        cash_units = eq + short.sum(axis=1) - long_.sum(axis=1)
+        debit = (-cash_units).clip(lower=0)
+        debit_usd = debit * nav_gbp * GBPUSD
+        tier1 = (debit_usd.clip(upper=ib["debit_tier"]) / debit_usd.where(debit_usd > 0)).fillna(1.0)
+        spread = tier1 * ib["debit_spread"][0] + (1 - tier1) * ib["debit_spread"][1]
+        fin_rate = credit(cash_units) - debit * (bm + spread) - eq * bm
+    fin = (fin_rate - borrow) / DAYS
+    tc = pd.Series(0.0, index=pos.index)
+    for c in trade.columns:
+        t = trade[c]
+        value = t * nav_gbp * GBPUSD  # USD traded (trade is in units of initial capital)
+        comm = np.maximum(ib["min_order"], ib["per_share"] * value / PRICES.get(c, 50.0))
+        comm = np.minimum(comm, ib["max_pct"] * value)
+        tc += t * HALF_SPREAD.get(c, HALF_SPREAD_DEFAULT) + np.where(value > 0, comm, 0.0) / (nav_gbp * GBPUSD)
+    return fin, tc
+
+
 def excess_returns(rets: pd.DataFrame, pos: pd.DataFrame, trade: pd.DataFrame, rf: pd.Series, bull: str, bear: str,
-                   sc: dict) -> pd.DataFrame:
+                   sc: dict, nav_gbp: float | None = None) -> pd.DataFrame:
     """Daily return over cash per unit of start-of-day equity, gross and net, for one cost scenario.
     excess = price P&L + sum over shorts of (rf - haircut - borrow) x |short| - sum over longs of (rf + spread) x long
              - trading costs.  (Capital itself earns rf and is the benchmark, so it drops out.)"""
@@ -214,6 +280,9 @@ def excess_returns(rets: pd.DataFrame, pos: pd.DataFrame, trade: pd.DataFrame, r
     equity = equity.where(equity > 0, np.nan)
     price = (pos * rets[pos.columns]).sum(axis=1)
     d_rf = rf.reindex(pos.index).ffill().fillna(0) / DAYS
+    if sc.get("ibkr"):
+        fin, tc = ibkr_costs(pos, trade, equity, rf, bull, bear, sc, nav_gbp or sc["nav_gbp"], sc["nav_gbp"])
+        return pd.DataFrame({"gross": price / equity, "net": (price + fin - tc) / equity}).fillna(0.0)
     fin = pd.Series(0.0, index=pos.index)
     for c in pos.columns:
         p = pos[c]
@@ -240,8 +309,86 @@ def run_decay(daily: pd.DataFrame, rf: pd.Series) -> dict:
             for h in HORIZONS:
                 pos, trade = simulate(rets, legs(strat, bull, bear, und), h)
                 for name, sc in SCENARIOS.items():
-                    out[(bull, strat, h, name)] = excess_returns(rets, pos, trade, rf, bull, bear, sc)
+                    nav = sc["nav_gbp"] / len(PAIRS) if sc.get("ibkr") else None  # a basket splits the account across pairs
+                    out[(bull, strat, h, name)] = excess_returns(rets, pos, trade, rf, bull, bear, sc, nav)
     return out
+
+
+IBKR_PAIRS = [("TQQQ", "SQQQ", "QQQ"), ("SOXL", "SOXS", "SOXX")]
+LOAN_GBP, LOAN_MONTHLY_GBP = 3_000, 13.0  # the person's figure: about GBP 13 a month to borrow GBP 3,000 at IBKR
+
+
+def run_ibkr_single(daily: pd.DataFrame, rf: pd.Series) -> dict:
+    """One pair traded with the whole account (a GBP 3k account cannot split across 11 pairs: the $1 minimum
+    commission would be most of each order). {(bull, strat, h, scenario): DataFrame(gross, net)}."""
+    out = {}
+    for bull, bear, und in IBKR_PAIRS:
+        rets = daily[[bull, bear, und]].pct_change().dropna().clip(-0.9, 3.0)
+        for strat in STRATS:
+            for h in HORIZONS:
+                pos, trade = simulate(rets, legs(strat, bull, bear, und), h)
+                for name in IBKR_SCENARIOS:
+                    out[(bull, strat, h, name)] = excess_returns(rets, pos, trade, rf, bull, bear, SCENARIOS[name])
+    return out
+
+
+def ibkr_section(single: dict, rf: pd.Series, split: str) -> tuple[list, dict]:
+    oos_rf = float(rf.loc[split:].mean()) if not rf.empty else 0.0
+    loan_rate = LOAN_MONTHLY_GBP * 12 / LOAN_GBP
+    loan_spread = IBKR["debit_spread"][0]
+    L = ["## 1b. Interactive Brokers terms and the GBP 3,000 loan", "",
+         f"Reading of the person's figure: about GBP {LOAN_MONTHLY_GBP:.0f} a month to borrow GBP {LOAN_GBP:,} is "
+         f"{loan_rate:.1%} a year, which is IBKR Pro's tier-I margin rate (GBP benchmark about 3.7% + 1.5%). So it is "
+         "not a flat fee: it scales with the amount borrowed, and IBKR charges it only on a negative cash balance.", "",
+         "Two things follow before any backtest:", "",
+         "- **A short does not need a cash loan.** Selling short puts cash into the account, so the pair and bearh books never "
+         "borrow cash at all; their IBKR cost is the stock borrow fee plus the interest IBKR keeps on the proceeds. Only the "
+         "long index leg of bullh can create a margin loan, and at 1x it is fully funded by the short proceeds.",
+         "- **Borrowing more to scale up is capped by margin rules.** US maintenance margin on a 3x ETF is 3 x the normal "
+         "rate: about 90% of the value of a short 3x fund and 75% of a long one (FINRA Rule 4210). So a short 3x position of "
+         "about GBP 3.3k is the most GBP 3k of equity can carry (3,000 / 0.9), and an extra GBP 3k loan would not buy meaningfully more short exposure; "
+         "running near the cap means a forced close on the first bad day. (Rule quoted from memory of FINRA 4210, not checked against IBKR's own margin schedule.)", "",
+         f"On the loan itself: borrowed money must earn more than {loan_rate:.1%} a year today just to pay its interest. Because "
+         f"the rate is the benchmark + {loan_spread:.1%}, the borrowed slice of a book has to beat cash by {loan_spread:.1%} a year after "
+         f"borrow fees, spreads and commission (the cash rate averaged {oos_rf:.1%} from {split[:4]}; it is about 3.7-3.9% now).", "",
+         "Single pair traded with the whole GBP 3k account, every reset interval, out of sample (annual return over cash, "
+         "Sharpe in brackets). 'gross' is price P&L only; 'pro_3k' is IBKR shares with professional status; 'cfd_3k' is "
+         "IBKR UK CFDs (the only route open to a UK retail client, and only if IBKR lists a CFD on that fund). The last "
+         "column is the return on each extra GBP 1 of book financed with the loan at "
+         f"benchmark + {loan_spread:.1%} (bullh only; it is the shares result minus {loan_spread:.1%}).", "",
+         "| pair | book | H | gross | pro_3k | cfd_3k | pro_100k | extra GBP 1 on the loan |", "|---|---|---|---|---|---|---|---|"]
+    summary = {}
+    for bull, bear, _ in IBKR_PAIRS:
+        for strat in STRATS:
+            for h in HORIZONS:
+                g = stats(single[(bull, strat, h, "ibkr_pro_3k")]["gross"].loc[split:])
+                cells = {n: stats(single[(bull, strat, h, n)]["net"].loc[split:]) for n in IBKR_SCENARIOS}
+                summary[(bull, strat, h)] = {"gross": g, **cells}
+                extra = (pct(cells["ibkr_pro_3k"]["ann"] - loan_spread) if strat == "bullh" else "n/a (no loan)")
+                L.append(f"| {bull}/{bear} | {strat} | {h} | {pct(g['ann'])} | {pct(cells['ibkr_pro_3k']['ann'])} "
+                         f"({pct(cells['ibkr_pro_3k']['sharpe'], '.2f')}) | {pct(cells['ibkr_cfd_3k']['ann'])} "
+                         f"({pct(cells['ibkr_cfd_3k']['sharpe'], '.2f')}) | {pct(cells['ibkr_pro_100k']['ann'])} | {extra} |")
+    best = max(summary, key=lambda k: summary[k]["ibkr_pro_3k"]["ann"])
+    bc = max(summary, key=lambda k: summary[k]["ibkr_cfd_3k"]["ann"])
+    sb, sc_ = summary[best]["ibkr_pro_3k"], summary[bc]["ibkr_cfd_3k"]
+    L += ["", f"Best cell on IBKR shares with GBP 3k: {best[0]} {best[1]} H={best[2]} at {pct(sb['ann'])} a year over cash, but with "
+          f"{pct(sb['vol'])} volatility, Sharpe {pct(sb['sharpe'], '.2f')} (t = {pct(sb['t'], '.1f')}), max drawdown {pct(sb['maxdd'])} and worst day {pct(sb['worst'])}. "
+          f"Best on IBKR CFDs: {bc[0]} {bc[1]} H={bc[2]} at {pct(sc_['ann'])} (Sharpe {pct(sc_['sharpe'], '.2f')}, t = {pct(sc_['t'], '.1f')}, max drawdown {pct(sc_['maxdd'])}). "
+          "These cells are the best of 18 picked after the fact, are not statistically different from zero, and come from a 21-day reset that lets the "
+          "two legs drift apart, so most of the return is an unhedged bet on the semiconductor index, not decay. At the 1-day reset, where the book is "
+          "actually hedged, every IBKR cell loses money.", "",
+          "Why a small IBKR account does worse than the institutional case: IBKR pays nothing on the first USD 10k of cash and scales "
+          "the rest by NAV/100k, so a GBP 3k account earns almost nothing on its short proceeds while the bear fund it is short "
+          "earns T-bills; the USD 1 minimum commission is 3-30bp of each small rebalancing order (worst at a 1-day reset); "
+          "and borrow is charged on top. The CFD route gets BM - 1.5% on shorts, which is better than nothing on proceeds, but pays "
+          "BM + 1.5% on the bullh long leg.", "",
+          "**UK access at IBKR:** IBKR says it is 'required to block direct trading of US ETFs for retail clients in the EEA and UK', "
+          "and its short-selling FAQ says retail clients may not open purchases or sales (shorts included) in ETFs without a KID. "
+          "The routes it offers are European-listed equivalents (none can be shorted cheaply: see below), CFDs on 'most large US ETFs', "
+          "and elective professional status, which needs two of: a portfolio over EUR 500k, about 10 sizeable trades a quarter for "
+          "the past year, or a year working in finance in a role that needs the knowledge. Options on US ETFs are generally open to "
+          "UK retail at IBKR, but a synthetic short through options prices in the same borrow fee (put-call parity) plus option spreads.", ""]
+    return L, summary
 
 
 def stats(r: pd.Series) -> dict:
@@ -362,7 +509,7 @@ def pct(x, spec=".1%"):
     return format(x, spec) if x is not None and np.isfinite(x) else "n/a"
 
 
-def report(results, chosen, flows, resid, split, rf_ok, first_dates) -> str:
+def report(results, chosen, flows, resid, split, rf_ok, first_dates, ibkr_lines=(), ibkr_summary=None) -> str:
     L = ["# Leveraged ETF structural arbitrage (3x bull/bear pairs)", ""]
     oos = {}
     for strat in STRATS:
@@ -378,6 +525,13 @@ def report(results, chosen, flows, resid, split, rf_ok, first_dates) -> str:
                f"the best book ({best_inst}, reset every {chosen[best_inst]} days) earns {pct(bi['ann'])} a year over cash at "
                f"institutional costs (Sharpe {pct(bi['sharpe'], '.2f')}, worst day {pct(bi['worst'])}, max drawdown {pct(bi['maxdd'])}), "
                f"and {pct(uk['ann'])} a year (Sharpe {pct(uk['sharpe'], '.2f')}) on a UK CFD account. ")
+    if ibkr_summary:
+        b3 = max(ibkr_summary.values(), key=lambda v: v["ibkr_pro_3k"]["ann"])["ibkr_pro_3k"]["ann"]
+        c3 = max(ibkr_summary.values(), key=lambda v: v["ibkr_cfd_3k"]["ann"])["ibkr_cfd_3k"]["ann"]
+        verdict += (f"Rerun on Interactive Brokers terms (section 1b): a GBP 3k account loses money in every hedged (1-day reset) cell; the best "
+                    f"of 18 single-pair cells, {pct(b3)} a year over cash on shares (needs professional status) or {pct(c3)} on CFDs, is SOXL/SOXS "
+                    f"reset monthly, not significant, and mostly unhedged chip exposure. Borrowing GBP 3k at about GBP 13 a month (5.2% a year) "
+                    f"adds cost without adding usable size, since margin on 3x funds is about 90%. The conclusion does not change. ")
     verdict += ("No close-of-day or mispricing effect survives costs either (sections 2 and 3). "
                 "UK retail cannot short the US funds directly, and the UK-listed 3x ETPs are unborrowable. **No edge worth trading.**")
     L += [verdict, ""]
@@ -408,7 +562,7 @@ def report(results, chosen, flows, resid, split, rf_ok, first_dates) -> str:
             cells.append(f"{pct(stats(b[b.index < split])['sharpe'], '.2f')} / {pct(stats(b.loc[split:])['sharpe'], '.2f')}")
         L.append(f"| {strat} | " + " | ".join(cells) + " |")
     L += ["", f"Per pair, out of sample, best book ({best_inst}, H={chosen[best_inst]}): gross vs net at institutional and UK CFD costs (annual, over cash):", "",
-          "| pair | gross | institutional | inst_hard | retail_broker | uk_cfd | worst day (inst) |", "|---|---|---|---|---|---|---|"]
+          "| pair | gross | " + " | ".join(SCENARIOS) + " | worst day (inst) |", "|---|---|" + "---|" * len(SCENARIOS) + "---|"]
     for bull, bear, und in PAIRS:
         k = (bull, best_inst, chosen[best_inst])
         if k + (BASE,) not in results:
@@ -425,6 +579,7 @@ def report(results, chosen, flows, resid, split, rf_ok, first_dates) -> str:
           "Results are also very sensitive to trading exactly at the close: Quantpedia's version of the TQQQ/SQQQ pair "
           "(Oct 2026) went from +2.1% a year to about -1% a year when rebalanced 10 minutes before the close, because the "
           "funds' own rebalancing moves prices into the close.", ""]
+    L += list(ibkr_lines)
     L += ["## 2. Close-of-day rebalancing flows", "",
           "Last half hour (15:30 to close) regressed on the day's move to 15:30, Yahoo hourly bars. Trade = follow the day's sign for the last half hour.", "",
           "| ETF | days | beta | t | gross bp/trade | net bp (1bp/side) | net bp (5bp/side) | hit rate |", "|---|---|---|---|---|---|---|---|"]
@@ -481,12 +636,15 @@ def main(refresh: bool = False) -> None:
         daily[f"open_{t}"], daily[f"close_{t}"] = sub["open"], sub["close"]
     first_dates = {b: str(daily[[b, s, u]].dropna().index[0].date()) for b, s, u in PAIRS if all(c in daily for c in (b, s, u))}
     rf = cash_rate(refresh)
+    last = panel.sort_values("date").groupby("ticker")["close"].last()
+    PRICES.update(last.dropna().to_dict())
     results = run_decay(daily, rf)
     split = config.LETF_SPLIT
     chosen = pick_horizons(results, split)
     flows = close_flow_tests(last_half_hour(intraday), daily)
     resid = residual_tests(daily)
-    text = report(results, chosen, flows, resid, split, not rf.empty, first_dates)
+    ibkr_lines, ibkr_summary = ibkr_section(run_ibkr_single(daily, rf), rf, split)
+    text = report(results, chosen, flows, resid, split, not rf.empty, first_dates, ibkr_lines, ibkr_summary)
     REPORT.write_text(text + "\n")
     best = max(STRATS, key=lambda s: stats(basket(results, s, chosen[s], BASE, "net").loc[split:])["sharpe"])
     out = pd.DataFrame({f"net_{sc}": basket(results, best, chosen[best], sc, "net") for sc in SCENARIOS})

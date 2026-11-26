@@ -40,3 +40,13 @@ def test_regress_recovers_slope():
     y = 0.3 * x + rng.normal(size=2000)
     s = letf.regress(x, y)
     assert abs(s["beta"] - 0.3) < 0.05 and s["t"] > 5
+
+
+def test_ibkr_small_account_earns_less_than_large_and_cfd_runs():
+    r = _rets()
+    pos, trade = letf.simulate(r, letf.legs("pair", "BULL", "BEAR", "UND"), 5)
+    rf = pd.Series(0.04, index=r.index)
+    small = letf.excess_returns(r, pos, trade, rf, "BULL", "BEAR", letf.SCENARIOS["ibkr_pro_3k"])["net"].sum()
+    big = letf.excess_returns(r, pos, trade, rf, "BULL", "BEAR", letf.SCENARIOS["ibkr_pro_100k"])["net"].sum()
+    cfd = letf.excess_returns(r, pos, trade, rf, "BULL", "BEAR", letf.SCENARIOS["ibkr_cfd_3k"])["net"]
+    assert small < big and np.isfinite(cfd).all()
