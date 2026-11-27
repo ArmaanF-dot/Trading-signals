@@ -30,6 +30,7 @@ HISTORY_DIR = config.DATA_DIR / "jets" / "history"
 OMAHA = {"KOMA", "KMLE"}  # Eppley Airfield, Millard (Omaha's general-aviation field)
 FIELDS = ["date", "hex", "reg", "type", "owner_op", "airport", "arrived_utc", "watch", "omaha"]
 TRACE_NAME = re.compile(r"trace_full_(?:~)?([0-9a-f]{6})\.json$")
+AIRLINER = re.compile(r"^(A3\d\d|A2\d|A30|B7\d\d|B3\dM|B73|B75|B76|B77|B78|CRJ\d|E1[79]\d|E7\d|E75|BCS\d|MD\d\d|DC\d+|C208|B190|SW4|AT\d\d)")
 CELL = 0.1  # degrees, airport grid
 MAX_KM = 4.0
 
@@ -158,6 +159,8 @@ def scan_tar(fileobj, day: date, watch: set[str], airports: Airports, omaha: set
                 stats["watch_seen"] += 1
             for ap, ts in arrivals(tr, airports):
                 is_oma = ap in omaha
+                if is_oma and not in_watch and AIRLINER.match(tr.get("t") or ""):
+                    continue  # scheduled airline and cargo traffic says nothing about who visits
                 if in_watch or is_oma:
                     rows.append({"date": day.isoformat(), "hex": hx, "reg": (tr.get("r") or "").strip(),
                                  "type": tr.get("t") or "", "owner_op": tr.get("ownOp") or "",
@@ -191,13 +194,15 @@ def part_urls(day: date, token: str | None = None) -> list[str]:
     hdr = {"Accept": "application/vnd.github+json"}
     if token:
         hdr["Authorization"] = f"Bearer {token}"
-    for pod in ("prod-0", "staging-0"):
-        r = requests.get(RELEASE_API.format(year=day.year, tag=tag_for(day, pod)), headers=hdr, timeout=60)
-        if r.status_code == 200:
-            assets = sorted((a["name"], a["browser_download_url"]) for a in r.json().get("assets", [])
-                            if re.search(r"\.tar\.[a-z]{2}$", a["name"]))
-            if assets:
-                return [u for _, u in assets]
+    # a year's repo can hold the first days of the next year (2024-01-01 is in globe_history_2023)
+    for year in (day.year, day.year - 1):
+        for pod in ("prod-0", "staging-0"):
+            r = requests.get(RELEASE_API.format(year=year, tag=tag_for(day, pod)), headers=hdr, timeout=60)
+            if r.status_code == 200:
+                assets = sorted((a["name"], a["browser_download_url"]) for a in r.json().get("assets", [])
+                                if re.search(r"\.tar\.[a-z]{2}$", a["name"]))
+                if assets:
+                    return [u for _, u in assets]
     return []
 
 

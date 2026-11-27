@@ -21,6 +21,9 @@ def study_runner(what: str, argv: list[str]):
     if what == "combine":
         from edge import combine
         return combine.main
+    if what == "jets-study":
+        from edge.jets import study as jstudy
+        return jstudy.main
     if what == "jobs-deep":
         from edge.jobs import deep
         return deep.main
@@ -86,6 +89,10 @@ def main(argv: list[str]) -> int:
     if what == "jets-watchlist":
         from edge.jets import registry
         registry.run()
+        return 0
+    if what == "jets":
+        from edge.jets import collect as jcollect
+        jcollect.run()
         return 0
     if what == "jets-history":
         from edge.jets import history
