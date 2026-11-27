@@ -1,19 +1,21 @@
-# Signal feed (2026-11-26)
+# Signal feed (2026-11-27)
 
 _Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first._
 
 ## Avoid
 
-- **CY0106002112** (UK, fca_short_rise, 2026-11-25): ATALAYA MINING PLC: aggregate net short up 0.55pp over 30 days, now 2.37%
-- **VTY.L** (UK, fca_short_rise, 2026-11-25): Vistry Group PLC: aggregate net short up 0.61pp over 30 days, now 14.79%
-- **ITM.L** (UK, fca_short_rise, 2026-11-25): ITM Power PLC: aggregate net short up 0.60pp over 30 days, now 2.92%
 - **JET2.L** (UK, fca_short_rise, 2026-11-26): Jet2 Plc: aggregate net short up 0.60pp over 30 days, now 2.68%
-- **VSVS.L** (UK, fca_short_rise, 2026-11-26): VESUVIUS PLC: aggregate net short up 0.62pp over 30 days, now 1.43%
-- **CRST.L** (UK, fca_short_rise, 2026-11-26): CREST NICHOLSON HOLDINGS PLC: aggregate net short up 0.65pp over 30 days, now 12.65%
-- **CWR.L** (UK, fca_short_rise, 2026-11-26): CERES POWER HOLDINGS PLC: aggregate net short up 0.83pp over 30 days, now 21.36%
-- **DOM.L** (UK, fca_short_rise, 2026-11-26): DOMINO'S PIZZA GROUP PLC: aggregate net short up 0.50pp over 30 days, now 9.18%
-- **WIZZ.L** (UK, fca_short_rise, 2026-11-26): Wizz Air Holdings PLC: aggregate net short up 1.15pp over 30 days, now 9.90%
-- **US25520W1071** (UK, fca_short_rise, 2026-11-26): Diversified Energy Company: aggregate net short up 0.68pp over 30 days, now 9.71%
+- **US25520W1071** (UK, fca_short_rise, 2026-11-26): Diversified Energy Company: aggregate net short up 0.68pp over 30 days, now 9.78%
+- **GKP.L** (UK, fca_short_rise, 2026-11-27): GULF KEYSTONE PETROLEUM LIMITED: aggregate net short up 0.53pp over 30 days, now 0.82%
+- **CY0106002112** (UK, fca_short_rise, 2026-11-27): ATALAYA MINING PLC: aggregate net short up 0.65pp over 30 days, now 2.47%
+- **VTY.L** (UK, fca_short_rise, 2026-11-27): Vistry Group PLC: aggregate net short up 1.06pp over 30 days, now 15.24%
+- **GBG.L** (UK, fca_short_rise, 2026-11-27): GB GROUP PLC: aggregate net short up 0.51pp over 30 days, now 7.41%
+- **RTO.L** (UK, fca_short_rise, 2026-11-27): RENTOKIL INITIAL PLC: aggregate net short up 0.65pp over 30 days, now 5.78%
+- **RKH.L** (UK, fca_short_rise, 2026-11-27): ROCKHOPPER EXPLORATION PLC: aggregate net short up 0.54pp over 30 days, now 3.00%
+- **VSVS.L** (UK, fca_short_rise, 2026-11-27): VESUVIUS PLC: aggregate net short up 0.97pp over 30 days, now 1.78%
+- **CRST.L** (UK, fca_short_rise, 2026-11-27): CREST NICHOLSON HOLDINGS PLC: aggregate net short up 0.86pp over 30 days, now 12.86%
+- **CWR.L** (UK, fca_short_rise, 2026-11-27): CERES POWER HOLDINGS PLC: aggregate net short up 1.04pp over 30 days, now 21.57%
+- **WIZZ.L** (UK, fca_short_rise, 2026-11-27): Wizz Air Holdings PLC: aggregate net short up 1.46pp over 30 days, now 10.21%
 
 ## Watch
 
@@ -25,5 +27,6 @@ _Research signals, not advice. Backtests found no standalone edge after costs; u
 
 ## Info
 
-- **BREE.L** (UK, fca_short_fall, 2026-11-26): Breedon Group Plc: aggregate net short down 0.60pp over 30 days, now 11.46%
+- **DE000EVNK013** (UK, fca_short_fall, 2026-11-27): Evonik Industries AG: aggregate net short down 0.50pp over 30 days, now 1.28%
+- **CPI.L** (UK, fca_short_fall, 2026-11-27): CAPITA PLC: aggregate net short down 0.94pp over 30 days, now 8.20%
 

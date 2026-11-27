@@ -9,7 +9,7 @@ Too few to read anything into (need 30).
 
 ### FCA short changes
 
-Signals logged: 244. With a 20-day return: 0.
+Signals logged: 342. With a 20-day return: 0.
 Too few to read anything into (need 30).
 
 ### UK combo

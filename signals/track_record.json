@@ -18,7 +18,7 @@
    "signal": "FCA short rises, shorted",
    "side": "short",
    "cost": 0.017,
-   "logged": 149,
+   "logged": 206,
    "priced": 0,
    "ready": false,
    "sizing": {
