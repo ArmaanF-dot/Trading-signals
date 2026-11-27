@@ -1,0 +1,54 @@
+name: jets-history
+# Scan adsb.lol daily archives (about 2.4 GB a day, streamed, nothing kept but a few hundred rows)
+# for arrivals of watchlist jets and every arrival in Omaha. 20 shards run in parallel; a final
+# job merges their day files into data/jets/history and commits them.
+on:
+  workflow_dispatch:
+    inputs:
+      start: {description: "first day (YYYY-MM-DD)", default: "2023-03-01"}
+      end: {description: "last day (YYYY-MM-DD)", default: "2026-11-25"}
+permissions:
+  contents: write
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: python run.py jets-history ${{ inputs.start }} ${{ inputs.end }} ${{ matrix.shard }} 20
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PYTHONUNBUFFERED: "1"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jets-${{ matrix.shard }}
+          path: data/jets/history/
+          if-no-files-found: ignore
+  merge:
+    needs: scan
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: artifacts}
+      - name: Commit day files
+        run: |
+          mkdir -p data/jets/history
+          find artifacts -name '*.csv' -exec cp -n {} data/jets/history/ \;
+          ls data/jets/history | wc -l
+          git config user.name "signals-bot"
+          git config user.email "signals-bot@users.noreply.github.com"
+          git add data/jets/history
+          git diff --cached --quiet && exit 0
+          git commit -m "data: jet arrivals from adsb.lol history"
+          for i in 1 2 3 4; do git pull --rebase && git push && exit 0; sleep $((i * 10)); done
+          exit 1
