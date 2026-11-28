@@ -62,6 +62,10 @@ Features are changes against the company's own previous four calls. The pre-set 
 | d_q_tone | -0.004 (t -0.2) | -0.007 (t -0.5) | +0.013 (t 0.7) | +0.009 (t 0.5) |
 | call_score | -0.022 (t -1.3) | -0.025 (t -1.4) | -0.007 (t -0.4) | -0.009 (t -0.6) |
 
+## What about pauses, pitch and tone of voice?
+
+Not testable for free at scale. What exists: the Hugging Face "EarningsCallVoice" set has only 100 short clips with no company or date, so it cannot be linked to returns; a larger audio set (soundai2016/pimm_nasdaq_earningscall) is gated; the academic MAEC set (about 3,400 calls, 2015-18, with acoustic features) lives on a GitHub repository this project cannot reach; company webcast archives are mostly behind registration and expire. The transcripts carry no timestamps, so pauses cannot be recovered either; the "disfluency" feature above (fillers, "--" and "...") is only a weak proxy, because vendors clean transcripts. If audio is ever worth pursuing, the realistic route is to download MAEC by hand, extract pitch and pause features, and run the same quintile test, but about 3,400 calls over four years is small and the text result suggests little to find.
+
 ## Verdict
 
 Pre-set rule: buy the top score quintile, hold 60 days, judged out of sample. No edge: the top quintile did not beat SPY out of sample.
