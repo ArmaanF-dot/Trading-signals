@@ -1,7 +1,7 @@
 """Entry point: python run.py form4|fca|combo|all"""
 import sys
 
-USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep | text-study | products | combine | jets-watchlist | jets-history START END [SHARD N] | jets-study | jets"
+USAGE = "usage: python run.py form4|fca|combo|feed|all | backtest START_YEAR END_YEAR | opportunistic FIRST_YEAR LAST_YEAR | fca-study | pead-study | momentum | frontier | trend | carry [--refresh] | letf [--refresh] | reversal | ml-rank | quality-value | oil-tanks | risk | dashboard | ufc PATH | jobs | jobs-study | jobs-deep | text-study | call-study | products | combine | jets-watchlist | jets-history START END [SHARD N] | jets-study | jets"
 
 
 def study_runner(what: str, argv: list[str]):
@@ -15,6 +15,9 @@ def study_runner(what: str, argv: list[str]):
     if what == "oil-tanks":
         from edge import oil_tanks
         return oil_tanks.main
+    if what == "call-study":
+        from edge import calls
+        return calls.main
     if what == "text-study":
         from edge import textchg
         return textchg.main
