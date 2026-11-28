@@ -4,3 +4,5 @@ pytest
 openpyxl
 scikit-learn
 pyarrow
+praat-parselmouth
+soundfile

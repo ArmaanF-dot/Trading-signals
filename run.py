@@ -85,6 +85,10 @@ def main(argv: list[str]) -> int:
         from edge.jobs import collect
         collect.run()
         return 0
+    if what == "voice":
+        from edge.voice import collect as vcollect
+        vcollect.run()
+        return 0
     if what == "products":
         from edge.products import collect as pcollect
         pcollect.run()
