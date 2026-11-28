@@ -1,6 +1,76 @@
 {
- "generated_utc": "2026-11-27T17:31Z",
+ "generated_utc": "2026-11-28T16:16Z",
  "flags": [
+  {
+   "date": "2026-11-27",
+   "kind": "novel",
+   "ticker": "NWL",
+   "company": "NEWELL BRANDS INC.",
+   "jet": "N904NB",
+   "airport": "KAPF",
+   "arrived_utc": "2026-11-27T21:12",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "novel",
+   "ticker": "BANC",
+   "company": "BANC OF CALIFORNIA, INC.",
+   "jet": "N712AG",
+   "airport": "KHYA",
+   "arrived_utc": "2026-11-27T15:57",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "novel",
+   "ticker": "APD",
+   "company": "Air Products & Chemicals, Inc.",
+   "jet": "N987QS",
+   "airport": "KJFK",
+   "arrived_utc": "2026-11-27T22:32",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "novel",
+   "ticker": "AFL",
+   "company": "AFLAC INC",
+   "jet": "N280AF",
+   "airport": "KTIX",
+   "arrived_utc": "2026-11-27T17:57",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "novel",
+   "ticker": "LTH",
+   "company": "Life Time Group Holdings, Inc.",
+   "jet": "N890LT",
+   "airport": "KCGF",
+   "arrived_utc": "2026-11-25T18:35",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "novel",
+   "ticker": "MSI",
+   "company": "Motorola Solutions, Inc.",
+   "jet": "N513FX",
+   "airport": "KMSN",
+   "arrived_utc": "2026-11-25T22:25",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-25",
+   "kind": "omaha",
+   "ticker": "CMI",
+   "company": "CUMMINS INC",
+   "jet": "N283CE",
+   "airport": "KOMA",
+   "arrived_utc": "2026-11-25T13:45",
+   "stance": "info"
+  },
   {
    "date": "2026-11-25",
    "kind": "novel",
@@ -22,33 +92,13 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-25",
+   "date": "2026-11-24",
    "kind": "novel",
-   "ticker": "LTH",
-   "company": "Life Time Group Holdings, Inc.",
-   "jet": "N890LT",
-   "airport": "KCGF",
-   "arrived_utc": "2026-11-25T18:35",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-25",
-   "kind": "omaha",
-   "ticker": "CMI",
-   "company": "CUMMINS INC",
-   "jet": "N283CE",
-   "airport": "KOMA",
-   "arrived_utc": "2026-11-25T13:45",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-25",
-   "kind": "novel",
-   "ticker": "MSI",
-   "company": "Motorola Solutions, Inc.",
-   "jet": "N513FX",
-   "airport": "KDTW",
-   "arrived_utc": "2026-11-25T20:15",
+   "ticker": "PCAR",
+   "company": "PACCAR INC",
+   "jet": "N706P",
+   "airport": "KILN",
+   "arrived_utc": "2026-11-24T15:03",
    "stance": "info"
   },
   {
@@ -59,16 +109,6 @@
    "jet": "N926TP",
    "airport": "KORL",
    "arrived_utc": "2026-11-24T18:25",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-24",
-   "kind": "novel",
-   "ticker": "PCAR",
-   "company": "PACCAR INC",
-   "jet": "N706P",
-   "airport": "KILN",
-   "arrived_utc": "2026-11-24T15:03",
    "stance": "info"
   },
   {
@@ -94,6 +134,16 @@
   {
    "date": "2026-11-23",
    "kind": "novel",
+   "ticker": "CBRL",
+   "company": "CRACKER BARREL OLD COUNTRY STORE, INC",
+   "jet": "N68CB",
+   "airport": "KRSW",
+   "arrived_utc": "2026-11-23T20:25",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-23",
+   "kind": "novel",
    "ticker": "LVS",
    "company": "LAS VEGAS SANDS CORP",
    "jet": "N339LS",
@@ -114,16 +164,6 @@
   {
    "date": "2026-11-23",
    "kind": "novel",
-   "ticker": "SENEA",
-   "company": "Seneca Foods Corp",
-   "jet": "N87SF",
-   "airport": "CYQB",
-   "arrived_utc": "2026-11-23T17:17",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-23",
-   "kind": "novel",
    "ticker": "CHH",
    "company": "CHOICE HOTELS INTERNATIONAL INC /DE",
    "jet": "N472K",
@@ -134,11 +174,11 @@
   {
    "date": "2026-11-23",
    "kind": "novel",
-   "ticker": "CBRL",
-   "company": "CRACKER BARREL OLD COUNTRY STORE, INC",
-   "jet": "N68CB",
-   "airport": "KTPA",
-   "arrived_utc": "2026-11-23T23:28",
+   "ticker": "SENEA",
+   "company": "Seneca Foods Corp",
+   "jet": "N87SF",
+   "airport": "CYQB",
+   "arrived_utc": "2026-11-23T17:17",
    "stance": "info"
   },
   {
@@ -164,6 +204,16 @@
   {
    "date": "2026-11-21",
    "kind": "novel",
+   "ticker": "WHR",
+   "company": "WHIRLPOOL CORP /DE/",
+   "jet": "N1911W",
+   "airport": "KCHS",
+   "arrived_utc": "2026-11-21T13:12",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-21",
+   "kind": "novel",
    "ticker": "FLGT",
    "company": "Fulgent Genetics, Inc.",
    "jet": "N369FG",
@@ -177,18 +227,58 @@
    "ticker": "WMT",
    "company": "Walmart Inc.",
    "jet": "N15DP",
-   "airport": "KFMY",
-   "arrived_utc": "2026-11-21T21:44",
+   "airport": "KBKV",
+   "arrived_utc": "2026-11-21T15:34",
    "stance": "info"
   },
   {
-   "date": "2026-11-21",
+   "date": "2026-11-20",
    "kind": "novel",
-   "ticker": "WHR",
-   "company": "WHIRLPOOL CORP /DE/",
-   "jet": "N1911W",
-   "airport": "KCHS",
-   "arrived_utc": "2026-11-21T13:12",
+   "ticker": "PNC",
+   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
+   "jet": "N545DL",
+   "airport": "KAVL",
+   "arrived_utc": "2026-11-20T22:29",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "NWL",
+   "company": "NEWELL BRANDS INC.",
+   "jet": "N904NB",
+   "airport": "KDJT",
+   "arrived_utc": "2026-11-20T22:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "NUE",
+   "company": "NUCOR CORP",
+   "jet": "N980JF",
+   "airport": "KFNT",
+   "arrived_utc": "2026-11-20T13:17",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "DDS",
+   "company": "DILLARD'S, INC.",
+   "jet": "N917BD",
+   "airport": "KLRD",
+   "arrived_utc": "2026-11-20T14:16",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "TWI",
+   "company": "TITAN INTERNATIONAL INC",
+   "jet": "N506TW",
+   "airport": "KHPN",
+   "arrived_utc": "2026-11-20T14:27",
    "stance": "info"
   },
   {
@@ -199,6 +289,26 @@
    "jet": "N302KC",
    "airport": "KBGR",
    "arrived_utc": "2026-11-20T16:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "JNJ",
+   "company": "JOHNSON & JOHNSON",
+   "jet": "N60QJ",
+   "airport": "KFLL",
+   "arrived_utc": "2026-11-20T01:53",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "novel",
+   "ticker": "EMN",
+   "company": "EASTMAN CHEMICAL CO",
+   "jet": "N494EC",
+   "airport": "KDAY",
+   "arrived_utc": "2026-11-20T13:12",
    "stance": "info"
   },
   {
@@ -222,76 +332,6 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "TWI",
-   "company": "TITAN INTERNATIONAL INC",
-   "jet": "N506TW",
-   "airport": "KHPN",
-   "arrived_utc": "2026-11-20T14:27",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "PNC",
-   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
-   "jet": "N545DL",
-   "airport": "KAVL",
-   "arrived_utc": "2026-11-20T22:29",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "JNJ",
-   "company": "JOHNSON & JOHNSON",
-   "jet": "N60QJ",
-   "airport": "KFLL",
-   "arrived_utc": "2026-11-20T01:53",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "NUE",
-   "company": "NUCOR CORP",
-   "jet": "N980JF",
-   "airport": "KFNT",
-   "arrived_utc": "2026-11-20T13:17",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "NWL",
-   "company": "NEWELL BRANDS INC.",
-   "jet": "N904NB",
-   "airport": "KDJT",
-   "arrived_utc": "2026-11-20T22:45",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "EMN",
-   "company": "EASTMAN CHEMICAL CO",
-   "jet": "N494EC",
-   "airport": "KDAY",
-   "arrived_utc": "2026-11-20T13:12",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-20",
-   "kind": "novel",
-   "ticker": "DDS",
-   "company": "DILLARD'S, INC.",
-   "jet": "N917BD",
-   "airport": "KLRD",
-   "arrived_utc": "2026-11-20T14:16",
-   "stance": "info"
-  },
-  {
    "date": "2026-11-19",
    "kind": "novel",
    "ticker": "SYK",
@@ -304,11 +344,11 @@
   {
    "date": "2026-11-19",
    "kind": "novel",
-   "ticker": "GRC",
-   "company": "GORMAN RUPP CO",
-   "jet": "N19GR",
-   "airport": "KFRG",
-   "arrived_utc": "2026-11-19T20:42",
+   "ticker": "GPC",
+   "company": "GENUINE PARTS CO",
+   "jet": "N28GP",
+   "airport": "KCMH",
+   "arrived_utc": "2026-11-19T18:03",
    "stance": "info"
   },
   {
@@ -324,31 +364,11 @@
   {
    "date": "2026-11-19",
    "kind": "novel",
-   "ticker": "FDXF",
-   "company": "FedEx Freight Holding Company, Inc.",
-   "jet": "N39FE",
-   "airport": "KRIC",
-   "arrived_utc": "2026-11-19T01:53",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-19",
-   "kind": "novel",
    "ticker": "BJ",
    "company": "BJ's Wholesale Club Holdings, Inc.",
    "jet": "N496QS",
-   "airport": "KEWR",
-   "arrived_utc": "2026-11-19T00:07",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-19",
-   "kind": "novel",
-   "ticker": "GPC",
-   "company": "GENUINE PARTS CO",
-   "jet": "N28GP",
-   "airport": "KRIC",
-   "arrived_utc": "2026-11-19T13:32",
+   "airport": "KAPA",
+   "arrived_utc": "2026-11-19T23:41",
    "stance": "info"
   },
   {
@@ -362,43 +382,33 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-18",
+   "date": "2026-11-19",
    "kind": "novel",
-   "ticker": "WDAY",
-   "company": "Workday, Inc.",
-   "jet": "N191MM",
-   "airport": "KFAR",
-   "arrived_utc": "2026-11-18T21:45",
+   "ticker": "GRC",
+   "company": "GORMAN RUPP CO",
+   "jet": "N19GR",
+   "airport": "KFRG",
+   "arrived_utc": "2026-11-19T20:42",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-19",
+   "kind": "novel",
+   "ticker": "FDXF",
+   "company": "FedEx Freight Holding Company, Inc.",
+   "jet": "N39FE",
+   "airport": "KFTW",
+   "arrived_utc": "2026-11-19T20:55",
    "stance": "info"
   },
   {
    "date": "2026-11-18",
    "kind": "novel",
-   "ticker": "UFPI",
-   "company": "UFP INDUSTRIES INC",
-   "jet": "N255FP",
-   "airport": "KDFW",
-   "arrived_utc": "2026-11-18T15:08",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-18",
-   "kind": "novel",
-   "ticker": "BC",
-   "company": "BRUNSWICK CORP",
-   "jet": NaN,
-   "airport": "KGON",
-   "arrived_utc": "2026-11-18T13:44",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-18",
-   "kind": "novel",
-   "ticker": "CAT",
-   "company": "CATERPILLAR INC",
-   "jet": "N175CT",
-   "airport": "KABY",
-   "arrived_utc": "2026-11-18T13:45",
+   "ticker": "CMI",
+   "company": "CUMMINS INC",
+   "jet": "N281CE",
+   "airport": "KSGF",
+   "arrived_utc": "2026-11-18T14:22",
    "stance": "info"
   },
   {
@@ -414,21 +424,61 @@
   {
    "date": "2026-11-18",
    "kind": "novel",
-   "ticker": "IBM",
-   "company": "INTERNATIONAL BUSINESS MACHINES CORP",
-   "jet": "N780TW",
-   "airport": "KVNY",
-   "arrived_utc": "2026-11-18T01:39",
+   "ticker": "JKHY",
+   "company": "JACK HENRY & ASSOCIATES INC",
+   "jet": "N780JH",
+   "airport": "KHPN",
+   "arrived_utc": "2026-11-18T20:51",
    "stance": "info"
   },
   {
    "date": "2026-11-18",
    "kind": "novel",
-   "ticker": "JKHY",
-   "company": "JACK HENRY & ASSOCIATES INC",
-   "jet": "N780JH",
-   "airport": "KRIC",
-   "arrived_utc": "2026-11-18T23:02",
+   "ticker": "CAT",
+   "company": "CATERPILLAR INC",
+   "jet": "N175CT",
+   "airport": "KABY",
+   "arrived_utc": "2026-11-18T13:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "novel",
+   "ticker": "BC",
+   "company": "BRUNSWICK CORP",
+   "jet": NaN,
+   "airport": "KGON",
+   "arrived_utc": "2026-11-18T13:44",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "novel",
+   "ticker": "UFPI",
+   "company": "UFP INDUSTRIES INC",
+   "jet": "N255FP",
+   "airport": "KDFW",
+   "arrived_utc": "2026-11-18T15:08",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "novel",
+   "ticker": "WDAY",
+   "company": "Workday, Inc.",
+   "jet": "N191MM",
+   "airport": "KFAR",
+   "arrived_utc": "2026-11-18T21:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-18",
+   "kind": "novel",
+   "ticker": "IBM",
+   "company": "INTERNATIONAL BUSINESS MACHINES CORP",
+   "jet": "N780TW",
+   "airport": "KVNY",
+   "arrived_utc": "2026-11-18T01:39",
    "stance": "info"
   },
   {
@@ -442,13 +492,43 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-18",
+   "date": "2026-11-17",
    "kind": "novel",
-   "ticker": "CMI",
-   "company": "CUMMINS INC",
-   "jet": "N281CE",
-   "airport": "KSGF",
-   "arrived_utc": "2026-11-18T14:22",
+   "ticker": "WOR",
+   "company": "WORTHINGTON ENTERPRISES, INC.",
+   "jet": "N352W",
+   "airport": "KBKV",
+   "arrived_utc": "2026-11-17T15:30",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-17",
+   "kind": "novel",
+   "ticker": "CNR",
+   "company": "Core Natural Resources, Inc.",
+   "jet": "N56BA",
+   "airport": "KCHS",
+   "arrived_utc": "2026-11-17T22:32",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-17",
+   "kind": "novel",
+   "ticker": "SAH",
+   "company": "SONIC AUTOMOTIVE INC",
+   "jet": "N304K",
+   "airport": "KMRY",
+   "arrived_utc": "2026-11-17T17:06",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-17",
+   "kind": "novel",
+   "ticker": "SNEX",
+   "company": "StoneX Group Inc.",
+   "jet": "N855A",
+   "airport": "KAUS",
+   "arrived_utc": "2026-11-17T13:10",
    "stance": "info"
   },
   {
@@ -474,21 +554,11 @@
   {
    "date": "2026-11-17",
    "kind": "novel",
-   "ticker": "AVA",
-   "company": "AVISTA CORP",
-   "jet": "N202AV",
-   "airport": "KPUW",
-   "arrived_utc": "2026-11-17T16:24",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-17",
-   "kind": "novel",
-   "ticker": "CNR",
-   "company": "Core Natural Resources, Inc.",
-   "jet": "N56BA",
-   "airport": "KCHS",
-   "arrived_utc": "2026-11-17T22:32",
+   "ticker": "BALL",
+   "company": "BALL Corp",
+   "jet": "N400BC",
+   "airport": "ESSB",
+   "arrived_utc": "2026-11-17T20:49",
    "stance": "info"
   },
   {
@@ -504,91 +574,11 @@
   {
    "date": "2026-11-17",
    "kind": "novel",
-   "ticker": "SNEX",
-   "company": "StoneX Group Inc.",
-   "jet": "N855A",
-   "airport": "KAUS",
-   "arrived_utc": "2026-11-17T13:10",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-17",
-   "kind": "novel",
-   "ticker": "BALL",
-   "company": "BALL Corp",
-   "jet": "N400BC",
-   "airport": "ESSB",
-   "arrived_utc": "2026-11-17T20:49",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-17",
-   "kind": "novel",
-   "ticker": "WOR",
-   "company": "WORTHINGTON ENTERPRISES, INC.",
-   "jet": "N352W",
-   "airport": "KBKV",
-   "arrived_utc": "2026-11-17T15:30",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-17",
-   "kind": "novel",
-   "ticker": "SAH",
-   "company": "SONIC AUTOMOTIVE INC",
-   "jet": "N304K",
-   "airport": "KMRY",
-   "arrived_utc": "2026-11-17T17:06",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "COST",
-   "company": "COSTCO WHOLESALE CORP /NEW",
-   "jet": "N82CW",
-   "airport": "KHOU",
-   "arrived_utc": "2026-11-16T23:50",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "NKE",
-   "company": "NIKE, Inc.",
-   "jet": "N1972",
-   "airport": "KMCC",
-   "arrived_utc": "2026-11-16T03:41",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "CIEN",
-   "company": "CIENA CORP",
-   "jet": "N711QS",
-   "airport": "KMGM",
-   "arrived_utc": "2026-11-16T20:35",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "QCOM",
-   "company": "QUALCOMM INC/DE",
-   "jet": "N882WT",
-   "airport": "RJBB",
-   "arrived_utc": "2026-11-16T15:00",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "BANC",
-   "company": "BANC OF CALIFORNIA, INC.",
-   "jet": "N712AG",
-   "airport": "KBNA",
-   "arrived_utc": "2026-11-16T15:31",
+   "ticker": "AVA",
+   "company": "AVISTA CORP",
+   "jet": "N202AV",
+   "airport": "KPUW",
+   "arrived_utc": "2026-11-17T16:24",
    "stance": "info"
   },
   {
@@ -597,38 +587,8 @@
    "ticker": "SENEA",
    "company": "Seneca Foods Corp",
    "jet": "N77SF",
-   "airport": "KPSC",
-   "arrived_utc": "2026-11-16T19:52",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "CHRW",
-   "company": "C. H. ROBINSON WORLDWIDE, INC.",
-   "jet": "N71CH",
-   "airport": "KDET",
-   "arrived_utc": "2026-11-16T14:05",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "AGCO",
-   "company": "AGCO CORP /DE",
-   "jet": "N650LC",
-   "airport": "KCMI",
-   "arrived_utc": "2026-11-16T13:34",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
-   "ticker": "ROK",
-   "company": "ROCKWELL AUTOMATION, INC",
-   "jet": "N68AB",
-   "airport": "KBOS",
-   "arrived_utc": "2026-11-16T14:25",
+   "airport": "KFCM",
+   "arrived_utc": "2026-11-16T14:55",
    "stance": "info"
   },
   {
@@ -644,21 +604,51 @@
   {
    "date": "2026-11-16",
    "kind": "novel",
-   "ticker": "SJM",
-   "company": "J M SMUCKER Co",
-   "jet": "N1897S",
-   "airport": "KIAH",
-   "arrived_utc": "2026-11-16T15:15",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-16",
-   "kind": "novel",
    "ticker": "PCAR",
    "company": "PACCAR INC",
    "jet": "N706P",
    "airport": "KDFW",
    "arrived_utc": "2026-11-16T20:43",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "COST",
+   "company": "COSTCO WHOLESALE CORP /NEW",
+   "jet": "N82CW",
+   "airport": "KHOU",
+   "arrived_utc": "2026-11-16T23:50",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "ROK",
+   "company": "ROCKWELL AUTOMATION, INC",
+   "jet": "A57AB",
+   "airport": "KBOS",
+   "arrived_utc": "2026-11-16T21:00",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "NKE",
+   "company": "NIKE, Inc.",
+   "jet": "N1972",
+   "airport": "KMCC",
+   "arrived_utc": "2026-11-16T03:41",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "CHRW",
+   "company": "C. H. ROBINSON WORLDWIDE, INC.",
+   "jet": "N71CH",
+   "airport": "KDET",
+   "arrived_utc": "2026-11-16T14:05",
    "stance": "info"
   },
   {
@@ -674,6 +664,16 @@
   {
    "date": "2026-11-16",
    "kind": "novel",
+   "ticker": "BRO",
+   "company": "BROWN & BROWN, INC.",
+   "jet": "N396BB",
+   "airport": "KSWF",
+   "arrived_utc": "2026-11-16T17:48",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
    "ticker": "GVA",
    "company": "GRANITE CONSTRUCTION INC",
    "jet": "N1922G",
@@ -684,21 +684,51 @@
   {
    "date": "2026-11-16",
    "kind": "novel",
-   "ticker": "BRO",
-   "company": "BROWN & BROWN, INC.",
-   "jet": "N396BB",
-   "airport": "KSWF",
-   "arrived_utc": "2026-11-16T17:48",
+   "ticker": "AGCO",
+   "company": "AGCO CORP /DE",
+   "jet": "N650LC",
+   "airport": "KCMI",
+   "arrived_utc": "2026-11-16T13:34",
    "stance": "info"
   },
   {
-   "date": "2026-11-15",
+   "date": "2026-11-16",
    "kind": "novel",
-   "ticker": "LVS",
-   "company": "LAS VEGAS SANDS CORP",
-   "jet": "N336LS",
-   "airport": "KTRM",
-   "arrived_utc": "2026-11-15T19:28",
+   "ticker": "BANC",
+   "company": "BANC OF CALIFORNIA, INC.",
+   "jet": "N319FS",
+   "airport": "KJYO",
+   "arrived_utc": "2026-11-16T16:57",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "QCOM",
+   "company": "QUALCOMM INC/DE",
+   "jet": "N882WT",
+   "airport": "RJBB",
+   "arrived_utc": "2026-11-16T15:00",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "SJM",
+   "company": "J M SMUCKER Co",
+   "jet": "N1897S",
+   "airport": "KIAH",
+   "arrived_utc": "2026-11-16T15:15",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-16",
+   "kind": "novel",
+   "ticker": "CIEN",
+   "company": "CIENA CORP",
+   "jet": "N711QS",
+   "airport": "KMGM",
+   "arrived_utc": "2026-11-16T20:35",
    "stance": "info"
   },
   {
@@ -712,13 +742,13 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-14",
+   "date": "2026-11-15",
    "kind": "novel",
-   "ticker": "PNR",
-   "company": "PENTAIR plc",
-   "jet": "N211WG",
-   "airport": "K11R",
-   "arrived_utc": "2026-11-14T16:58",
+   "ticker": "LVS",
+   "company": "LAS VEGAS SANDS CORP",
+   "jet": "N336LS",
+   "airport": "KAPC",
+   "arrived_utc": "2026-11-15T17:32",
    "stance": "info"
   },
   {
@@ -729,6 +759,26 @@
    "jet": "N513FX",
    "airport": "CA-1291",
    "arrived_utc": "2026-11-14T17:25",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-14",
+   "kind": "novel",
+   "ticker": "FWONA",
+   "company": "Liberty Media Corp",
+   "jet": "N780LM",
+   "airport": "KILG",
+   "arrived_utc": "2026-11-14T20:48",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-14",
+   "kind": "novel",
+   "ticker": "HTH",
+   "company": "Hilltop Holdings Inc.",
+   "jet": "N824HH",
+   "airport": "KHEF",
+   "arrived_utc": "2026-11-14T21:07",
    "stance": "info"
   },
   {
@@ -754,21 +804,21 @@
   {
    "date": "2026-11-14",
    "kind": "novel",
-   "ticker": "HTH",
-   "company": "Hilltop Holdings Inc.",
-   "jet": "N824HH",
-   "airport": "KHEF",
-   "arrived_utc": "2026-11-14T21:07",
+   "ticker": "PNR",
+   "company": "PENTAIR plc",
+   "jet": "N211WG",
+   "airport": "K11R",
+   "arrived_utc": "2026-11-14T16:58",
    "stance": "info"
   },
   {
-   "date": "2026-11-14",
+   "date": "2026-11-13",
    "kind": "novel",
-   "ticker": "FWONA",
-   "company": "Liberty Media Corp",
-   "jet": "N780LM",
-   "airport": "KILG",
-   "arrived_utc": "2026-11-14T20:48",
+   "ticker": "WHR",
+   "company": "WHIRLPOOL CORP /DE/",
+   "jet": "N1911W",
+   "airport": "VHHH",
+   "arrived_utc": "2026-11-13T06:36",
    "stance": "info"
   },
   {
@@ -794,16 +844,6 @@
   {
    "date": "2026-11-13",
    "kind": "novel",
-   "ticker": "WHR",
-   "company": "WHIRLPOOL CORP /DE/",
-   "jet": "N1911W",
-   "airport": "VHHH",
-   "arrived_utc": "2026-11-13T06:36",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-13",
-   "kind": "novel",
    "ticker": "D",
    "company": "DOMINION ENERGY, INC",
    "jet": "N607D",
@@ -814,31 +854,21 @@
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "JNJ",
-   "company": "JOHNSON & JOHNSON",
-   "jet": "N60QJ",
-   "airport": "KOPF",
-   "arrived_utc": "2026-11-12T13:30",
+   "ticker": "PPG",
+   "company": "PPG INDUSTRIES INC",
+   "jet": "N857GA",
+   "airport": "KMDW",
+   "arrived_utc": "2026-11-12T00:11",
    "stance": "info"
   },
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "PNC",
-   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
-   "jet": "N545DL",
-   "airport": "KIAD",
-   "arrived_utc": "2026-11-12T13:07",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-12",
-   "kind": "novel",
-   "ticker": "BJ",
-   "company": "BJ's Wholesale Club Holdings, Inc.",
-   "jet": "N496QS",
-   "airport": "KSVH",
-   "arrived_utc": "2026-11-12T22:42",
+   "ticker": "SYK",
+   "company": "STRYKER CORP",
+   "jet": "N625SC",
+   "airport": "KXNA",
+   "arrived_utc": "2026-11-12T18:33",
    "stance": "info"
   },
   {
@@ -854,11 +884,11 @@
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "APD",
-   "company": "Air Products & Chemicals, Inc.",
-   "jet": "N987QS",
-   "airport": "KJPX",
-   "arrived_utc": "2026-11-12T00:13",
+   "ticker": "GE",
+   "company": "GENERAL ELECTRIC CO",
+   "jet": "N120GE",
+   "airport": "KMCO",
+   "arrived_utc": "2026-11-12T14:44",
    "stance": "info"
   },
   {
@@ -884,16 +914,6 @@
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "SYK",
-   "company": "STRYKER CORP",
-   "jet": "N625SC",
-   "airport": "KXNA",
-   "arrived_utc": "2026-11-12T18:33",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-12",
-   "kind": "novel",
    "ticker": "BDC",
    "company": "BELDEN INC.",
    "jet": "N363AP",
@@ -904,11 +924,41 @@
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "GE",
-   "company": "GENERAL ELECTRIC CO",
-   "jet": "N120GE",
-   "airport": "KMCO",
-   "arrived_utc": "2026-11-12T14:44",
+   "ticker": "PNC",
+   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
+   "jet": "N545DL",
+   "airport": "KIAD",
+   "arrived_utc": "2026-11-12T13:07",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "novel",
+   "ticker": "TVE",
+   "company": "Tennessee Valley Authority",
+   "jet": "N560GJ",
+   "airport": "KMMU",
+   "arrived_utc": "2026-11-12T15:50",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "novel",
+   "ticker": "JNJ",
+   "company": "JOHNSON & JOHNSON",
+   "jet": "N60QJ",
+   "airport": "KOPF",
+   "arrived_utc": "2026-11-12T13:30",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-12",
+   "kind": "novel",
+   "ticker": "APD",
+   "company": "Air Products & Chemicals, Inc.",
+   "jet": "N987QS",
+   "airport": "KJPX",
+   "arrived_utc": "2026-11-12T00:13",
    "stance": "info"
   },
   {
@@ -924,31 +974,21 @@
   {
    "date": "2026-11-12",
    "kind": "novel",
-   "ticker": "PPG",
-   "company": "PPG INDUSTRIES INC",
-   "jet": "N857GA",
-   "airport": "KMDW",
-   "arrived_utc": "2026-11-12T00:11",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-12",
-   "kind": "novel",
-   "ticker": "TVE",
-   "company": "Tennessee Valley Authority",
-   "jet": "N560GJ",
-   "airport": "KMMU",
-   "arrived_utc": "2026-11-12T15:50",
+   "ticker": "BJ",
+   "company": "BJ's Wholesale Club Holdings, Inc.",
+   "jet": "N496QS",
+   "airport": "KCPS",
+   "arrived_utc": "2026-11-12T16:17",
    "stance": "info"
   },
   {
    "date": "2026-11-10",
    "kind": "novel",
-   "ticker": "SNEX",
-   "company": "StoneX Group Inc.",
-   "jet": "N855A",
-   "airport": "KIAD",
-   "arrived_utc": "2026-11-10T19:49",
+   "ticker": "CMI",
+   "company": "CUMMINS INC",
+   "jet": "N281CE",
+   "airport": "KONT",
+   "arrived_utc": "2026-11-10T15:54",
    "stance": "info"
   },
   {
@@ -959,36 +999,6 @@
    "jet": "N957RC",
    "airport": "KMDW",
    "arrived_utc": "2026-11-10T19:14",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-10",
-   "kind": "novel",
-   "ticker": "MGHL",
-   "company": "MORGAN GROUP HOLDING CO",
-   "jet": "N926TP",
-   "airport": "KGSP",
-   "arrived_utc": "2026-11-10T12:31",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-10",
-   "kind": "novel",
-   "ticker": "AFL",
-   "company": "AFLAC INC",
-   "jet": "N280AF",
-   "airport": "KBDL",
-   "arrived_utc": "2026-11-10T16:48",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-10",
-   "kind": "novel",
-   "ticker": "IBM",
-   "company": "INTERNATIONAL BUSINESS MACHINES CORP",
-   "jet": "N780TW",
-   "airport": "KMIA",
-   "arrived_utc": "2026-11-10T22:17",
    "stance": "info"
   },
   {
@@ -1014,21 +1024,21 @@
   {
    "date": "2026-11-10",
    "kind": "novel",
-   "ticker": "AMP",
-   "company": "AMERIPRISE FINANCIAL INC",
-   "jet": "N616AF",
-   "airport": "KBCT",
-   "arrived_utc": "2026-11-10T02:45",
+   "ticker": "SNEX",
+   "company": "StoneX Group Inc.",
+   "jet": "N855A",
+   "airport": "KIAD",
+   "arrived_utc": "2026-11-10T19:49",
    "stance": "info"
   },
   {
    "date": "2026-11-10",
    "kind": "novel",
-   "ticker": "CMI",
-   "company": "CUMMINS INC",
-   "jet": "N281CE",
-   "airport": "KONT",
-   "arrived_utc": "2026-11-10T15:54",
+   "ticker": "AFL",
+   "company": "AFLAC INC",
+   "jet": "N280AF",
+   "airport": "KBDL",
+   "arrived_utc": "2026-11-10T16:48",
    "stance": "info"
   },
   {
@@ -1044,6 +1054,26 @@
   {
    "date": "2026-11-10",
    "kind": "novel",
+   "ticker": "IBM",
+   "company": "INTERNATIONAL BUSINESS MACHINES CORP",
+   "jet": "N780TW",
+   "airport": "KMIA",
+   "arrived_utc": "2026-11-10T22:17",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-10",
+   "kind": "novel",
+   "ticker": "AMP",
+   "company": "AMERIPRISE FINANCIAL INC",
+   "jet": "N616AF",
+   "airport": "KBCT",
+   "arrived_utc": "2026-11-10T02:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-10",
+   "kind": "novel",
    "ticker": "NWL",
    "company": "NEWELL BRANDS INC.",
    "jet": "N904NB",
@@ -1052,13 +1082,13 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-09",
+   "date": "2026-11-10",
    "kind": "novel",
-   "ticker": "JKHY",
-   "company": "JACK HENRY & ASSOCIATES INC",
-   "jet": "N895JH",
-   "airport": "KTEB",
-   "arrived_utc": "2026-11-09T20:41",
+   "ticker": "MGHL",
+   "company": "MORGAN GROUP HOLDING CO",
+   "jet": "N926TP",
+   "airport": "KGSP",
+   "arrived_utc": "2026-11-10T12:31",
    "stance": "info"
   },
   {
@@ -1074,31 +1104,11 @@
   {
    "date": "2026-11-09",
    "kind": "novel",
-   "ticker": "PWR",
-   "company": "QUANTA SERVICES, INC.",
-   "jet": "N282QA",
-   "airport": "KAUS",
-   "arrived_utc": "2026-11-09T16:54",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-09",
-   "kind": "novel",
    "ticker": "COP",
    "company": "CONOCOPHILLIPS",
    "jet": "N797CP",
    "airport": "KSBA",
    "arrived_utc": "2026-11-09T22:14",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-09",
-   "kind": "novel",
-   "ticker": "UNF",
-   "company": "UNIFIRST CORP",
-   "jet": "N683UF",
-   "airport": "KORD",
-   "arrived_utc": "2026-11-09T20:04",
    "stance": "info"
   },
   {
@@ -1114,21 +1124,51 @@
   {
    "date": "2026-11-09",
    "kind": "novel",
-   "ticker": "TKR",
-   "company": "TIMKEN CO",
-   "jet": "N78TC",
-   "airport": "KMDW",
-   "arrived_utc": "2026-11-09T21:55",
+   "ticker": "BRO",
+   "company": "BROWN & BROWN, INC.",
+   "jet": "N394BB",
+   "airport": "KATL",
+   "arrived_utc": "2026-11-09T00:31",
    "stance": "info"
   },
   {
    "date": "2026-11-09",
    "kind": "novel",
-   "ticker": "BRO",
-   "company": "BROWN & BROWN, INC.",
-   "jet": "N394BB",
-   "airport": "KFXE",
-   "arrived_utc": "2026-11-09T04:11",
+   "ticker": "PWR",
+   "company": "QUANTA SERVICES, INC.",
+   "jet": "N282QA",
+   "airport": "KAUS",
+   "arrived_utc": "2026-11-09T16:54",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "novel",
+   "ticker": "JKHY",
+   "company": "JACK HENRY & ASSOCIATES INC",
+   "jet": "N895JH",
+   "airport": "KTEB",
+   "arrived_utc": "2026-11-09T20:41",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "novel",
+   "ticker": "UNF",
+   "company": "UNIFIRST CORP",
+   "jet": "N683UF",
+   "airport": "KORD",
+   "arrived_utc": "2026-11-09T20:04",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-09",
+   "kind": "novel",
+   "ticker": "TKR",
+   "company": "TIMKEN CO",
+   "jet": "N78TC",
+   "airport": "KMDW",
+   "arrived_utc": "2026-11-09T21:55",
    "stance": "info"
   },
   {
@@ -1154,36 +1194,6 @@
   {
    "date": "2026-11-08",
    "kind": "novel",
-   "ticker": "QCOM",
-   "company": "QUALCOMM INC/DE",
-   "jet": "N882WT",
-   "airport": "EGSS",
-   "arrived_utc": "2026-11-08T09:21",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-08",
-   "kind": "novel",
-   "ticker": "CRK",
-   "company": "COMSTOCK RESOURCES INC",
-   "jet": "N400CR",
-   "airport": "KISM",
-   "arrived_utc": "2026-11-08T19:11",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-08",
-   "kind": "novel",
-   "ticker": "HP",
-   "company": "Helmerich & Payne, Inc.",
-   "jet": "N1HP",
-   "airport": "KMKC",
-   "arrived_utc": "2026-11-08T15:47",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-08",
-   "kind": "novel",
    "ticker": "FLGT",
    "company": "Fulgent Genetics, Inc.",
    "jet": "N369FG",
@@ -1204,6 +1214,36 @@
   {
    "date": "2026-11-08",
    "kind": "novel",
+   "ticker": "QCOM",
+   "company": "QUALCOMM INC/DE",
+   "jet": "N882WT",
+   "airport": "EGSS",
+   "arrived_utc": "2026-11-08T09:21",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-08",
+   "kind": "novel",
+   "ticker": "HP",
+   "company": "Helmerich & Payne, Inc.",
+   "jet": "N1HP",
+   "airport": "KMKC",
+   "arrived_utc": "2026-11-08T15:47",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-08",
+   "kind": "novel",
+   "ticker": "CRK",
+   "company": "COMSTOCK RESOURCES INC",
+   "jet": "N400CR",
+   "airport": "KISM",
+   "arrived_utc": "2026-11-08T19:11",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-08",
+   "kind": "novel",
    "ticker": "BEN",
    "company": "FRANKLIN TEMPLETON INC",
    "jet": "N988F",
@@ -1214,11 +1254,11 @@
   {
    "date": "2026-11-07",
    "kind": "novel",
-   "ticker": "CNR",
-   "company": "Core Natural Resources, Inc.",
-   "jet": "N56BA",
-   "airport": "KALN",
-   "arrived_utc": "2026-11-07T19:47",
+   "ticker": "WMT",
+   "company": "Walmart Inc.",
+   "jet": "N15DP",
+   "airport": "KSDL",
+   "arrived_utc": "2026-11-07T00:38",
    "stance": "info"
   },
   {
@@ -1234,31 +1274,11 @@
   {
    "date": "2026-11-07",
    "kind": "novel",
-   "ticker": "WMT",
-   "company": "Walmart Inc.",
-   "jet": "N15DP",
-   "airport": "KSDL",
-   "arrived_utc": "2026-11-07T00:38",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-06",
-   "kind": "novel",
-   "ticker": "CHRW",
-   "company": "C. H. ROBINSON WORLDWIDE, INC.",
-   "jet": "N71CH",
-   "airport": "KBCT",
-   "arrived_utc": "2026-11-06T02:24",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-06",
-   "kind": "novel",
-   "ticker": "SLND",
-   "company": "Southland Holdings, Inc.",
-   "jet": "N41PM",
+   "ticker": "CNR",
+   "company": "Core Natural Resources, Inc.",
+   "jet": "N56BA",
    "airport": "KALN",
-   "arrived_utc": "2026-11-06T01:08",
+   "arrived_utc": "2026-11-07T19:47",
    "stance": "info"
   },
   {
@@ -1274,11 +1294,51 @@
   {
    "date": "2026-11-06",
    "kind": "novel",
+   "ticker": "MSI",
+   "company": "Motorola Solutions, Inc.",
+   "jet": "N513FX",
+   "airport": "CYYT",
+   "arrived_utc": "2026-11-06T14:10",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "novel",
+   "ticker": "APH",
+   "company": "AMPHENOL CORP /DE/",
+   "jet": "N289QS",
+   "airport": "KUNI",
+   "arrived_utc": "2026-11-06T21:58",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "novel",
+   "ticker": "CHRW",
+   "company": "C. H. ROBINSON WORLDWIDE, INC.",
+   "jet": "N71CH",
+   "airport": "KBCT",
+   "arrived_utc": "2026-11-06T02:24",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "novel",
    "ticker": "LTH",
    "company": "Life Time Group Holdings, Inc.",
    "jet": "N890LT",
-   "airport": "KAFJ",
-   "arrived_utc": "2026-11-06T20:07",
+   "airport": "KMMU",
+   "arrived_utc": "2026-11-06T22:52",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-06",
+   "kind": "novel",
+   "ticker": "FWONA",
+   "company": "Liberty Media Corp",
+   "jet": "N780LM",
+   "airport": "KMRY",
+   "arrived_utc": "2026-11-06T02:00",
    "stance": "info"
   },
   {
@@ -1294,51 +1354,11 @@
   {
    "date": "2026-11-06",
    "kind": "novel",
-   "ticker": "MSI",
-   "company": "Motorola Solutions, Inc.",
-   "jet": "N513FX",
-   "airport": "KBTR",
-   "arrived_utc": "2026-11-06T21:15",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-06",
-   "kind": "novel",
-   "ticker": "FWONA",
-   "company": "Liberty Media Corp",
-   "jet": "N780LM",
-   "airport": "KSEA",
-   "arrived_utc": "2026-11-06T21:19",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-06",
-   "kind": "novel",
-   "ticker": "APH",
-   "company": "AMPHENOL CORP /DE/",
-   "jet": "N289QS",
-   "airport": "KUNI",
-   "arrived_utc": "2026-11-06T21:58",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-05",
-   "kind": "novel",
-   "ticker": "PNC",
-   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
-   "jet": "N852DL",
-   "airport": "KSBN",
-   "arrived_utc": "2026-11-05T23:15",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-05",
-   "kind": "novel",
-   "ticker": "WMK",
-   "company": "WEIS MARKETS INC",
-   "jet": "N613WM",
-   "airport": "KBGM",
-   "arrived_utc": "2026-11-05T16:45",
+   "ticker": "SLND",
+   "company": "Southland Holdings, Inc.",
+   "jet": "N41PM",
+   "airport": "KALN",
+   "arrived_utc": "2026-11-06T01:08",
    "stance": "info"
   },
   {
@@ -1354,11 +1374,11 @@
   {
    "date": "2026-11-05",
    "kind": "novel",
-   "ticker": "WDAY",
-   "company": "Workday, Inc.",
-   "jet": "N191MM",
-   "airport": "KAGS",
-   "arrived_utc": "2026-11-05T18:58",
+   "ticker": "CBRL",
+   "company": "CRACKER BARREL OLD COUNTRY STORE, INC",
+   "jet": "N68CB",
+   "airport": "KCPT",
+   "arrived_utc": "2026-11-05T14:45",
    "stance": "info"
   },
   {
@@ -1374,11 +1394,51 @@
   {
    "date": "2026-11-05",
    "kind": "novel",
-   "ticker": "CBRL",
-   "company": "CRACKER BARREL OLD COUNTRY STORE, INC",
-   "jet": "N68CB",
-   "airport": "KCPT",
-   "arrived_utc": "2026-11-05T14:45",
+   "ticker": "BJ",
+   "company": "BJ's Wholesale Club Holdings, Inc.",
+   "jet": "N496QS",
+   "airport": "KPVD",
+   "arrived_utc": "2026-11-05T17:54",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "novel",
+   "ticker": "WMB",
+   "company": "WILLIAMS COMPANIES, INC.",
+   "jet": "N281WC",
+   "airport": "KSHV",
+   "arrived_utc": "2026-11-05T13:14",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "novel",
+   "ticker": "WMK",
+   "company": "WEIS MARKETS INC",
+   "jet": "N613WM",
+   "airport": "KBGM",
+   "arrived_utc": "2026-11-05T16:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "novel",
+   "ticker": "PNC",
+   "company": "PNC FINANCIAL SERVICES GROUP, INC.",
+   "jet": "N852DL",
+   "airport": "KSBN",
+   "arrived_utc": "2026-11-05T23:15",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-05",
+   "kind": "novel",
+   "ticker": "WDAY",
+   "company": "Workday, Inc.",
+   "jet": "N191MM",
+   "airport": "KAGS",
+   "arrived_utc": "2026-11-05T18:58",
    "stance": "info"
   },
   {
@@ -1404,26 +1464,6 @@
   {
    "date": "2026-11-05",
    "kind": "novel",
-   "ticker": "WMB",
-   "company": "WILLIAMS COMPANIES, INC.",
-   "jet": "N281WC",
-   "airport": "KSHV",
-   "arrived_utc": "2026-11-05T13:14",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-05",
-   "kind": "novel",
-   "ticker": "BJ",
-   "company": "BJ's Wholesale Club Holdings, Inc.",
-   "jet": "N496QS",
-   "airport": "KPSM",
-   "arrived_utc": "2026-11-05T19:26",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-05",
-   "kind": "novel",
    "ticker": "HUM",
    "company": "HUMANA INC",
    "jet": "N733K",
@@ -1444,11 +1484,11 @@
   {
    "date": "2026-11-04",
    "kind": "novel",
-   "ticker": "GE",
-   "company": "GENERAL ELECTRIC CO",
-   "jet": "N120GE",
-   "airport": "KPHL",
-   "arrived_utc": "2026-11-04T00:10",
+   "ticker": "GRC",
+   "company": "GORMAN RUPP CO",
+   "jet": "N19GR",
+   "airport": "KSDF",
+   "arrived_utc": "2026-11-04T15:07",
    "stance": "info"
   },
   {
@@ -1464,41 +1504,21 @@
   {
    "date": "2026-11-04",
    "kind": "novel",
-   "ticker": "GRC",
-   "company": "GORMAN RUPP CO",
-   "jet": "N19GR",
-   "airport": "KSDF",
-   "arrived_utc": "2026-11-04T15:07",
+   "ticker": "NUE",
+   "company": "NUCOR CORP",
+   "jet": "N980JF",
+   "airport": "KHSV",
+   "arrived_utc": "2026-11-04T15:54",
    "stance": "info"
   },
   {
    "date": "2026-11-04",
    "kind": "novel",
-   "ticker": "ROK",
-   "company": "ROCKWELL AUTOMATION, INC",
-   "jet": "N68AB",
-   "airport": "KEUG",
-   "arrived_utc": "2026-11-04T00:35",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-04",
-   "kind": "novel",
-   "ticker": "TVE",
-   "company": "Tennessee Valley Authority",
-   "jet": "N560GJ",
-   "airport": "KATL",
-   "arrived_utc": "2026-11-04T13:45",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-04",
-   "kind": "novel",
-   "ticker": "APD",
-   "company": "Air Products & Chemicals, Inc.",
-   "jet": "N987QS",
-   "airport": "KBLM",
-   "arrived_utc": "2026-11-04T19:10",
+   "ticker": "GE",
+   "company": "GENERAL ELECTRIC CO",
+   "jet": "N120GE",
+   "airport": "KPHL",
+   "arrived_utc": "2026-11-04T00:10",
    "stance": "info"
   },
   {
@@ -1514,11 +1534,31 @@
   {
    "date": "2026-11-04",
    "kind": "novel",
-   "ticker": "NUE",
-   "company": "NUCOR CORP",
-   "jet": "N980JF",
-   "airport": "KHSV",
-   "arrived_utc": "2026-11-04T15:54",
+   "ticker": "APD",
+   "company": "Air Products & Chemicals, Inc.",
+   "jet": "N987QS",
+   "airport": "KBLM",
+   "arrived_utc": "2026-11-04T19:10",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "novel",
+   "ticker": "TVE",
+   "company": "Tennessee Valley Authority",
+   "jet": "N560GJ",
+   "airport": "KATL",
+   "arrived_utc": "2026-11-04T13:45",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-04",
+   "kind": "novel",
+   "ticker": "ROK",
+   "company": "ROCKWELL AUTOMATION, INC",
+   "jet": "N68AB",
+   "airport": "KEUG",
+   "arrived_utc": "2026-11-04T00:35",
    "stance": "info"
   },
   {
@@ -1544,61 +1584,11 @@
   {
    "date": "2026-11-03",
    "kind": "novel",
-   "ticker": "GD",
-   "company": "GENERAL DYNAMICS CORP",
-   "jet": "N586G",
-   "airport": "LEMD",
-   "arrived_utc": "2026-11-03T11:08",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-03",
-   "kind": "novel",
-   "ticker": "CHH",
-   "company": "CHOICE HOTELS INTERNATIONAL INC /DE",
-   "jet": "N472K",
-   "airport": "KTPA",
-   "arrived_utc": "2026-11-03T15:12",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-03",
-   "kind": "novel",
-   "ticker": "NRXP",
-   "company": "NRX Pharmaceuticals, Inc.",
-   "jet": "N633AT",
-   "airport": "KILG",
-   "arrived_utc": "2026-11-03T22:30",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-03",
-   "kind": "novel",
-   "ticker": "ASTE",
-   "company": "ASTEC INDUSTRIES INC",
-   "jet": "N12JK",
-   "airport": "KAUO",
-   "arrived_utc": "2026-11-03T17:49",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-03",
-   "kind": "novel",
    "ticker": "SENEA",
    "company": "Seneca Foods Corp",
    "jet": "N447SF",
    "airport": "KRSW",
    "arrived_utc": "2026-11-03T21:19",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-03",
-   "kind": "novel",
-   "ticker": "PPG",
-   "company": "PPG INDUSTRIES INC",
-   "jet": "N857GA",
-   "airport": "KHND",
-   "arrived_utc": "2026-11-03T01:19",
    "stance": "info"
   },
   {
@@ -1614,31 +1604,61 @@
   {
    "date": "2026-11-03",
    "kind": "novel",
+   "ticker": "CHH",
+   "company": "CHOICE HOTELS INTERNATIONAL INC /DE",
+   "jet": "N472K",
+   "airport": "KTPA",
+   "arrived_utc": "2026-11-03T15:12",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "novel",
+   "ticker": "PPG",
+   "company": "PPG INDUSTRIES INC",
+   "jet": "N857GA",
+   "airport": "KHND",
+   "arrived_utc": "2026-11-03T01:19",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "novel",
+   "ticker": "NRXP",
+   "company": "NRX Pharmaceuticals, Inc.",
+   "jet": "N633AT",
+   "airport": "KILG",
+   "arrived_utc": "2026-11-03T22:30",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "novel",
+   "ticker": "GD",
+   "company": "GENERAL DYNAMICS CORP",
+   "jet": "N586G",
+   "airport": "LEMD",
+   "arrived_utc": "2026-11-03T11:08",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "novel",
+   "ticker": "ASTE",
+   "company": "ASTEC INDUSTRIES INC",
+   "jet": "N12JK",
+   "airport": "KAUO",
+   "arrived_utc": "2026-11-03T17:49",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-03",
+   "kind": "novel",
    "ticker": "BANC",
    "company": "BANC OF CALIFORNIA, INC.",
    "jet": "N319FS",
    "airport": "KDAL",
    "arrived_utc": "2026-11-03T19:47",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-02",
-   "kind": "novel",
-   "ticker": "UNF",
-   "company": "UNIFIRST CORP",
-   "jet": "N683UF",
-   "airport": "KATL",
-   "arrived_utc": "2026-11-02T19:06",
-   "stance": "info"
-  },
-  {
-   "date": "2026-11-02",
-   "kind": "novel",
-   "ticker": "OKE",
-   "company": "ONEOK INC /NEW/",
-   "jet": "N310KE",
-   "airport": "KAPA",
-   "arrived_utc": "2026-11-02T23:15",
    "stance": "info"
   },
   {
@@ -1654,11 +1674,11 @@
   {
    "date": "2026-11-02",
    "kind": "novel",
-   "ticker": "CI",
-   "company": "Cigna Group",
-   "jet": "N1982C",
-   "airport": "KMLB",
-   "arrived_utc": "2026-11-02T14:12",
+   "ticker": "PWR",
+   "company": "QUANTA SERVICES, INC.",
+   "jet": "N283QA",
+   "airport": "KTWF",
+   "arrived_utc": "2026-11-02T17:41",
    "stance": "info"
   },
   {
@@ -1666,19 +1686,19 @@
    "kind": "novel",
    "ticker": "COP",
    "company": "CONOCOPHILLIPS",
-   "jet": "N795CP",
-   "airport": "KAFW",
-   "arrived_utc": "2026-11-02T15:24",
+   "jet": "N284CP",
+   "airport": "KXWA",
+   "arrived_utc": "2026-11-02T16:07",
    "stance": "info"
   },
   {
    "date": "2026-11-02",
    "kind": "novel",
-   "ticker": "PWR",
-   "company": "QUANTA SERVICES, INC.",
-   "jet": "N283QA",
-   "airport": "KTWF",
-   "arrived_utc": "2026-11-02T17:41",
+   "ticker": "AMP",
+   "company": "AMERIPRISE FINANCIAL INC",
+   "jet": "N616AF",
+   "airport": "KSAN",
+   "arrived_utc": "2026-11-02T04:12",
    "stance": "info"
   },
   {
@@ -1694,11 +1714,31 @@
   {
    "date": "2026-11-02",
    "kind": "novel",
-   "ticker": "AMP",
-   "company": "AMERIPRISE FINANCIAL INC",
-   "jet": "N616AF",
-   "airport": "KSAN",
-   "arrived_utc": "2026-11-02T04:12",
+   "ticker": "UNF",
+   "company": "UNIFIRST CORP",
+   "jet": "N683UF",
+   "airport": "KATL",
+   "arrived_utc": "2026-11-02T19:06",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "novel",
+   "ticker": "CI",
+   "company": "Cigna Group",
+   "jet": "N1982C",
+   "airport": "KMLB",
+   "arrived_utc": "2026-11-02T14:12",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "novel",
+   "ticker": "OKE",
+   "company": "ONEOK INC /NEW/",
+   "jet": "N310KE",
+   "airport": "KAPA",
+   "arrived_utc": "2026-11-02T23:15",
    "stance": "info"
   },
   {
@@ -1724,6 +1764,16 @@
   {
    "date": "2026-11-01",
    "kind": "novel",
+   "ticker": "BEN",
+   "company": "FRANKLIN TEMPLETON INC",
+   "jet": "N988F",
+   "airport": "VHHH",
+   "arrived_utc": "2026-11-01T22:17",
+   "stance": "info"
+  },
+  {
+   "date": "2026-11-01",
+   "kind": "novel",
    "ticker": "FDXF",
    "company": "FedEx Freight Holding Company, Inc.",
    "jet": "N21FE",
@@ -1742,16 +1792,6 @@
    "stance": "info"
   },
   {
-   "date": "2026-11-01",
-   "kind": "novel",
-   "ticker": "BEN",
-   "company": "FRANKLIN TEMPLETON INC",
-   "jet": "N988F",
-   "airport": "RJTT",
-   "arrived_utc": "2026-11-01T17:11",
-   "stance": "info"
-  },
-  {
    "date": "2026-10-31",
    "kind": "novel",
    "ticker": "WMT",
@@ -1759,16 +1799,6 @@
    "jet": "N17ZP",
    "airport": "KOKC",
    "arrived_utc": "2026-10-31T13:08",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-30",
-   "kind": "novel",
-   "ticker": "MSI",
-   "company": "Motorola Solutions, Inc.",
-   "jet": "N513FX",
-   "airport": "KLEX",
-   "arrived_utc": "2026-10-30T23:46",
    "stance": "info"
   },
   {
@@ -1784,41 +1814,31 @@
   {
    "date": "2026-10-30",
    "kind": "novel",
-   "ticker": "JKHY",
-   "company": "JACK HENRY & ASSOCIATES INC",
-   "jet": "N894JH",
-   "airport": "KIOB",
-   "arrived_utc": "2026-10-30T16:23",
+   "ticker": "COST",
+   "company": "COSTCO WHOLESALE CORP /NEW",
+   "jet": "N82CW",
+   "airport": "CYOW",
+   "arrived_utc": "2026-10-30T01:18",
    "stance": "info"
   },
   {
    "date": "2026-10-30",
    "kind": "novel",
-   "ticker": "COST",
-   "company": "COSTCO WHOLESALE CORP /NEW",
-   "jet": "N84CW",
-   "airport": "KPHF",
-   "arrived_utc": "2026-10-30T15:33",
+   "ticker": "MSI",
+   "company": "Motorola Solutions, Inc.",
+   "jet": "N513FX",
+   "airport": "KLEX",
+   "arrived_utc": "2026-10-30T23:46",
    "stance": "info"
   },
   {
-   "date": "2026-10-29",
+   "date": "2026-10-30",
    "kind": "novel",
-   "ticker": "KR",
-   "company": "KROGER CO",
-   "jet": "N300KC",
-   "airport": "KUES",
-   "arrived_utc": "2026-10-29T12:35",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-29",
-   "kind": "novel",
-   "ticker": "CMI",
-   "company": "CUMMINS INC",
-   "jet": "N283CE",
-   "airport": "KLRD",
-   "arrived_utc": "2026-10-29T18:27",
+   "ticker": "JKHY",
+   "company": "JACK HENRY & ASSOCIATES INC",
+   "jet": "N894JH",
+   "airport": "KIOB",
+   "arrived_utc": "2026-10-30T16:23",
    "stance": "info"
   },
   {
@@ -1844,6 +1864,16 @@
   {
    "date": "2026-10-29",
    "kind": "novel",
+   "ticker": "KR",
+   "company": "KROGER CO",
+   "jet": "N300KC",
+   "airport": "KUES",
+   "arrived_utc": "2026-10-29T12:35",
+   "stance": "info"
+  },
+  {
+   "date": "2026-10-29",
+   "kind": "novel",
    "ticker": "AEI",
    "company": "Alset Inc.",
    "jet": "N10M",
@@ -1856,9 +1886,19 @@
    "kind": "novel",
    "ticker": "HUM",
    "company": "HUMANA INC",
-   "jet": "N733K",
-   "airport": "KIAH",
-   "arrived_utc": "2026-10-29T23:48",
+   "jet": "N733H",
+   "airport": "KMDW",
+   "arrived_utc": "2026-10-29T23:22",
+   "stance": "info"
+  },
+  {
+   "date": "2026-10-29",
+   "kind": "novel",
+   "ticker": "CMI",
+   "company": "CUMMINS INC",
+   "jet": "N283CE",
+   "airport": "KLRD",
+   "arrived_utc": "2026-10-29T18:27",
    "stance": "info"
   },
   {
@@ -1869,106 +1909,6 @@
    "jet": "N917BD",
    "airport": "KOMA",
    "arrived_utc": "2026-10-29T18:01",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "CRK",
-   "company": "COMSTOCK RESOURCES INC",
-   "jet": "N400CR",
-   "airport": "KAPC",
-   "arrived_utc": "2026-10-28T16:50",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "CAG",
-   "company": "CONAGRA BRANDS INC.",
-   "jet": "N834CA",
-   "airport": "KFCM",
-   "arrived_utc": "2026-10-28T19:17",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "TKR",
-   "company": "TIMKEN CO",
-   "jet": "N78TC",
-   "airport": "KCOS",
-   "arrived_utc": "2026-10-28T20:21",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "GE",
-   "company": "GENERAL ELECTRIC CO",
-   "jet": "N120GE",
-   "airport": "KLAF",
-   "arrived_utc": "2026-10-28T14:12",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "HTH",
-   "company": "Hilltop Holdings Inc.",
-   "jet": "N824HH",
-   "airport": "KSAT",
-   "arrived_utc": "2026-10-28T16:06",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "WHR",
-   "company": "WHIRLPOOL CORP /DE/",
-   "jet": "N1911W",
-   "airport": "KFRG",
-   "arrived_utc": "2026-10-28T14:33",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "KG",
-   "company": "Kestrel Group Ltd",
-   "jet": "N915MC",
-   "airport": "KDPA",
-   "arrived_utc": "2026-10-28T19:47",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "SON",
-   "company": "SONOCO PRODUCTS CO",
-   "jet": "N351SP",
-   "airport": "KGRB",
-   "arrived_utc": "2026-10-28T15:24",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "GPC",
-   "company": "GENUINE PARTS CO",
-   "jet": "N28GP",
-   "airport": "KCXY",
-   "arrived_utc": "2026-10-28T14:04",
-   "stance": "info"
-  },
-  {
-   "date": "2026-10-28",
-   "kind": "novel",
-   "ticker": "WOR",
-   "company": "WORTHINGTON ENTERPRISES, INC.",
-   "jet": "N352W",
-   "airport": "KTEB",
-   "arrived_utc": "2026-10-28T19:50",
    "stance": "info"
   }
  ]
