@@ -1,0 +1,30 @@
+name: voice
+on:
+  schedule:
+    - cron: "40 5 * * *"  # daily; recent calls first, then backfill of older episodes
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: voice-data
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt
+      - run: python run.py voice
+        env:
+          PYTHONUNBUFFERED: "1"
+          VOICE_BUDGET_S: "16200"  # 4.5 h, then stop cleanly and commit
+      - name: Commit data
+        if: always()
+        run: |
+          git config user.name "signals-bot"
+          git config user.email "signals-bot@users.noreply.github.com"
+          git add data/voice
+          git diff --cached --quiet || (git commit -m "data: voice features" && git pull --rebase && git push)
