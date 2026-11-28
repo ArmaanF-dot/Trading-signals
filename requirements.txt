@@ -3,3 +3,4 @@ pandas
 pytest
 openpyxl
 scikit-learn
+pyarrow
