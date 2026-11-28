@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-27",
+  "as_of": "2026-11-28",
   "lookback_days": 30,
   "disclaimer": "Research signals, not advice. Backtests found no standalone edge after costs; use as inputs only and paper trade first.",
   "signals": [
@@ -15,21 +15,6 @@
       "metrics": {
         "net_change_pp": 0.6,
         "aggregate_net_short_pct": 2.68
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:US25520W1071:2026-11-26",
-      "symbol": "",
-      "isin": "US25520W1071",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-26",
-      "summary": "Diversified Energy Company: aggregate net short up 0.68pp over 30 days, now 9.78%",
-      "metrics": {
-        "net_change_pp": 0.68,
-        "aggregate_net_short_pct": 9.78
       },
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
@@ -64,51 +49,6 @@
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
     {
-      "id": "fca:GB0001859296:2026-11-27",
-      "symbol": "VTY.L",
-      "isin": "GB0001859296",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "Vistry Group PLC: aggregate net short up 1.06pp over 30 days, now 15.24%",
-      "metrics": {
-        "net_change_pp": 1.06,
-        "aggregate_net_short_pct": 15.24
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:GB0006870611:2026-11-27",
-      "symbol": "GBG.L",
-      "isin": "GB0006870611",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "GB GROUP PLC: aggregate net short up 0.51pp over 30 days, now 7.41%",
-      "metrics": {
-        "net_change_pp": 0.51,
-        "aggregate_net_short_pct": 7.41
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:GB00B082RF11:2026-11-27",
-      "symbol": "RTO.L",
-      "isin": "GB00B082RF11",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "RENTOKIL INITIAL PLC: aggregate net short up 0.65pp over 30 days, now 5.78%",
-      "metrics": {
-        "net_change_pp": 0.65,
-        "aggregate_net_short_pct": 5.78
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
       "id": "fca:GB00B0FVQX23:2026-11-27",
       "symbol": "RKH.L",
       "isin": "GB00B0FVQX23",
@@ -116,55 +56,10 @@
       "signal": "fca_short_rise",
       "stance": "avoid",
       "date": "2026-11-27",
-      "summary": "ROCKHOPPER EXPLORATION PLC: aggregate net short up 0.54pp over 30 days, now 3.00%",
+      "summary": "ROCKHOPPER EXPLORATION PLC: aggregate net short up 0.54pp over 30 days, now 3.03%",
       "metrics": {
         "net_change_pp": 0.54,
-        "aggregate_net_short_pct": 3.0
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:GB00B82YXW83:2026-11-27",
-      "symbol": "VSVS.L",
-      "isin": "GB00B82YXW83",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "VESUVIUS PLC: aggregate net short up 0.97pp over 30 days, now 1.78%",
-      "metrics": {
-        "net_change_pp": 0.97,
-        "aggregate_net_short_pct": 1.78
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:GB00B8VZXT93:2026-11-27",
-      "symbol": "CRST.L",
-      "isin": "GB00B8VZXT93",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "CREST NICHOLSON HOLDINGS PLC: aggregate net short up 0.86pp over 30 days, now 12.86%",
-      "metrics": {
-        "net_change_pp": 0.86,
-        "aggregate_net_short_pct": 12.86
-      },
-      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
-    },
-    {
-      "id": "fca:GB00BG5KQW09:2026-11-27",
-      "symbol": "CWR.L",
-      "isin": "GB00BG5KQW09",
-      "market": "UK",
-      "signal": "fca_short_rise",
-      "stance": "avoid",
-      "date": "2026-11-27",
-      "summary": "CERES POWER HOLDINGS PLC: aggregate net short up 1.04pp over 30 days, now 21.57%",
-      "metrics": {
-        "net_change_pp": 1.04,
-        "aggregate_net_short_pct": 21.57
+        "aggregate_net_short_pct": 3.03
       },
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
@@ -176,10 +71,190 @@
       "signal": "fca_short_rise",
       "stance": "avoid",
       "date": "2026-11-27",
-      "summary": "Wizz Air Holdings PLC: aggregate net short up 1.46pp over 30 days, now 10.21%",
+      "summary": "Wizz Air Holdings PLC: aggregate net short up 1.46pp over 30 days, now 10.20%",
       "metrics": {
         "net_change_pp": 1.46,
-        "aggregate_net_short_pct": 10.21
+        "aggregate_net_short_pct": 10.2
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:CH0311864901:2026-11-28",
+      "symbol": "",
+      "isin": "CH0311864901",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "VAT Group AG: aggregate net short up 0.57pp over 30 days, now 2.28%",
+      "metrics": {
+        "net_change_pp": 0.57,
+        "aggregate_net_short_pct": 2.28
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB0000904986:2026-11-28",
+      "symbol": "BWY.L",
+      "isin": "GB0000904986",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "BELLWAY P L C: aggregate net short up 0.54pp over 30 days, now 4.28%",
+      "metrics": {
+        "net_change_pp": 0.54,
+        "aggregate_net_short_pct": 4.28
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB0001859296:2026-11-28",
+      "symbol": "VTY.L",
+      "isin": "GB0001859296",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "Vistry Group PLC: aggregate net short up 0.92pp over 30 days, now 15.10%",
+      "metrics": {
+        "net_change_pp": 0.92,
+        "aggregate_net_short_pct": 15.1
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB0002074580:2026-11-28",
+      "symbol": "GNS.L",
+      "isin": "GB0002074580",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "GENUS PLC: aggregate net short up 0.72pp over 30 days, now 2.86%",
+      "metrics": {
+        "net_change_pp": 0.72,
+        "aggregate_net_short_pct": 2.86
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB0006870611:2026-11-28",
+      "symbol": "GBG.L",
+      "isin": "GB0006870611",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "GB GROUP PLC: aggregate net short up 0.97pp over 30 days, now 7.87%",
+      "metrics": {
+        "net_change_pp": 0.97,
+        "aggregate_net_short_pct": 7.87
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00B082RF11:2026-11-28",
+      "symbol": "RTO.L",
+      "isin": "GB00B082RF11",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "RENTOKIL INITIAL PLC: aggregate net short up 0.84pp over 30 days, now 5.97%",
+      "metrics": {
+        "net_change_pp": 0.84,
+        "aggregate_net_short_pct": 5.97
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00B82YXW83:2026-11-28",
+      "symbol": "VSVS.L",
+      "isin": "GB00B82YXW83",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "VESUVIUS PLC: aggregate net short up 1.29pp over 30 days, now 2.10%",
+      "metrics": {
+        "net_change_pp": 1.29,
+        "aggregate_net_short_pct": 2.1
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00B8VZXT93:2026-11-28",
+      "symbol": "CRST.L",
+      "isin": "GB00B8VZXT93",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "CREST NICHOLSON HOLDINGS PLC: aggregate net short up 0.98pp over 30 days, now 12.98%",
+      "metrics": {
+        "net_change_pp": 0.98,
+        "aggregate_net_short_pct": 12.98
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00BG5KQW09:2026-11-28",
+      "symbol": "CWR.L",
+      "isin": "GB00BG5KQW09",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "CERES POWER HOLDINGS PLC: aggregate net short up 1.30pp over 30 days, now 21.83%",
+      "metrics": {
+        "net_change_pp": 1.3,
+        "aggregate_net_short_pct": 21.83
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:GB00BYN59130:2026-11-28",
+      "symbol": "DOM.L",
+      "isin": "GB00BYN59130",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "DOMINO'S PIZZA GROUP PLC: aggregate net short up 0.67pp over 30 days, now 9.35%",
+      "metrics": {
+        "net_change_pp": 0.67,
+        "aggregate_net_short_pct": 9.35
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:JE00BSBJ5M88:2026-11-28",
+      "symbol": "ROSE.L",
+      "isin": "JE00BSBJ5M88",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "Rosebank Industries Plc: aggregate net short up 0.51pp over 30 days, now 3.84%",
+      "metrics": {
+        "net_change_pp": 0.51,
+        "aggregate_net_short_pct": 3.84
+      },
+      "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
+    },
+    {
+      "id": "fca:US25520W1071:2026-11-28",
+      "symbol": "",
+      "isin": "US25520W1071",
+      "market": "UK",
+      "signal": "fca_short_rise",
+      "stance": "avoid",
+      "date": "2026-11-28",
+      "summary": "Diversified Energy Company: aggregate net short up 0.87pp over 30 days, now 9.97%",
+      "metrics": {
+        "net_change_pp": 0.87,
+        "aggregate_net_short_pct": 9.97
       },
       "evidence": "Backtest 2016-26: aggregate-short rises were followed by about -1.4% excess over 60 days before costs (monthly t about -2.3). Weak avoid filter; too thin to short."
     },
@@ -285,6 +360,36 @@
       "metrics": {
         "net_change_pp": -0.94,
         "aggregate_net_short_pct": 8.2
+      },
+      "evidence": "Short covering: no measurable edge in backtests."
+    },
+    {
+      "id": "fca:GB0006215205:2026-11-28",
+      "symbol": "MCG.L",
+      "isin": "GB0006215205",
+      "market": "UK",
+      "signal": "fca_short_fall",
+      "stance": "info",
+      "date": "2026-11-28",
+      "summary": "Mobico Group PLC: aggregate net short down 0.51pp over 30 days, now 3.43%",
+      "metrics": {
+        "net_change_pp": -0.51,
+        "aggregate_net_short_pct": 3.43
+      },
+      "evidence": "Short covering: no measurable edge in backtests."
+    },
+    {
+      "id": "fca:GB00B4WFW713:2026-11-28",
+      "symbol": "LMP.L",
+      "isin": "GB00B4WFW713",
+      "market": "UK",
+      "signal": "fca_short_fall",
+      "stance": "info",
+      "date": "2026-11-28",
+      "summary": "LONDONMETRIC PROPERTY PLC: aggregate net short down 0.57pp over 30 days, now 1.66%",
+      "metrics": {
+        "net_change_pp": -0.57,
+        "aggregate_net_short_pct": 1.66
       },
       "evidence": "Short covering: no measurable edge in backtests."
     }
