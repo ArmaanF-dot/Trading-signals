@@ -1,0 +1,6 @@
+# Live call analyser: everything free, everything runs on your PC.
+# Use Python 3.11 or 3.12 (64-bit) from python.org.
+numpy
+praat-parselmouth
+faster-whisper
+PyAudioWPatch; sys_platform == "win32"
