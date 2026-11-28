@@ -116,3 +116,7 @@ date,company,isin,ticker,director,role,shares,price,value_gbp,source_url
 - The FCA file URL was checked against the FCA page on 21 November 2026; if it ever 404s, copy the current link from the "Notification and disclosure of net short positions" page.
 - The EDGAR feed shows only the latest ~300 filings, so the 2-hourly schedule matters; gaps are not backfilled.
 - Parsers are tested offline against fixtures; live formats may drift.
+
+## Live call analyser
+
+`python -m live` (or `live\run_live.bat` on Windows) follows a live earnings call: it captures the audio your PC is playing, transcribes it locally and flags hedging, negative wording, long pauses, slow answers and shifts in how management sounds. Colour, not a validated trade signal. See `live/README.md`.

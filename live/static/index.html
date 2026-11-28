@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Call Analyser</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#16202b;--mute:#667385;--line:#dfe3e8;--accent:#1c6b8f;--info:#667385;--watch:#b86e00;--alert:#c0392b;--ok:#2a7d4f;--warn-bg:#fff6e5;--warn-line:#f0d9a8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171e26;--ink:#e6ebf0;--mute:#8d9bab;--line:#27313c;--accent:#5bb4d6;--info:#8d9bab;--watch:#e8a33d;--alert:#ef6a5b;--ok:#5cc38a;--warn-bg:#2a2414;--warn-line:#5a4a1d}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+h1{font-size:17px;margin:0;font-weight:650}
+.pill{font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+.pill.on{color:var(--ok);border-color:var(--ok)}.pill.demo{color:var(--watch);border-color:var(--watch)}.pill.bad{color:var(--alert);border-color:var(--alert)}
+.banner{margin:12px 16px 0;padding:9px 12px;background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:8px;font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;padding:12px 16px 24px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.card h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;font-weight:600}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+ul{list-style:none;margin:0;padding:0}li{padding:6px 0;border-top:1px solid var(--line)}li:first-child{border-top:0}
+.flag{display:flex;gap:8px}.flag .t{color:var(--mute);font-variant-numeric:tabular-nums;font-size:12px;min-width:42px;padding-top:2px}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:none;background:var(--info)}.dot.watch{background:var(--watch)}.dot.alert{background:var(--alert)}
+.scroll{max-height:340px;overflow:auto}.tall{max-height:460px}
+.turn{font-size:14px}.turn b{font-weight:600}.turn .m{color:var(--mute);font-size:12px}
+.empty{color:var(--mute);font-size:14px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px}.kv span:nth-child(odd){color:var(--mute)}
+canvas{width:100%;height:110px;display:block}
+button,a.btn{font:inherit;font-size:13px;padding:5px 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none}
+.spacer{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>Live Call Analyser</h1>
+  <span class="pill" id="state">starting</span>
+  <span class="pill" id="section">prepared remarks</span>
+  <span class="pill" id="elapsed">0:00</span>
+  <span class="pill" id="behind" hidden></span>
+  <span class="pill demo" id="demo" hidden>demo: synthetic voices, scripted text</span>
+  <span class="spacer"></span>
+  <a class="btn" href="/api/summary" target="_blank">Call summary</a>
+</header>
+<div class="banner" id="disc"></div>
+<main>
+  <div class="col">
+    <section class="card"><h2>Cues now (newest first)</h2><div class="scroll tall"><ul id="flags"></ul><div class="empty" id="noflags">Nothing flagged yet. Cues need a few minutes of speech to settle.</div></div></section>
+    <section class="card"><h2>Last three minutes</h2><ul id="rolling"></ul><div class="empty" id="norolling">Needs about a minute of management speech.</div></section>
+    <section class="card"><h2>Prepared remarks against Q&amp;A</h2><ul id="shift"></ul><div class="empty" id="noshift">Appears once Q&amp;A has started and both parts have enough speech.</div></section>
+  </div>
+  <div class="col">
+    <section class="card"><h2>Management speaking rate and pitch spread</h2><canvas id="chart" width="600" height="110"></canvas><div class="empty" id="chartnote"></div></section>
+    <section class="card"><h2>Transcript</h2><div class="scroll tall" id="turns"></div></section>
+    <section class="card"><h2>Voices</h2><div id="speakers" class="kv"></div>
+      <div class="empty" style="margin-top:8px">Voices are grouped by sound, not identified by name. Roles are guessed from who talks most before questions and who joins after.</div></section>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const mmss=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+function fill(ul,items,render){ul.replaceChildren(...items.map(render))}
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function chart(series){
+  const c=$("chart"),g=c.getContext("2d"),W=c.width,H=c.height;g.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement);
+  if(series.length<2){$("chartnote").textContent="Needs a few phrases of management speech.";return}
+  $("chartnote").textContent="Blue: syllables a second. Amber: pitch spread (semitones). Each point is one phrase.";
+  const line=(vals,color)=>{
+    const v=vals.filter(x=>x!=null);if(v.length<2)return;
+    const lo=Math.min(...v),hi=Math.max(...v),span=(hi-lo)||1;
+    g.beginPath();g.strokeStyle=color;g.lineWidth=2;let first=true;
+    vals.forEach((x,i)=>{if(x==null)return;const px=8+i*(W-16)/(vals.length-1),py=H-10-(x-lo)/span*(H-20);first?g.moveTo(px,py):g.lineTo(px,py);first=false});g.stroke()};
+  line(series.map(p=>p.rate),css.getPropertyValue("--accent").trim());
+  line(series.map(p=>p.pitch_sd),css.getPropertyValue("--watch").trim());
+}
+async function tick(){
+  try{
+    const r=await fetch("/api/state");const s=await r.json();
+    const st=s.status||{};
+    $("state").textContent=st.state||"";$("state").className="pill"+(st.state==="listening"?" on":"")+(st.error?" bad":"");
+    if(st.error){$("state").textContent="error: "+st.error}
+    $("section").textContent=s.section==="qa"?"Q&A":"prepared remarks";
+    $("elapsed").textContent=mmss(s.elapsed);
+    $("demo").hidden=!st.demo;
+    $("behind").hidden=!(st.behind_s>3);$("behind").textContent="transcript "+st.behind_s+" s behind";
+    $("disc").textContent=s.disclaimer;
+    fill($("flags"),s.flags,f=>{const li=el("li","flag");li.append(el("span","t",mmss(f.t)),el("span","dot "+f.severity),el("span","",f.text));return li});
+    $("noflags").hidden=s.flags.length>0;
+    fill($("rolling"),s.rolling,x=>el("li","",x));$("norolling").hidden=s.rolling.length>0;
+    fill($("shift"),s.shift,x=>el("li","",x));$("noshift").hidden=s.shift.length>0;
+    const tb=$("turns"),atBottom=tb.scrollTop+tb.clientHeight>=tb.scrollHeight-30;
+    tb.replaceChildren(...s.turns.map(t=>{const d=el("div","turn");d.style.padding="5px 0";
+      const who=el("b","",t.speaker+" ");const m=el("span","m",mmss(t.t)+" · "+t.role+" ");d.append(who,m,el("div","",t.text||"(no words recognised)"));return d}));
+    if(atBottom)tb.scrollTop=tb.scrollHeight;
+    const sp=$("speakers");sp.replaceChildren();
+    s.speakers.forEach(x=>{sp.append(el("span","",x.label),el("span","",x.role+", "+mmss(x.talk_s)+" of speech"))});
+    chart(s.series);
+  }catch(e){$("state").textContent="waiting for the analyser…"}
+}
+tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
